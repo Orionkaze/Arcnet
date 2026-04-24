@@ -30,9 +30,37 @@ erDiagram
         String bio
         String[] skills
         String role "developer | artist | animator | storywriter | tester"
-        Boolean isMentor
         DateTime createdAt
         DateTime updatedAt
+    }
+
+    COMPANY {
+        ObjectId _id PK
+        ObjectId registeredBy FK
+        String name UK
+        String email UK
+        String logoUrl
+        String website
+        String description
+        String industry "game_studio | animation_studio | vfx_studio | other"
+        String size "startup | small | medium | large"
+        Boolean isVerified
+        DateTime createdAt
+        DateTime updatedAt
+    }
+
+    MENTOR {
+        ObjectId _id PK
+        ObjectId userId FK
+        String specialization "game_designer | animator | vfx_artist | other"
+        String[] expertise
+        Boolean isVerified
+        Decimal sessionRate
+        String currency "INR"
+        String availability
+        Float rating
+        Int totalSessions
+        DateTime registeredAt
     }
 
     POST {
@@ -92,7 +120,9 @@ erDiagram
 
     PRIVATE_HUB {
         ObjectId _id PK
-        ObjectId ownerId FK
+        ObjectId ownerUserId FK "nullable"
+        ObjectId ownerCompanyId FK "nullable"
+        String ownerType "user | company"
         String name
         String hubCode UK
         String description
@@ -151,23 +181,9 @@ erDiagram
         DateTime registeredAt
     }
 
-    MENTOR_PROFILE {
-        ObjectId _id PK
-        ObjectId userId FK
-        String specialization "game_designer | animator | vfx_artist | other"
-        String[] expertise
-        Boolean isVerified
-        Decimal sessionRate
-        String currency "INR"
-        String availability
-        Float rating
-        Int totalSessions
-        DateTime createdAt
-    }
-
     MENTORSHIP_SESSION {
         ObjectId _id PK
-        ObjectId mentorProfileId FK
+        ObjectId mentorId FK
         ObjectId menteeId FK
         DateTime scheduledAt
         Int durationMinutes
@@ -176,11 +192,13 @@ erDiagram
         DateTime createdAt
     }
 
+
+
     JOB_LISTING {
         ObjectId _id PK
-        ObjectId postedBy FK
+        ObjectId companyId FK
+        ObjectId postedByUserId FK
         String title
-        String company
         String description
         String type "internship | full_time | contract | freelance"
         String location
@@ -218,9 +236,12 @@ erDiagram
 
     PUBLIC_HUB ||--o{ POST : "contains"
 
-    USER ||--o{ PRIVATE_HUB : "owns"
+    USER ||--o{ PRIVATE_HUB : "owns as user"
+    COMPANY ||--o{ PRIVATE_HUB : "owns as company"
     PRIVATE_HUB ||--o{ PRIVATE_HUB_MEMBER : "has"
     USER ||--o{ PRIVATE_HUB_MEMBER : "joins"
+
+    USER ||--o{ COMPANY : "registers"
 
     USER ||--o{ TEAM : "creates"
     TEAM ||--o{ TEAM_MEMBER : "has"
@@ -230,11 +251,11 @@ erDiagram
     USER ||--o{ GAME_JAM_PARTICIPANT : "participates in"
     TEAM ||--o{ GAME_JAM_PARTICIPANT : "competes in"
 
-    USER ||--o| MENTOR_PROFILE : "has"
-    MENTOR_PROFILE ||--o{ MENTORSHIP_SESSION : "hosts"
+    USER ||--o| MENTOR : "registers as"
+    MENTOR ||--o{ MENTORSHIP_SESSION : "hosts"
     USER ||--o{ MENTORSHIP_SESSION : "books as mentee"
 
-    USER ||--o{ JOB_LISTING : "posts"
+    COMPANY ||--o{ JOB_LISTING : "posts"
     JOB_LISTING ||--o{ JOB_APPLICATION : "receives"
     USER ||--o{ JOB_APPLICATION : "submits"
 ```
@@ -244,14 +265,16 @@ erDiagram
 | Entity | Purpose |
 |---|---|
 | **User** | Central entity — every actor on the platform |
+| **Company** | Separately registered entity by a User — posts jobs, can own Private Hubs |
+| **Mentor** | Separately registered role by a User — hosts mentorship sessions |
 | **Post / Comment** | Social feed content within Public Hubs |
 | **Follow / DirectMessage / Notification** | Social connectivity & real-time engagement |
 | **PublicHub** | Categorized community feeds (Game Dev, Artists, etc.) |
-| **PrivateHub / PrivateHubMember** | Code-gated collaboration spaces for studios |
+| **PrivateHub / PrivateHubMember** | Code-gated collaboration spaces — owned by Users or Companies |
 | **Team / TeamMember** | Squad formation with join requests |
 | **GameJam / GameJamParticipant** | Competition portal with registration & submissions |
-| **MentorProfile / MentorshipSession** | Verified professional mentorship booking |
-| **JobListing / JobApplication** | India-first hiring hub with INR compensation |
+| **MentorshipSession** | Session booking between a registered Mentor and a mentee User |
+| **JobListing / JobApplication** | India-first hiring hub — jobs posted by Companies, applied to by Users |
 
 ---
 
@@ -274,7 +297,6 @@ classDiagram
         -String bio
         -String[] skills
         -Role role
-        -Boolean isMentor
         -DateTime createdAt
         -DateTime updatedAt
         +register(email, password) User
@@ -286,6 +308,43 @@ classDiagram
         +getFollowers() User[]
         +getFollowing() User[]
         +searchBySkill(skill) User[]
+    }
+
+    class Company {
+        -ObjectId _id
+        -ObjectId registeredBy
+        -String name
+        -String email
+        -String logoUrl
+        -String website
+        -String description
+        -IndustryType industry
+        -CompanySize size
+        -Boolean isVerified
+        -DateTime createdAt
+        -DateTime updatedAt
+        +register(userId, data) Company
+        +update(companyId, data) Company
+        +getByUser(userId) Company[]
+        +verify(companyId) void
+    }
+
+    class Mentor {
+        -ObjectId _id
+        -ObjectId userId
+        -String specialization
+        -String[] expertise
+        -Boolean isVerified
+        -Decimal sessionRate
+        -String currency
+        -String availability
+        -Float rating
+        -Int totalSessions
+        -DateTime registeredAt
+        +register(userId, data) Mentor
+        +update(data) Mentor
+        +browse(filters) Mentor[]
+        +getBySpecialization(spec) Mentor[]
     }
 
     class AuthService {
@@ -338,13 +397,15 @@ classDiagram
 
     class PrivateHub {
         -ObjectId _id
-        -ObjectId ownerId
+        -ObjectId ownerUserId
+        -ObjectId ownerCompanyId
+        -OwnerType ownerType
         -String name
         -String hubCode
         -String description
         -Boolean isActive
         -DateTime createdAt
-        +create(ownerId, name, hubCode) PrivateHub
+        +create(ownerId, ownerType, name, hubCode) PrivateHub
         +submitEntryRequest(userId, hubCode) PrivateHubMember
         +approveRequest(memberId) void
         +rejectRequest(memberId) void
@@ -415,42 +476,27 @@ classDiagram
         -DateTime registeredAt
     }
 
-    class MentorProfile {
-        -ObjectId _id
-        -ObjectId userId
-        -String specialization
-        -String[] expertise
-        -Boolean isVerified
-        -Decimal sessionRate
-        -String currency
-        -String availability
-        -Float rating
-        -Int totalSessions
-        +create(userId, data) MentorProfile
-        +update(data) MentorProfile
-        +browse(filters) MentorProfile[]
-        +getBySpecialization(spec) MentorProfile[]
-    }
-
     class MentorshipSession {
         -ObjectId _id
-        -ObjectId mentorProfileId
+        -ObjectId mentorId
         -ObjectId menteeId
         -DateTime scheduledAt
         -Int durationMinutes
         -SessionStatus status
         -String meetingLink
-        +book(mentorProfileId, menteeId, slot) MentorshipSession
+        +book(mentorId, menteeId, slot) MentorshipSession
         +cancel(sessionId) void
         +complete(sessionId) void
         +getUpcoming(userId) MentorshipSession[]
     }
 
+
+
     class JobListing {
         -ObjectId _id
-        -ObjectId postedBy
+        -ObjectId companyId
+        -ObjectId postedByUserId
         -String title
-        -String company
         -String description
         -JobType type
         -String location
@@ -463,7 +509,7 @@ classDiagram
         -ListingStatus status
         -DateTime postedAt
         -DateTime deadline
-        +create(postedBy, data) JobListing
+        +create(companyId, postedByUserId, data) JobListing
         +update(jobId, data) JobListing
         +close(jobId) void
         +browse(filters) JobListing[]
@@ -537,9 +583,12 @@ classDiagram
 
     PublicHub "1" --> "*" Post : contains
 
-    User "1" --> "*" PrivateHub : owns
+    User "1" --> "*" PrivateHub : owns as user
+    Company "1" --> "*" PrivateHub : owns as company
     PrivateHub "1" --> "*" PrivateHubMember : has
     User "1" --> "*" PrivateHubMember : joins via
+
+    User "1" --> "*" Company : registers
 
     User "1" --> "*" Team : creates
     Team "1" --> "*" TeamMember : has
@@ -549,11 +598,11 @@ classDiagram
     User "1" --> "*" GameJamParticipant : participates via
     Team "1" --> "*" GameJamParticipant : competes via
 
-    User "1" --> "0..1" MentorProfile : has
-    MentorProfile "1" --> "*" MentorshipSession : hosts
+    User "1" --> "0..1" Mentor : registers as
+    Mentor "1" --> "*" MentorshipSession : hosts
     User "1" --> "*" MentorshipSession : books
 
-    User "1" --> "*" JobListing : posts
+    Company "1" --> "*" JobListing : posts
     JobListing "1" --> "*" JobApplication : receives
     User "1" --> "*" JobApplication : submits
 
@@ -571,12 +620,15 @@ classDiagram
 | **Role** | `developer`, `artist`, `animator`, `storywriter`, `tester` |
 | **MediaType** | `image`, `video`, `model3d` |
 | **HubCategory** | `game_dev`, `2d3d_art`, `animation`, `storywriting`, `testing` |
+| **OwnerType** | `user`, `company` |
 | **MemberRole** | `owner`, `admin`, `member` |
 | **TeamRole** | `leader`, `member` |
 | **RequestStatus** | `pending`, `approved`, `rejected` |
 | **JamType** | `flagship`, `community` |
 | **JamStatus** | `upcoming`, `active`, `completed` |
 | **SessionStatus** | `booked`, `completed`, `cancelled` |
+| **IndustryType** | `game_studio`, `animation_studio`, `vfx_studio`, `other` |
+| **CompanySize** | `startup`, `small`, `medium`, `large` |
 | **JobType** | `internship`, `full_time`, `contract`, `freelance` |
 | **CompPeriod** | `yearly`, `monthly` |
 | **ListingStatus** | `active`, `closed` |
@@ -599,12 +651,14 @@ flowchart TB
         ADMIN([🛡️ Admin])
     end
 
-    subgraph AUTH ["🔐 Authentication & Authorization"]
-        A1["Register with Email/Password"]
+    subgraph AUTH ["🔐 Authentication & Registration"]
+        A1["Register as User (Email/Password)"]
         A2["Login with Email/Password"]
         A3["Login with Google OAuth"]
         A4["Manage Profile & Skills"]
         A5["Logout"]
+        A6["Register as Company"]
+        A7["Register as Mentor"]
     end
 
     subgraph HUBS ["📢 Public Hubs"]
@@ -649,7 +703,7 @@ flowchart TB
     subgraph MENTORSHIP ["🧑‍🏫 Mentorship"]
         M1["Browse Verified Mentors"]
         M2["Book a Mentorship Session"]
-        M3["Create Mentor Profile"]
+        M3["Manage Mentor Profile"]
         M4["Manage Session Schedule"]
         M5["Complete / Cancel Session"]
     end
@@ -665,9 +719,9 @@ flowchart TB
     end
 
     subgraph ADMIN_OPS ["⚙️ Administration"]
-        AD1["Manage Users"]
+        AD1["Manage Users & Companies"]
         AD2["Moderate Content"]
-        AD3["Verify Mentors"]
+        AD3["Verify Mentors & Companies"]
         AD4["Manage Game Jams"]
         AD5["Platform Analytics"]
     end
@@ -687,6 +741,8 @@ flowchart TB
     %% ── Registered User Interactions ──
     USER_ACTOR --> A4
     USER_ACTOR --> A5
+    USER_ACTOR --> A6
+    USER_ACTOR --> A7
     USER_ACTOR --> H3
     USER_ACTOR --> H4
     USER_ACTOR --> H5
@@ -694,6 +750,7 @@ flowchart TB
     USER_ACTOR --> S2
     USER_ACTOR --> S3
     USER_ACTOR --> S4
+    USER_ACTOR --> PH1
     USER_ACTOR --> PH2
     USER_ACTOR --> PH4
     USER_ACTOR --> T1
@@ -705,13 +762,14 @@ flowchart TB
     USER_ACTOR --> J2
     USER_ACTOR --> J3
     USER_ACTOR --> M2
+    USER_ACTOR --> JB4
 
-    %% ── Mentor Interactions ──
+    %% ── Mentor Interactions (registered via A7) ──
     MENTOR_ACTOR --> M3
     MENTOR_ACTOR --> M4
     MENTOR_ACTOR --> M5
 
-    %% ── Employer / Studio Interactions ──
+    %% ── Company Interactions (registered via A6) ──
     EMPLOYER --> PH1
     EMPLOYER --> PH3
     EMPLOYER --> JB5
@@ -727,10 +785,10 @@ flowchart TB
     ADMIN --> AD5
     ADMIN --> J4
 
-    %% ── Inheritance ──
+    %% ── Inheritance / Registration Flows ──
     GUEST -.->|registers| USER_ACTOR
-    USER_ACTOR -.->|becomes| MENTOR_ACTOR
-    USER_ACTOR -.->|becomes| EMPLOYER
+    USER_ACTOR -.->|registers as mentor| MENTOR_ACTOR
+    USER_ACTOR -.->|registers company| EMPLOYER
 ```
 
 ### Actor Summary
@@ -738,16 +796,16 @@ flowchart TB
 | Actor | Description |
 |---|---|
 | **Guest** | Unauthenticated visitor — can browse public content, register, and login |
-| **Registered User** | Authenticated member — full access to social features, hubs, teams, jams, and mentorship booking |
-| **Mentor** | A verified Registered User who has created a mentor profile and can host sessions |
-| **Employer / Studio** | A Registered User representing a company — can post jobs, manage Private Hubs, and review applications |
-| **Admin** | Platform administrator — manages users, content moderation, mentor verification, and jam operations |
+| **Registered User** | Authenticated member — full access to social features, hubs, teams, jams, and can create Private Hubs. Can register as a Mentor or Company |
+| **Mentor** | A User who has completed separate mentor registration — can manage sessions and mentor profile |
+| **Company** | A separately registered entity by a User — posts jobs, manages Private Hubs, and reviews applications |
+| **Admin** | Platform administrator — manages users, companies, content moderation, mentor/company verification, and jam operations |
 
 ### Use Case Count by Module
 
 | Module | Use Cases |
 |---|---|
-| Authentication | 5 |
+| Authentication & Registration | 7 |
 | Public Hubs | 5 |
 | Social & Connectivity | 5 |
 | Private Hubs | 4 |
@@ -756,7 +814,7 @@ flowchart TB
 | Mentorship | 5 |
 | Job Board | 7 |
 | Administration | 5 |
-| **Total** | **46** |
+| **Total** | **48** |
 
 ---
 
