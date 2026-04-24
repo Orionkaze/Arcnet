@@ -29,18 +29,19 @@ Based on the official ArcNet design architecture, the platform is divided into t
 This project uses a decoupled **MERN Stack** (MongoDB, Express.js, React/Next.js, Node.js) configured with TypeScript. It relies on a straightforward two-folder structure to maximize development velocity.
 
 ### **Frontend (`/frontend`)**
-* **Framework:** Next.js 14+ (App Router)
+* **Framework:** Next.js v16.2.4 (App Router)
 * **Language:** TypeScript
 * **Styling:** Tailwind CSS
 * **State Management:** Zustand
 * **Real-time:** Socket.io-client
 
 ### **Backend (`/backend`)**
-* **Runtime/Framework:** Node.js + Express.js
-* **Language:** TypeScript
-* **Database:** MongoDB (Mongoose)
-* **Caching:** Redis
-* **Real-time:** Socket.io
+* **Runtime/Framework:** Node.js v25.9.0 + Express.js v5.2.1
+* **Language:** TypeScript v6.0.3
+* **Database:** MongoDB v8.2.7
+* **Caching:** Redis v8.6.2
+* **Real-time:** Socket.io v4.8.3
+* **Authentication & Authorization:** Google OAuth, JWT
 
 ---
 
