@@ -1,26 +1,38 @@
 @import "tailwindcss";
+@config "../../tailwind.config.ts";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@theme {
+  --color-arc-page: #080c14;
+  --color-arc-card: #0d1320;
+  --color-arc-accent: #00b4e6;
+  --color-arc-input: #080c14;
+  --color-arc-google-bg: #0a0f1c;
+  --color-arc-primary: #e4f0ff;
+  --color-arc-border-card: rgba(0, 180, 230, 0.22);
+  --color-arc-border-input: rgba(0, 180, 230, 0.18);
+  --color-arc-border-google: rgba(255, 255, 255, 0.1);
+  --font-sans: var(--font-inter), sans-serif;
+  --font-chakra: var(--font-chakra-petch), sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-arc-page);
+  background-image: 
+    linear-gradient(rgba(0, 180, 230, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 180, 230, 0.045) 1px, transparent 1px);
+  background-size: 40px 40px;
+  color: var(--color-arc-primary);
+  min-height: 100vh;
+}
+
+/* Page transitions */
+@keyframes slideFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
