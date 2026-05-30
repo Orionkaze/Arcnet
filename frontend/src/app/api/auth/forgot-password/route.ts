@@ -1,51 +1,60 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import bcrypt from "bcrypt";
 import crypto from "crypto";
+import { sendEmail, getPasswordResetEmailHtml } from "@/lib/email";
+import { checkRateLimit } from "@/lib/rateLimit";
+import { z } from "zod";
+
+const forgotPasswordSchema = z.object({
+  email: z.string().email("Invalid email format"),
+});
 
 export async function POST(req: Request) {
   try {
-    const { email } = await req.json();
+    const body = await req.json();
+    const result = forgotPasswordSchema.safeParse(body);
 
-    if (!email) {
-      return NextResponse.json({ error: "Email is required" }, { status: 400 });
+    if (!result.success) {
+      return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 });
     }
 
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) {
-      // Return success to avoid email enumeration
-      return NextResponse.json({ success: true });
-    }
+    const { email } = result.data;
 
-    // Rate limiting: check recent requests
-    const recentRequests = await prisma.passwordResetToken.count({
-      where: {
-        email,
-        createdAt: { gte: new Date(Date.now() - 60 * 60 * 1000) } // last hour
-      }
-    });
-
-    if (recentRequests >= 3) {
+    // Rate limit forgot password requests (3 per hour per email)
+    const rateLimit = checkRateLimit(`forgot_pw_${email}`, 3, 60 * 60 * 1000);
+    if (!rateLimit.success) {
       return NextResponse.json({ error: "Too many requests. Try again later." }, { status: 429 });
     }
 
-    // Delete existing tokens
-    await prisma.passwordResetToken.deleteMany({
-      where: { email },
-    });
+    const user = await prisma.user.findUnique({ where: { email } });
 
-    const token = crypto.randomBytes(32).toString("hex");
-    
-    await prisma.passwordResetToken.create({
+    // Always return success even if user not found to prevent email enumeration
+    if (!user) {
+      return NextResponse.json({ success: true }, { status: 200 });
+    }
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const hashedToken = await bcrypt.hash(resetToken, 12);
+    const passwordResetTokenExpiry = new Date(Date.now() + 15 * 60 * 1000); // 15 mins
+
+    await prisma.user.update({
+      where: { id: user.id },
       data: {
-        email,
-        token,
-        expiresAt: new Date(Date.now() + 15 * 60 * 1000), // 15 mins
-      }
+        passwordResetToken: hashedToken,
+        passwordResetTokenExpiry,
+      },
     });
 
-    console.log(`[MOCK EMAIL] Password reset link for ${email} is http://localhost:3000/reset-password?token=${token}`);
+    const resetLink = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/reset-password?token=${resetToken}&email=${encodeURIComponent(email)}`;
 
-    return NextResponse.json({ success: true });
+    await sendEmail({
+      to: user.email,
+      subject: "Reset your ARCNET password",
+      html: getPasswordResetEmailHtml(resetLink),
+    });
+
+    return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error("Forgot Password Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

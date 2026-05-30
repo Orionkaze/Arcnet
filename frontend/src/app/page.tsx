@@ -1,65 +1,97 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+import "./home.css";
+import Navbar from "@/components/home/Navbar";
+import LeftSidebar from "@/components/home/LeftSidebar";
+import PostCard from "@/components/home/PostCard";
+import RightPanel from "@/components/home/RightPanel";
+import MobileBottomNav from "@/components/home/MobileBottomNav";
+import MobileDrawer from "@/components/home/MobileDrawer";
+
+const MOCK_POSTS = [
+  {
+    username: "Arcavon_Akshit",
+    handle: "@Tech.Hero.ANET",
+    text: "Today I made this asset using all of my knowledge till now. It felt really good finishing it even after all the problem. See it in the image below",
+    isFollowing: true,
+    hasImage: true,
+    likes: 42,
+    comments: 8,
+    shares: 5,
+    reposts: 12,
+  },
+  {
+    username: "Deepak",
+    handle: "Founder & Chairman @Arcavon",
+    text: "Arcavon became a Unicorn today, lessgo",
+    isFollowing: false,
+    hasImage: false,
+    likes: 256,
+    comments: 34,
+    shares: 89,
+    reposts: 67,
+  },
+  {
+    username: "Maya_3D",
+    handle: "@maya.artist.ANET",
+    text: "Just finished rigging this character for our upcoming indie horror game. The bone structure took forever but the result is so satisfying. Can't wait to show the full animation cycle next week!",
+    isFollowing: false,
+    hasImage: true,
+    likes: 128,
+    comments: 22,
+    shares: 15,
+    reposts: 31,
+  },
+];
+
+import Link from "next/link";
 
 export default function Home() {
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="home-layout">
+      <Navbar onMenuToggle={() => setIsDrawerOpen(!isDrawerOpen)} />
+      <div className="home-content relative">
+        <LeftSidebar />
+        <main className="center-feed">
+          {MOCK_POSTS.map((post, index) => (
+            <PostCard key={index} {...post} />
+          ))}
+        </main>
+        <RightPanel />
+
+        {/* Floating Grid Menu Button */}
+        <div className="fixed top-[72px] right-6 z-50">
+          <button 
+            className="w-9 h-9 rounded-full bg-[#10141A] border-2 border-[#00EAFF] flex items-center justify-center hover:bg-[rgba(0,234,255,0.1)] transition-colors cursor-pointer"
+            onClick={() => setDropdownOpen(!dropdownOpen)}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#00EAFF"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+          </button>
         </div>
-      </main>
+      </div>
+      <MobileBottomNav />
+      <MobileDrawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+      />
     </div>
   );
 }

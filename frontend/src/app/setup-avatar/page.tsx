@@ -95,7 +95,7 @@ export default function SetupAvatarPage() {
       const res = await fetch("/api/auth/setup-avatar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ avatarUrl: finalAvatar }),
+        body: JSON.stringify({ avatar: finalAvatar }),
       });
 
       const data = await res.json();

@@ -61,7 +61,7 @@ function VerifyEmailForm() {
         return;
       }
 
-      setAuth(data.user);
+      // Cookies were set server-side, just redirect
       router.push("/setup-username");
     } catch {
       setError("An unexpected error occurred. Please try again.");

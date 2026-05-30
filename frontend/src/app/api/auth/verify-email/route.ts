@@ -1,61 +1,57 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { z } from "zod";
-import { setAuthCookies } from "@/lib/auth";
-
-const verifySchema = z.object({
-  email: z.string().email(),
-  code: z.string().length(6),
-});
+import bcrypt from "bcrypt";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const result = verifySchema.safeParse(body);
+    const { email, code } = body;
 
-    if (!result.success) {
-      return NextResponse.json({ error: "Invalid code" }, { status: 400 });
+    if (!email || !code) {
+      return NextResponse.json({ error: "Email and code are required" }, { status: 400 });
     }
 
-    const { email, code } = result.data;
+    // Rate limit OTP attempts (5 per 15 minutes)
+    const rateLimit = checkRateLimit(`otp_attempt_${email}`, 5, 15 * 60 * 1000);
+    if (!rateLimit.success) {
+      return NextResponse.json({ error: "Too many attempts. Account temporarily locked from verification." }, { status: 429 });
+    }
 
-    const verification = await prisma.verificationCode.findFirst({
-      where: {
-        email,
-        code,
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user || !user.otpCode || !user.otpExpiry) {
+      return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    }
+
+    if (user.isVerified) {
+      return NextResponse.json({ error: "Email already verified" }, { status: 400 });
+    }
+
+    if (new Date() > user.otpExpiry) {
+      return NextResponse.json({ error: "Code expired. Request a new one." }, { status: 400 });
+    }
+
+    const isValid = await bcrypt.compare(code, user.otpCode);
+    if (!isValid) {
+      return NextResponse.json({ error: "Invalid verification code" }, { status: 400 });
+    }
+
+    // Success - verify user and clear OTP fields
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        isVerified: true,
+        otpCode: null,
+        otpExpiry: null,
       },
-      orderBy: { createdAt: "desc" },
     });
 
-    if (!verification) {
-      return NextResponse.json({ error: "Invalid or expired code" }, { status: 400 });
-    }
-
-    if (verification.expiresAt < new Date()) {
-      return NextResponse.json({ error: "Verification code has expired" }, { status: 400 });
-    }
-
-    const user = await prisma.user.update({
-      where: { email },
-      data: { isEmailVerified: true },
-    });
-
-    // Delete used code
-    await prisma.verificationCode.delete({ where: { id: verification.id } });
-
-    // Set auth cookies so user is logged in
+    // Set cookies to log the user in
+    const { setAuthCookies } = await import("@/lib/auth");
     await setAuthCookies(user.id);
 
-    return NextResponse.json({ success: true, user: {
-      id: user.id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      username: user.username,
-      avatarUrl: user.avatarUrl,
-      isEmailVerified: user.isEmailVerified
-    }}, { status: 200 });
-
+    return NextResponse.json({ success: true, user: { id: user.id, email: user.email } }, { status: 200 });
   } catch (error) {
     console.error("Verify Email Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

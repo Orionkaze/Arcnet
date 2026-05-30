@@ -23,7 +23,7 @@ export function ResponsiveAuthLayout({
 }: ResponsiveAuthLayoutProps) {
   return (
     <PageTransition>
-      <div className="min-h-screen w-full flex flex-col lg:flex-row overflow-hidden">
+      <div className="auth-page-bg min-h-screen w-full flex flex-col lg:flex-row lg:h-screen lg:overflow-hidden">
         {/* =========================================
             LEFT PANEL (DESKTOP ONLY - hidden <1024px)
             ========================================= */}
@@ -69,7 +69,7 @@ export function ResponsiveAuthLayout({
         {/* =========================================
             RIGHT PANEL (DESKTOP) / MAIN (MOBILE)
             ========================================= */}
-        <div className="w-full lg:w-[45%] min-h-screen lg:h-screen flex flex-col relative lg:bg-[#0d1320]">
+        <div className="w-full lg:w-[45%] min-h-screen lg:h-screen flex flex-col relative lg:bg-[#0d1320] lg:overflow-y-auto">
           {/* Top cyan edge on desktop */}
           <div className="hidden lg:block absolute top-0 left-0 right-0 h-[2px] bg-arc-accent w-full" />
           

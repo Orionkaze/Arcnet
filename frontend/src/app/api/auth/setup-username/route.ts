@@ -49,8 +49,8 @@ export async function POST(req: Request) {
       lastName: updatedUser.lastName,
       email: updatedUser.email,
       username: updatedUser.username,
-      avatarUrl: updatedUser.avatarUrl,
-      isEmailVerified: updatedUser.isEmailVerified
+      avatar: updatedUser.avatar,
+      isVerified: updatedUser.isVerified
     }}, { status: 200 });
 
   } catch (error) {

@@ -16,13 +16,19 @@
 }
 
 body {
+  color: var(--color-arc-primary);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+/* Auth pages grid background — applied via class on auth page wrappers */
+.auth-page-bg {
   background-color: var(--color-arc-page);
   background-image: 
     linear-gradient(rgba(0, 180, 230, 0.045) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 180, 230, 0.045) 1px, transparent 1px);
   background-size: 40px 40px;
-  color: var(--color-arc-primary);
-  min-height: 100vh;
 }
 
 /* Page transitions */

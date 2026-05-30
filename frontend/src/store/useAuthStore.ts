@@ -6,8 +6,9 @@ interface User {
   lastName: string;
   email: string;
   username: string | null;
-  avatarUrl: string | null;
-  isEmailVerified: boolean;
+  avatar: string | null;
+  isVerified: boolean;
+  isOnboarded: boolean;
 }
 
 interface AuthState {
@@ -17,6 +18,7 @@ interface AuthState {
   setAuth: (user: User) => void;
   logout: () => void;
   setLoading: (loading: boolean) => void;
+  checkAuth: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -26,4 +28,31 @@ export const useAuthStore = create<AuthState>((set) => ({
   setAuth: (user) => set({ user, isAuthenticated: true, isLoading: false }),
   logout: () => set({ user: null, isAuthenticated: false, isLoading: false }),
   setLoading: (loading) => set({ isLoading: loading }),
+  checkAuth: async () => {
+    try {
+      let res = await fetch("/api/auth/me");
+      
+      // If unauthorized, try to refresh
+      if (res.status === 401) {
+        const refreshRes = await fetch("/api/auth/refresh", { method: "POST" });
+        if (refreshRes.ok) {
+          // Retry me
+          res = await fetch("/api/auth/me");
+        } else {
+          // Refresh failed, clear session
+          set({ user: null, isAuthenticated: false, isLoading: false });
+          return;
+        }
+      }
+
+      if (res.ok) {
+        const data = await res.json();
+        set({ user: data.user, isAuthenticated: true, isLoading: false });
+      } else {
+        set({ user: null, isAuthenticated: false, isLoading: false });
+      }
+    } catch (error) {
+      set({ user: null, isAuthenticated: false, isLoading: false });
+    }
+  },
 }));

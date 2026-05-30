@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   try {
@@ -18,21 +18,22 @@ export async function GET() {
         lastName: true,
         email: true,
         username: true,
-        avatarUrl: true,
-        isEmailVerified: true,
+        avatar: true,
+        isVerified: true,
+        isOnboarded: true,
       },
     });
 
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      const response = NextResponse.json({ error: "User not found" }, { status: 404 });
+      response.cookies.delete("access_token");
+      response.cookies.delete("refresh_token");
+      return response;
     }
 
     return NextResponse.json({ user }, { status: 200 });
   } catch (error) {
-    console.error("Auth Me Error:", error);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
+    console.error("Get Me Error:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

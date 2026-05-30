@@ -6,10 +6,11 @@ import { useRouter } from "next/navigation";
 import { ResponsiveAuthLayout } from "@/components/auth/ResponsiveAuthLayout";
 import { AuthInput, PasswordInput, AuthButton, GoogleButton, Divider } from "@/components/auth/AuthComponents";
 import { useAuthStore } from "@/store/useAuthStore";
+import { signInWithGoogle } from "@/app/actions";
 
 export default function LoginPage() {
   const router = useRouter();
-  const setAuth = useAuthStore(state => state.setAuth);
+  const { checkAuth } = useAuthStore();
   
   const [formData, setFormData] = useState({
     email: "",
@@ -58,7 +59,8 @@ export default function LoginPage() {
         return;
       }
 
-      setAuth(data.user);
+      // Cookies are set server-side, fetch user profile then redirect
+      await checkAuth();
       router.push("/");
     } catch {
       setServerError("An unexpected error occurred. Please try again.");
@@ -76,7 +78,7 @@ export default function LoginPage() {
       oppositeText="Don't have an account? Sign up &rarr;"
     >
       <form className="flex flex-col w-full" onSubmit={handleSubmit}>
-        <GoogleButton type="button">Continue with Google</GoogleButton>
+        <GoogleButton type="button" onClick={() => signInWithGoogle()}>Continue with Google</GoogleButton>
         
         <Divider text="or" />
         

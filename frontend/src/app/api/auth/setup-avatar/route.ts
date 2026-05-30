@@ -4,7 +4,7 @@ import { getSession } from "@/lib/auth";
 import { z } from "zod";
 
 const avatarSchema = z.object({
-  avatarUrl: z.string().min(1, "Avatar URL is required"),
+  avatar: z.string().min(1, "Avatar URL is required"),
 });
 
 export async function POST(req: Request) {
@@ -21,11 +21,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 });
     }
 
-    const { avatarUrl } = result.data;
+    const { avatar } = result.data;
 
     const updatedUser = await prisma.user.update({
       where: { id: session.userId as string },
-      data: { avatarUrl },
+      data: { avatar, isOnboarded: true },
     });
 
     return NextResponse.json({ success: true, user: {
@@ -34,8 +34,9 @@ export async function POST(req: Request) {
       lastName: updatedUser.lastName,
       email: updatedUser.email,
       username: updatedUser.username,
-      avatarUrl: updatedUser.avatarUrl,
-      isEmailVerified: updatedUser.isEmailVerified
+      avatar: updatedUser.avatar,
+      isVerified: updatedUser.isVerified,
+      isOnboarded: updatedUser.isOnboarded,
     }}, { status: 200 });
 
   } catch (error) {

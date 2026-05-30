@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Chakra_Petch, Inter } from "next/font/google";
 import "./globals.css";
+import { AuthInit } from "@/components/auth/AuthInit";
 
 const chakraPetch = Chakra_Petch({
   variable: "--font-chakra-petch",
@@ -27,8 +28,10 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${chakraPetch.variable} ${inter.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col font-sans bg-arc-page text-arc-primary">
+      <body className="min-h-full flex flex-col font-sans text-arc-primary" suppressHydrationWarning>
+        <AuthInit />
         {children}
       </body>
     </html>
