@@ -7,8 +7,14 @@ interface User {
   email: string;
   username: string | null;
   avatar: string | null;
+  cover?: string | null;
   isVerified: boolean;
   isOnboarded: boolean;
+  bio?: string | null;
+  role?: string | null;
+  location?: string | null;
+  skills?: string | null;
+  socialLinks?: { platform: string; url: string }[] | null;
 }
 
 interface AuthState {
@@ -16,7 +22,7 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   setAuth: (user: User) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
   setLoading: (loading: boolean) => void;
   checkAuth: () => Promise<void>;
 }
@@ -26,7 +32,14 @@ export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
   isLoading: true, // Start true while we check session
   setAuth: (user) => set({ user, isAuthenticated: true, isLoading: false }),
-  logout: () => set({ user: null, isAuthenticated: false, isLoading: false }),
+  logout: async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch (error) {
+      console.error("Logout fetch error:", error);
+    }
+    set({ user: null, isAuthenticated: false, isLoading: false });
+  },
   setLoading: (loading) => set({ isLoading: loading }),
   checkAuth: async () => {
     try {

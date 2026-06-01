@@ -110,13 +110,22 @@ export default function Navbar({ onMenuToggle }: NavbarProps) {
         {user ? (
           <Link href={`/profile/${user.username}`} className="navbar-avatar" aria-label="Profile">
             {user.avatar ? (
-              <Image
-                src={user.avatar}
-                alt={`${user.firstName} ${user.lastName}`}
-                width={36}
-                height={36}
-                className="w-full h-full object-cover rounded-full"
-              />
+              user.avatar.startsWith("data:") ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={user.avatar}
+                  alt={`${user.firstName} ${user.lastName}`}
+                  className="w-full h-full object-cover rounded-full"
+                />
+              ) : (
+                <Image
+                  src={user.avatar}
+                  alt={`${user.firstName} ${user.lastName}`}
+                  width={36}
+                  height={36}
+                  className="w-full h-full object-cover rounded-full"
+                />
+              )
             ) : (
               <span>{`${user.firstName[0]}${user.lastName[0]}`.toUpperCase()}</span>
             )}

@@ -19,7 +19,7 @@ export function middleware(request: NextRequest) {
 
   const accessToken = request.cookies.get("access_token")?.value;
   const refreshToken = request.cookies.get("refresh_token")?.value;
-  const hasSession = !!(accessToken || refreshToken);
+  const hasSession = !!((accessToken && accessToken !== "") || (refreshToken && refreshToken !== ""));
 
   // Redirect logged-in users away from auth pages
   if (isAuthPage && hasSession) {

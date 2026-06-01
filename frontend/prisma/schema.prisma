@@ -16,9 +16,15 @@ model User {
   isVerified               Boolean   @default(false)
   isOnboarded              Boolean   @default(false)
   avatar                   String?
+  cover                    String?
   otpCode                  String?
   otpExpiry                DateTime?
   passwordResetToken       String?
   passwordResetTokenExpiry DateTime?
+  bio                      String?
+  role                     String?
+  location                 String?
+  skills                   String?
+  socialLinks              Json?
   createdAt                DateTime  @default(now())
 }

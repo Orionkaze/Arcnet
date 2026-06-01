@@ -18,19 +18,29 @@ export function AuthInit() {
 
     const isExactPublicPath = ["/login", "/signup", "/forgot-password", "/reset-password", "/verify-email"].includes(pathname);
     const isProfilePath = pathname.startsWith("/profile/");
-    const isPublicPath = isExactPublicPath || isProfilePath;
     const isOnboardingPath = ["/setup-username", "/setup-avatar"].includes(pathname);
 
-    if (!isAuthenticated && !isPublicPath && !isOnboardingPath) {
-      router.push("/login");
-    } else if (isAuthenticated && isPublicPath) {
-      router.push("/");
-    } else if (isAuthenticated && user && !user.isOnboarded && !isOnboardingPath) {
-      // User hasn't completed onboarding — redirect to appropriate step
-      if (!user.username) {
-        router.push("/setup-username");
+    if (!isAuthenticated) {
+      // Unauthenticated users can only access auth pages and profile pages
+      if (!isExactPublicPath && !isProfilePath) {
+        router.push("/login");
+      }
+    } else {
+      // Authenticated users
+      if (user && !user.isOnboarded) {
+        // If not onboarded, redirect to onboarding steps if they are not already there
+        if (!isOnboardingPath) {
+          if (!user.username) {
+            router.push("/setup-username");
+          } else {
+            router.push("/setup-avatar");
+          }
+        }
       } else {
-        router.push("/setup-avatar");
+        // Onboarded users should be redirected away from auth pages (login/signup) to home
+        if (isExactPublicPath) {
+          router.push("/");
+        }
       }
     }
   }, [isAuthenticated, isLoading, pathname, router, user]);

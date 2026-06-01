@@ -14,16 +14,27 @@ export async function GET(
     // Strip leading '@' if present
     const cleanUsername = decodeURIComponent(username).replace(/^@/, "");
 
-    const user = await prisma.user.findUnique({
-      where: { username: cleanUsername },
+    const user = await prisma.user.findFirst({
+      where: {
+        username: {
+          equals: cleanUsername,
+          mode: "insensitive",
+        },
+      },
       select: {
         id: true,
         firstName: true,
         lastName: true,
         username: true,
         avatar: true,
+        cover: true,
         isVerified: true,
         createdAt: true,
+        bio: true,
+        role: true,
+        location: true,
+        skills: true,
+        socialLinks: true,
       },
     });
 

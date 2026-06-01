@@ -21,19 +21,28 @@ export async function GET() {
         avatar: true,
         isVerified: true,
         isOnboarded: true,
+        bio: true,
+        role: true,
+        location: true,
+        skills: true,
+        socialLinks: true,
       },
     });
 
     if (!user) {
       const response = NextResponse.json({ error: "User not found" }, { status: 404 });
-      response.cookies.delete("access_token");
-      response.cookies.delete("refresh_token");
+      response.cookies.set("access_token", "", { maxAge: 0, path: "/" });
+      response.cookies.set("refresh_token", "", { maxAge: 0, path: "/" });
       return response;
     }
 
     return NextResponse.json({ user }, { status: 200 });
   } catch (error) {
     console.error("Get Me Error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    const response = NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    // Also clear cookies on internal error as a safety fallback
+    response.cookies.set("access_token", "", { maxAge: 0, path: "/" });
+    response.cookies.set("refresh_token", "", { maxAge: 0, path: "/" });
+    return response;
   }
 }

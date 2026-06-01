@@ -12,7 +12,7 @@ function VerifyEmailForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "";
-  const setAuth = useAuthStore(state => state.setAuth);
+  const { checkAuth } = useAuthStore();
 
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
@@ -61,7 +61,8 @@ function VerifyEmailForm() {
         return;
       }
 
-      // Cookies were set server-side, just redirect
+      // Fetch user profile to update Zustand state, then redirect
+      await checkAuth();
       router.push("/setup-username");
     } catch {
       setError("An unexpected error occurred. Please try again.");

@@ -18,8 +18,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         let dbUser = await prisma.user.findUnique({ where: { email: user.email } });
 
         if (!dbUser) {
-          const givenName = (profile as any)?.given_name || user.name?.split(" ")[0] || "User";
-          const familyName = (profile as any)?.family_name || user.name?.split(" ").slice(1).join(" ") || "";
+          const gProfile = profile as { given_name?: string; family_name?: string } | undefined;
+          const givenName = gProfile?.given_name || user.name?.split(" ")[0] || "User";
+          const familyName = gProfile?.family_name || user.name?.split(" ").slice(1).join(" ") || "";
           
           dbUser = await prisma.user.create({
             data: {

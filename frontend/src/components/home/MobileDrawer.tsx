@@ -2,6 +2,8 @@
 
 import React from "react";
 import Link from "next/link";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useRouter } from "next/navigation";
 
 interface MobileDrawerProps {
   isOpen: boolean;
@@ -10,6 +12,14 @@ interface MobileDrawerProps {
 
 export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
   const [activeItem, setActiveItem] = React.useState("game-developers");
+  const { user, logout } = useAuthStore();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    onClose();
+    await logout();
+    router.push("/login");
+  };
 
   const handleItemClick = (id: string) => {
     setActiveItem(id);
@@ -185,6 +195,20 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
         {/* Bottom: Private Hub */}
         <div className="sidebar-bottom">
           <button className="private-hub-btn">PRIVATE HUB +</button>
+          {user && (
+            <button 
+              onClick={handleSignOut} 
+              className="w-full py-2 px-3 border border-[#2A313C] hover:border-red-500/50 hover:bg-red-500/10 text-xs font-chakra text-[#C8C7C7] hover:text-red-400 rounded transition-all duration-200 flex items-center justify-center gap-2 mt-2"
+            >
+              {/* Logout icon */}
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+              <span>SIGN OUT</span>
+            </button>
+          )}
         </div>
       </div>
     </>

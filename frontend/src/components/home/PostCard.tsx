@@ -40,13 +40,22 @@ export default function PostCard({
       <div className="post-header">
         <div className="post-avatar">
           {displayAvatar ? (
-            <Image
-              src={displayAvatar}
-              alt={username}
-              width={32}
-              height={32}
-              className="w-full h-full object-cover rounded-full"
-            />
+            displayAvatar.startsWith("data:") ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={displayAvatar}
+                alt={username}
+                className="w-full h-full object-cover rounded-full"
+              />
+            ) : (
+              <Image
+                src={displayAvatar}
+                alt={username}
+                width={32}
+                height={32}
+                className="w-full h-full object-cover rounded-full"
+              />
+            )
           ) : (
             initial
           )}
