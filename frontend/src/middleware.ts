@@ -12,6 +12,9 @@ export function middleware(request: NextRequest) {
     path === "/reset-password" ||
     path === "/verify-email";
 
+  // Public pages that unauthenticated users can access (includes auth pages and latest page)
+  const isPublicPage = isAuthPage || path === "/latest";
+
   // Pages that require auth but are part of the onboarding flow
   const isOnboardingPage =
     path === "/setup-username" ||
@@ -26,8 +29,8 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/", request.nextUrl));
   }
 
-  // Redirect unauthenticated users to login (except auth pages, onboarding, profile pages, and API routes)
-  if (!isAuthPage && !isOnboardingPage && !path.startsWith("/profile/") && !hasSession && !path.startsWith("/api/")) {
+  // Redirect unauthenticated users to login (except public pages, onboarding, profile pages, and API routes)
+  if (!isPublicPage && !isOnboardingPage && !path.startsWith("/profile/") && !hasSession && !path.startsWith("/api/")) {
     return NextResponse.redirect(new URL("/login", request.nextUrl));
   }
 

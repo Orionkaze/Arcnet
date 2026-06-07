@@ -2,9 +2,22 @@
 
 import React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function LeftSidebar() {
-  const [activeItem, setActiveItem] = React.useState("game-developers");
+  const pathname = usePathname();
+
+  const isActive = (path: string) => {
+    if (path.startsWith("/ecosystem/")) {
+      const shortPath = path.replace("/ecosystem", "");
+      return pathname === path || pathname === shortPath;
+    }
+    if (path.startsWith("/")) {
+      const ecoPath = "/ecosystem" + path;
+      return pathname === path || pathname === ecoPath;
+    }
+    return pathname === path;
+  };
 
   return (
     <aside className="left-sidebar">
@@ -18,8 +31,7 @@ export default function LeftSidebar() {
 
           <Link
             href="/hub/game-developers"
-            className={`sidebar-item ${activeItem === "game-developers" ? "active" : ""}`}
-            onClick={() => setActiveItem("game-developers")}
+            className={`sidebar-item ${isActive("/hub/game-developers") ? "active" : ""}`}
           >
             {/* Controller icon */}
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -32,9 +44,8 @@ export default function LeftSidebar() {
           </Link>
 
           <Link
-            href="/hub/artists"
-            className={`sidebar-item ${activeItem === "artists" ? "active" : ""}`}
-            onClick={() => setActiveItem("artists")}
+            href="/hub/2d-3d-artists"
+            className={`sidebar-item ${isActive("/hub/2d-3d-artists") ? "active" : ""}`}
           >
             {/* Palette icon */}
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -48,8 +59,7 @@ export default function LeftSidebar() {
 
           <Link
             href="/hub/animators"
-            className={`sidebar-item ${activeItem === "animators" ? "active" : ""}`}
-            onClick={() => setActiveItem("animators")}
+            className={`sidebar-item ${isActive("/hub/animators") ? "active" : ""}`}
           >
             {/* Play icon */}
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -60,8 +70,7 @@ export default function LeftSidebar() {
 
           <Link
             href="/hub/storywriters"
-            className={`sidebar-item ${activeItem === "storywriters" ? "active" : ""}`}
-            onClick={() => setActiveItem("storywriters")}
+            className={`sidebar-item ${isActive("/hub/storywriters") ? "active" : ""}`}
           >
             {/* Pen icon */}
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -73,8 +82,7 @@ export default function LeftSidebar() {
 
           <Link
             href="/hub/game-testers"
-            className={`sidebar-item ${activeItem === "game-testers" ? "active" : ""}`}
-            onClick={() => setActiveItem("game-testers")}
+            className={`sidebar-item ${isActive("/hub/game-testers") ? "active" : ""}`}
           >
             {/* Bug icon */}
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -95,8 +103,7 @@ export default function LeftSidebar() {
 
           <Link
             href="/ecosystem/game-jams"
-            className={`sidebar-item ${activeItem === "game-jams" ? "active" : ""}`}
-            onClick={() => setActiveItem("game-jams")}
+            className={`sidebar-item ${isActive("/ecosystem/game-jams") ? "active" : ""}`}
           >
             {/* Trophy icon */}
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -112,8 +119,7 @@ export default function LeftSidebar() {
 
           <Link
             href="/ecosystem/find-team"
-            className={`sidebar-item ${activeItem === "find-team" ? "active" : ""}`}
-            onClick={() => setActiveItem("find-team")}
+            className={`sidebar-item ${isActive("/ecosystem/find-team") ? "active" : ""}`}
           >
             {/* People icon */}
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -127,8 +133,7 @@ export default function LeftSidebar() {
 
           <Link
             href="/ecosystem/mentors"
-            className={`sidebar-item ${activeItem === "mentors" ? "active" : ""}`}
-            onClick={() => setActiveItem("mentors")}
+            className={`sidebar-item ${isActive("/ecosystem/mentors") ? "active" : ""}`}
           >
             {/* Graduation cap icon */}
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -141,8 +146,7 @@ export default function LeftSidebar() {
 
           <Link
             href="/ecosystem/jobs"
-            className={`sidebar-item ${activeItem === "jobs" ? "active" : ""}`}
-            onClick={() => setActiveItem("jobs")}
+            className={`sidebar-item ${isActive("/ecosystem/jobs") ? "active" : ""}`}
           >
             {/* Briefcase icon */}
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -155,8 +159,7 @@ export default function LeftSidebar() {
 
           <Link
             href="/ecosystem/ai-match"
-            className={`sidebar-item ${activeItem === "ai-match" ? "active" : ""}`}
-            onClick={() => setActiveItem("ai-match")}
+            className={`sidebar-item ${isActive("/ecosystem/ai-match") ? "active" : ""}`}
           >
             {/* Spark / AI icon */}
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

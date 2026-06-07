@@ -1,6 +1,7 @@
 import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcrypt";
 import { cookies } from "next/headers";
+import { prisma } from "@/lib/prisma";
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "super-secret-key-for-arcnet-dev"
@@ -60,13 +61,27 @@ export async function clearAuthCookies() {
   cookieStore.delete("refresh_token");
 }
 
+const lastSeenUpdateCache = new Map<string, number>();
+
 export async function getSession() {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;
 
   if (accessToken) {
     const payload = await verifyToken(accessToken);
-    if (payload) return payload;
+    if (payload && payload.userId) {
+      const userId = payload.userId as string;
+      const lastUpdate = lastSeenUpdateCache.get(userId) || 0;
+      const now = Date.now();
+      if (now - lastUpdate > 60000) {
+        lastSeenUpdateCache.set(userId, now);
+        prisma.user.update({
+          where: { id: userId },
+          data: { lastSeen: new Date() }
+        }).catch(() => {});
+      }
+      return payload;
+    }
   }
 
   // Handle refresh token logic if needed

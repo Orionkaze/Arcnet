@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import "./home.css";
 import Navbar from "@/components/home/Navbar";
 import LeftSidebar from "@/components/home/LeftSidebar";
@@ -8,64 +9,367 @@ import PostCard from "@/components/home/PostCard";
 import RightPanel from "@/components/home/RightPanel";
 import MobileBottomNav from "@/components/home/MobileBottomNav";
 import MobileDrawer from "@/components/home/MobileDrawer";
+import PostSkeleton from "@/components/home/PostSkeleton";
+import { useAuthStore } from "@/store/useAuthStore";
 
-const MOCK_POSTS = [
-  {
-    username: "Arcavon_Akshit",
-    handle: "@Tech.Hero.ANET",
-    text: "Today I made this asset using all of my knowledge till now. It felt really good finishing it even after all the problem. See it in the image below",
-    isFollowing: true,
-    hasImage: true,
-    likes: 42,
-    comments: 8,
-    shares: 5,
-    reposts: 12,
-  },
-  {
-    username: "Deepak",
-    handle: "Founder & Chairman @Arcavon",
-    text: "Arcavon became a Unicorn today, lessgo",
-    isFollowing: false,
-    hasImage: false,
-    likes: 256,
-    comments: 34,
-    shares: 89,
-    reposts: 67,
-  },
-  {
-    username: "Maya_3D",
-    handle: "@maya.artist.ANET",
-    text: "Just finished rigging this character for our upcoming indie horror game. The bone structure took forever but the result is so satisfying. Can't wait to show the full animation cycle next week!",
-    isFollowing: false,
-    hasImage: true,
-    likes: 128,
-    comments: 22,
-    shares: 15,
-    reposts: 31,
-  },
-];
+interface PostAuthor {
+  id: string;
+  firstName: string;
+  lastName: string;
+  username: string | null;
+  avatar: string | null;
+  isVerified: boolean;
+}
 
-import Link from "next/link";
+interface PostType {
+  id: string;
+  content: string;
+  imageUrl?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  author: PostAuthor;
+  likesCount: number;
+  commentsCount: number;
+  repostsCount: number;
+  bookmarksCount: number;
+  isLiked: boolean;
+  isBookmarked: boolean;
+  isReposted: boolean;
+  isFollowing: boolean;
+  engagementScore?: number;
+}
 
 export default function Home() {
+  const { user, checkAuth } = useAuthStore();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  // Feed states
+  const [posts, setPosts] = useState<PostType[]>([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // New post form states
+  const [content, setContent] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [posting, setPosting] = useState(false);
+  const [postError, setPostError] = useState<string | null>(null);
+
+  // Polling states
+  const [newPostsAvailable, setNewPostsAvailable] = useState(false);
+  const latestPostIdRef = useRef<string | null>(null);
+
+  const observerRef = useRef<HTMLDivElement | null>(null);
+
+  const fetchFeed = async (pageNum: number, append: boolean) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/posts/feed?page=${pageNum}&limit=10`);
+      if (!res.ok) {
+        throw new Error("Failed to load feed");
+      }
+      const data = await res.json();
+      
+      if (append) {
+        setPosts((prev) => [...prev, ...data.posts]);
+      } else {
+        setPosts(data.posts);
+        if (data.posts.length > 0) {
+          latestPostIdRef.current = data.posts[0].id;
+        }
+      }
+      setHasMore(data.hasMore);
+      setPage(pageNum);
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : "Failed to load feed";
+      setError(errMsg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreatePost = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!content.trim()) return;
+
+    setPosting(true);
+    setPostError(null);
+
+    try {
+      const res = await fetch("/api/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: content.trim(), imageUrl: imageUrl.trim() || undefined }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to create post");
+      }
+
+      // Add new post to start of feed
+      setPosts((prev) => [data.post, ...prev]);
+      latestPostIdRef.current = data.post.id;
+      
+      setContent("");
+      setImageUrl("");
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : "Failed to create post";
+      setPostError(errMsg);
+      // Auto clear error after 5 seconds
+      setTimeout(() => setPostError(null), 5000);
+    } finally {
+      setPosting(false);
+    }
+  };
+
+  const handleInteractionUpdate = (
+    postId: string,
+    updatedFields: {
+      isLiked?: boolean;
+      likesCount?: number;
+      isReposted?: boolean;
+      repostsCount?: number;
+      isBookmarked?: boolean;
+      isFollowing?: boolean;
+      commentsCount?: number;
+    }
+  ) => {
+    setPosts((prev) =>
+      prev.map((post) =>
+        post.id === postId ? { ...post, ...updatedFields } : post
+      )
+    );
+  };
+
+  const loadNewPosts = () => {
+    setNewPostsAvailable(false);
+    fetchFeed(1, false);
+    // Scroll center feed container to top
+    const feedElement = document.querySelector(".center-feed");
+    if (feedElement) {
+      feedElement.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  // Initial Fetch
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchFeed(1, false);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Polling for new posts every 60 seconds
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (!latestPostIdRef.current) return;
+      try {
+        const res = await fetch("/api/posts/feed?page=1&limit=1");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.posts && data.posts.length > 0) {
+            const newestId = data.posts[0].id;
+            if (newestId !== latestPostIdRef.current) {
+              setNewPostsAvailable(true);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Polling error:", err);
+      }
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Intersection Observer for Infinite Scroll
+  useEffect(() => {
+    if (loading || !hasMore) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          fetchFeed(page + 1, true);
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    const currentRef = observerRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
+    }
+
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef);
+      }
+    };
+  }, [loading, hasMore, page]);
 
   return (
     <div className="home-layout">
       <Navbar onMenuToggle={() => setIsDrawerOpen(!isDrawerOpen)} />
       <div className="home-content relative">
         <LeftSidebar />
-        <main className="center-feed">
-          {MOCK_POSTS.map((post, index) => (
-            <PostCard key={index} {...post} />
-          ))}
+        
+        <main className="center-feed relative">
+          {/* Post Creation Widget */}
+          {user && (
+            <div className="post-card" style={{ marginBottom: "1rem" }}>
+              <form onSubmit={handleCreatePost}>
+                <div className="flex gap-3">
+                  <div className="w-9 h-9 rounded-full bg-[#2A313C] flex-shrink-0 overflow-hidden flex items-center justify-center font-bold text-sm">
+                    {user.avatar ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={user.avatar} alt={user.firstName} className="w-full h-full object-cover" />
+                    ) : (
+                      user.firstName.charAt(0).toUpperCase()
+                    )}
+                  </div>
+                  <div className="flex-grow">
+                    <textarea
+                      placeholder="Share your game dev progress, rig designs, art assets..."
+                      value={content}
+                      onChange={(e) => setContent(e.target.value)}
+                      maxLength={500}
+                      rows={3}
+                      className="w-full bg-[#10141A] border-none text-white text-sm focus:outline-none resize-none font-inter"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Attachment Image URL (optional)"
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
+                      className="w-full bg-[#10141A] border-t border-[#2A313C] text-xs text-[#C8C7C7] py-2 focus:outline-none font-inter"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center mt-3 pt-2 border-t border-[#2A313C]">
+                  <span className="text-xs text-[#C8C7C7] font-inter">
+                    {500 - content.length} characters remaining
+                  </span>
+                  <button
+                    type="submit"
+                    disabled={posting || !content.trim()}
+                    className="px-6 py-2 bg-[#00EAFF] hover:bg-[#00d0e0] text-[#10141A] font-bold font-chakra text-xs tracking-wider uppercase rounded transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {posting ? "Posting..." : "Post"}
+                  </button>
+                </div>
+              </form>
+
+              {postError && (
+                <div className="mt-2.5 text-red-500 font-chakra text-xs text-center border border-red-500/20 bg-red-500/5 p-2 rounded">
+                  {postError}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* New Posts Notification Pill */}
+          {newPostsAvailable && (
+            <div className="flex justify-center sticky top-0 z-10 my-2">
+              <button
+                onClick={loadNewPosts}
+                className="bg-[#00EAFF] text-[#10141A] font-chakra font-bold text-xs tracking-wide uppercase px-4 py-1.5 rounded-full border border-[#00EAFF] shadow-[0_0_10px_rgba(0,234,255,0.4)] cursor-pointer hover:bg-[#00d0e0] transition-all"
+              >
+                New posts available
+              </button>
+            </div>
+          )}
+
+          {/* Feed Container */}
+          <div className="space-y-4">
+            {posts.map((post) => (
+              <PostCard
+                key={`${post.id}-${post.likesCount}-${post.isLiked}-${post.isBookmarked}-${post.isReposted}-${post.isFollowing}-${post.commentsCount}`}
+                {...post}
+                onInteraction={handleInteractionUpdate}
+              />
+            ))}
+          </div>
+
+          {/* Shimmer loading states */}
+          {loading && (
+            <div className="space-y-4 mt-4">
+              <PostSkeleton />
+              <PostSkeleton />
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!loading && posts.length === 0 && !error && (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              {/* Cyan Icon */}
+              <div className="w-16 h-16 rounded-full bg-[#10141A] border border-[#00EAFF] flex items-center justify-center shadow-[0_0_15px_rgba(0,234,255,0.2)] mb-4">
+                <svg
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#00EAFF"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <line x1="19" y1="8" x2="19" y2="14"></line>
+                  <line x1="16" y1="11" x2="22" y2="11"></line>
+                </svg>
+              </div>
+              <h2 className="font-chakra text-lg text-white mb-2 uppercase tracking-wide">
+                Your feed is empty
+              </h2>
+              <p className="font-inter text-sm text-[#C8C7C7] mb-6 max-w-sm">
+                Follow some creators to see their posts here
+              </p>
+              <Link href="/ecosystem/find-team">
+                <button className="px-6 py-2.5 border border-[#00EAFF] bg-transparent text-[#00EAFF] font-chakra font-bold text-xs uppercase tracking-wider rounded cursor-pointer hover:bg-[rgba(0,234,255,0.1)] transition-colors">
+                  Discover Creators
+                </button>
+              </Link>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <h3 className="font-chakra text-base text-white mb-2 uppercase">
+                Failed to load feed
+              </h3>
+              <p className="font-inter text-sm text-[#C8C7C7] mb-4">
+                Please check your network and try again.
+              </p>
+              <button
+                onClick={() => fetchFeed(1, false)}
+                className="px-6 py-2 bg-[#00EAFF] hover:bg-[#00d0e0] text-[#10141A] font-chakra font-bold text-xs uppercase tracking-wider rounded cursor-pointer transition-colors"
+              >
+                Retry
+              </button>
+            </div>
+          )}
+
+          {/* Infinite Scroll trigger element */}
+          {hasMore && !loading && <div ref={observerRef} className="h-4" />}
         </main>
+
         <RightPanel />
 
         {/* Floating Grid Menu Button */}
         <div className="fixed top-[72px] right-6 z-50">
-          <button 
+          <button
             className="w-9 h-9 rounded-full bg-[#10141A] border-2 border-[#00EAFF] flex items-center justify-center hover:bg-[rgba(0,234,255,0.1)] transition-colors cursor-pointer"
             onClick={() => setDropdownOpen(!dropdownOpen)}
           >

@@ -4,14 +4,55 @@ import React from "react";
 import Link from "next/link";
 import { useAuthStore } from "@/store/useAuthStore";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 interface NavbarProps {
   onMenuToggle?: () => void;
 }
 
 export default function Navbar({ onMenuToggle }: NavbarProps) {
-  const [activeNav, setActiveNav] = React.useState<"home" | "latest">("home");
+  const pathname = usePathname();
   const { user } = useAuthStore();
+  const [unreadCount, setUnreadCount] = React.useState(0);
+
+  const fetchUnreadCount = React.useCallback(async () => {
+    if (!user) return;
+    try {
+      const res = await fetch("/api/notifications/unread-count");
+      if (res.ok) {
+        const data = await res.json();
+        setUnreadCount(data.unreadCount || 0);
+      }
+    } catch (err) {
+      console.warn("Error fetching unread count:", err);
+    }
+  }, [user]);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchUnreadCount();
+    }, 0);
+    if (!user) return () => clearTimeout(timer);
+
+    const interval = setInterval(fetchUnreadCount, 60000);
+    return () => {
+      clearTimeout(timer);
+      clearInterval(interval);
+    };
+  }, [user, fetchUnreadCount]);
+
+  const handleNotificationClick = async () => {
+    setUnreadCount(0);
+    try {
+      await fetch("/api/notifications/mark-read", { method: "POST" });
+    } catch (err) {
+      console.error("Error marking notifications as read:", err);
+    }
+  };
+
+  const isActive = (path: string) => {
+    return pathname === path;
+  };
 
   return (
     <nav className="navbar">
@@ -25,9 +66,9 @@ export default function Navbar({ onMenuToggle }: NavbarProps) {
 
       {/* Center — Nav links */}
       <div className="navbar-center">
-        <button
-          className={`navbar-link ${activeNav === "home" ? "active" : ""}`}
-          onClick={() => setActiveNav("home")}
+        <Link
+          href="/"
+          className={`navbar-link ${isActive("/") ? "active" : ""}`}
         >
           {/* House icon */}
           <svg
@@ -44,11 +85,11 @@ export default function Navbar({ onMenuToggle }: NavbarProps) {
             <path d="M9 21V12h6v9" />
           </svg>
           <span className="nav-text">Home</span>
-        </button>
+        </Link>
 
-        <button
-          className={`navbar-link ${activeNav === "latest" ? "active" : ""}`}
-          onClick={() => setActiveNav("latest")}
+        <Link
+          href="/latest"
+          className={`navbar-link ${isActive("/latest") ? "active" : ""}`}
         >
           {/* Clock icon */}
           <svg
@@ -65,7 +106,7 @@ export default function Navbar({ onMenuToggle }: NavbarProps) {
             <path d="M12 6v6l4 2" />
           </svg>
           <span className="nav-text">Latest</span>
-        </button>
+        </Link>
       </div>
 
       {/* Right — Actions */}
@@ -87,7 +128,12 @@ export default function Navbar({ onMenuToggle }: NavbarProps) {
         </button>
 
         {/* Bell icon */}
-        <button className="navbar-icon-btn" aria-label="Notifications">
+        <button
+          className="navbar-icon-btn"
+          aria-label="Notifications"
+          onClick={handleNotificationClick}
+          style={{ position: "relative" }}
+        >
           <svg
             width="20"
             height="20"
@@ -101,6 +147,20 @@ export default function Navbar({ onMenuToggle }: NavbarProps) {
             <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
             <path d="M13.73 21a2 2 0 01-3.46 0" />
           </svg>
+          {unreadCount > 0 && (
+            <span
+              style={{
+                position: "absolute",
+                top: "4px",
+                right: "4px",
+                width: "8px",
+                height: "8px",
+                backgroundColor: "#FF4D4D",
+                borderRadius: "50%",
+                boxShadow: "0 0 4px #FF4D4D",
+              }}
+            />
+          )}
         </button>
 
         {/* Vertical divider */}

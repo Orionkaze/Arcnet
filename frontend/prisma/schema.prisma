@@ -26,5 +26,151 @@ model User {
   location                 String?
   skills                   String?
   socialLinks              Json?
+  lastSeen                 DateTime  @default(now())
   createdAt                DateTime  @default(now())
+  
+  posts                    Post[]
+  likes                    Like[]
+  comments                 Comment[]
+  reposts                  Repost[]
+  bookmarks                Bookmark[]
+  followers                Follow[]  @relation("following")
+  following                Follow[]  @relation("follower")
+  hubMembers               HubMember[]
+  messages                 Message[]
+  messageReactions         MessageReaction[]
+}
+
+model Post {
+  id          String     @id @default(cuid())
+  content     String
+  imageUrl    String?
+  authorId    String
+  author      User       @relation(fields: [authorId], references: [id])
+  likes       Like[]
+  comments    Comment[]
+  reposts     Repost[]
+  bookmarks   Bookmark[]
+  hubId       String?
+  hub         Hub?       @relation(fields: [hubId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
+  createdAt DateTime @default(now())
+  @@unique([userId, postId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  userId    String
+  postId    String
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Repost {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
+  createdAt DateTime @default(now())
+  @@unique([userId, postId])
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
+  createdAt DateTime @default(now())
+  @@unique([userId, postId])
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  follower    User     @relation("follower", fields: [followerId], references: [id])
+  following   User     @relation("following", fields: [followingId], references: [id])
+  createdAt   DateTime @default(now())
+  @@unique([followerId, followingId])
+}
+
+model Notification {
+  id         String   @id @default(cuid())
+  type       String   // e.g. "share"
+  userId     String   // Recipient user ID
+  fromUserId String   // Sender user ID
+  postId     String   // Target Post ID
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model Hub {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  name        String
+  description String
+  icon        String
+  memberCount Int         @default(0)
+  members     HubMember[]
+  channels    Channel[]
+  posts       Post[]
+  createdAt   DateTime    @default(now())
+}
+
+model HubMember {
+  id        String   @id @default(cuid())
+  hubId     String
+  userId    String
+  role      String   @default("member")
+  hub       Hub      @relation(fields: [hubId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  joinedAt  DateTime @default(now())
+  @@unique([hubId, userId])
+}
+
+model Channel {
+  id        String    @id @default(cuid())
+  hubId     String
+  name      String
+  hub       Hub       @relation(fields: [hubId], references: [id])
+  messages  Message[]
+  createdAt DateTime  @default(now())
+}
+
+model Message {
+  id          String            @id @default(cuid())
+  content     String
+  channelId   String
+  authorId    String
+  replyToId   String?
+  channel     Channel           @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  author      User              @relation(fields: [authorId], references: [id])
+  replyTo     Message?          @relation("replies", fields: [replyToId], references: [id])
+  replies     Message[]         @relation("replies")
+  reactions   MessageReaction[]
+  createdAt   DateTime          @default(now())
+}
+
+model MessageReaction {
+  id        String   @id @default(cuid())
+  emoji     String
+  messageId String
+  userId    String
+  message   Message  @relation(fields: [messageId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  @@unique([messageId, userId, emoji])
 }

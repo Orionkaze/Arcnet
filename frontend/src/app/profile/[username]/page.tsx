@@ -1302,9 +1302,36 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
               {/* TAB 1: POSTS */}
               {activeTab === "posts" && (
                 <div className="profile-posts-list">
-                  {MOCK_POSTS.map((post, idx) => (
-                    <PostCard key={idx} {...post} />
-                  ))}
+                  {MOCK_POSTS.map((post, idx) => {
+                    const formattedPost = {
+                      id: `mock-post-${idx}`,
+                      content: post.text,
+                      imageUrl: post.hasImage ? "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=800" : null,
+                      createdAt: new Date(new Date(profileUser.createdAt).getTime() - idx * 24 * 60 * 60 * 1000).toISOString(),
+                      author: {
+                        id: profileUser.id,
+                        firstName: profileUser.firstName,
+                        lastName: profileUser.lastName,
+                        username: profileUser.username,
+                        avatar: profileUser.avatar,
+                        isVerified: !!profileUser.isVerified,
+                      },
+                      likesCount: post.likes,
+                      commentsCount: post.comments,
+                      repostsCount: post.reposts,
+                      bookmarksCount: 0,
+                      isLiked: false,
+                      isBookmarked: false,
+                      isReposted: false,
+                      isFollowing: post.isFollowing,
+                    };
+                    return (
+                      <PostCard 
+                        key={`${formattedPost.id}-${formattedPost.likesCount}-${formattedPost.isLiked}-${formattedPost.isBookmarked}-${formattedPost.isReposted}-${formattedPost.isFollowing}-${formattedPost.commentsCount}`} 
+                        {...formattedPost} 
+                      />
+                    );
+                  })}
                 </div>
               )}
 
