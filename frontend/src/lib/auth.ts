@@ -2,20 +2,27 @@ import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcrypt";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 
 const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "super-secret-key-for-arcnet-dev"
+  process.env.JWT_SECRET || "super-secret-key-for-arcnet-dev",
 );
 
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 12);
 }
 
-export async function comparePassword(password: string, hash: string): Promise<boolean> {
+export async function comparePassword(
+  password: string,
+  hash: string,
+): Promise<boolean> {
   return bcrypt.compare(password, hash);
 }
 
-export async function signToken(payload: Record<string, unknown>, expiresIn: string): Promise<string> {
+export async function signToken(
+  payload: Record<string, unknown>,
+  expiresIn: string,
+): Promise<string> {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
@@ -32,6 +39,10 @@ export async function verifyToken(token: string) {
   }
 }
 
+/**
+ * Set auth cookies using the `cookies()` API from next/headers.
+ * Use this ONLY in Server Actions and Middleware — NOT in Route Handlers.
+ */
 export async function setAuthCookies(userId: string) {
   const accessToken = await signToken({ userId }, "15m");
   const refreshToken = await signToken({ userId }, "7d");
@@ -51,6 +62,34 @@ export async function setAuthCookies(userId: string) {
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
     maxAge: 7 * 24 * 60 * 60, // 7 days
+    path: "/",
+  });
+}
+
+/**
+ * Set auth cookies on a NextResponse object.
+ * Use this in Route Handlers (API routes) where `cookies()` cannot set cookies.
+ */
+export async function setAuthCookiesOnResponse(
+  response: NextResponse,
+  userId: string,
+) {
+  const accessToken = await signToken({ userId }, "15m");
+  const refreshToken = await signToken({ userId }, "7d");
+
+  response.cookies.set("access_token", accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 15 * 60,
+    path: "/",
+  });
+
+  response.cookies.set("refresh_token", refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 7 * 24 * 60 * 60,
     path: "/",
   });
 }
@@ -75,18 +114,34 @@ export async function getSession() {
       const now = Date.now();
       if (now - lastUpdate > 60000) {
         lastSeenUpdateCache.set(userId, now);
-        prisma.user.update({
-          where: { id: userId },
-          data: { lastSeen: new Date() }
-        }).catch(() => {});
+        prisma.user
+          .update({
+            where: { id: userId },
+            data: { lastSeen: new Date() },
+          })
+          .catch(() => {});
       }
       return payload;
     }
   }
 
-  // Handle refresh token logic if needed
-  // For simplicity, we just rely on access_token, but in a real scenario
-  // we'd rotate tokens here if access_token is expired but refresh_token is valid.
+  // Access token expired or missing — try to rotate using refresh token
+  const refreshToken = cookieStore.get("refresh_token")?.value;
+  if (refreshToken) {
+    const payload = await verifyToken(refreshToken);
+    if (payload && payload.userId) {
+      // Refresh token is valid — issue a new access token
+      const newAccessToken = await signToken({ userId: payload.userId }, "15m");
+      cookieStore.set("access_token", newAccessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 15 * 60,
+        path: "/",
+      });
+      return payload;
+    }
+  }
 
   return null;
 }

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { setAuthCookiesOnResponse } from "@/lib/auth";
 import bcrypt from "bcrypt";
 import { checkRateLimit } from "@/lib/rateLimit";
 
@@ -47,13 +48,14 @@ export async function POST(req: Request) {
       },
     });
 
-    // Set cookies to log the user in
-    const { setAuthCookies } = await import("@/lib/auth");
-    await setAuthCookies(user.id);
+    // Set cookies on the response object (required for Route Handlers)
+    const response = NextResponse.json({ success: true, user: { id: user.id, email: user.email } }, { status: 200 });
+    await setAuthCookiesOnResponse(response, user.id);
 
-    return NextResponse.json({ success: true, user: { id: user.id, email: user.email } }, { status: 200 });
+    return response;
   } catch (error) {
     console.error("Verify Email Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
+
