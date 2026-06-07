@@ -41,7 +41,7 @@ This project uses a decoupled **MERN Stack** (MongoDB, Express.js, React/Next.js
 * **Database:** MongoDB v8.2.7
 * **Caching:** Redis v8.6.2
 * **Real-time:** Socket.io v4.8.3
-* **Authentication & Authorization:** Google OAuth, JWT
+* **Authentication & Authorization:** Google OAuth, JWT, Prisma
 
 ---
 
