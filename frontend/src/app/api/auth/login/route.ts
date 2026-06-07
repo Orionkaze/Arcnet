@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { comparePassword, setAuthCookies } from "@/lib/auth";
+import { comparePassword, setAuthCookiesOnResponse } from "@/lib/auth";
 import { checkRateLimit } from "@/lib/rateLimit";
 import { z } from "zod";
 
@@ -45,10 +45,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    // Success - set cookies
-    await setAuthCookies(user.id);
+    // Success - set cookies on the response object (required for Route Handlers)
+    const response = NextResponse.json({ success: true }, { status: 200 });
+    await setAuthCookiesOnResponse(response, user.id);
 
-    return NextResponse.json({ success: true }, { status: 200 });
+    return response;
   } catch (error) {
     console.error("Login Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
