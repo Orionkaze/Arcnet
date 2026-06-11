@@ -101,6 +101,42 @@ export async function clearAuthCookies() {
 }
 
 const lastSeenUpdateCache = new Map<string, number>();
+const userExistsCache = new Map<string, number>(); // userId → timestamp of last verified existence
+
+/**
+ * Verify the user actually exists in the database.
+ * Uses a 60-second cache to avoid a DB query on every single request.
+ * Returns false if the user has been deleted from the database.
+ */
+async function verifyUserExists(userId: string): Promise<boolean> {
+  const now = Date.now();
+  const lastCheck = userExistsCache.get(userId) || 0;
+
+  // If we checked within the last 60 seconds, trust the cache
+  if (now - lastCheck < 60000) {
+    return true;
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true },
+    });
+
+    if (user) {
+      userExistsCache.set(userId, now);
+      return true;
+    } else {
+      // User was deleted — clean up caches
+      userExistsCache.delete(userId);
+      lastSeenUpdateCache.delete(userId);
+      return false;
+    }
+  } catch {
+    // If DB is unreachable, fail open — let the downstream query handle it
+    return true;
+  }
+}
 
 export async function getSession() {
   const cookieStore = await cookies();
@@ -110,6 +146,13 @@ export async function getSession() {
     const payload = await verifyToken(accessToken);
     if (payload && payload.userId) {
       const userId = payload.userId as string;
+
+      // Issue #5 fix: verify user still exists in DB
+      const exists = await verifyUserExists(userId);
+      if (!exists) {
+        return null;
+      }
+
       const lastUpdate = lastSeenUpdateCache.get(userId) || 0;
       const now = Date.now();
       if (now - lastUpdate > 60000) {
@@ -130,15 +173,32 @@ export async function getSession() {
   if (refreshToken) {
     const payload = await verifyToken(refreshToken);
     if (payload && payload.userId) {
+      // Issue #5 fix: verify user still exists in DB
+      const exists = await verifyUserExists(payload.userId as string);
+      if (!exists) {
+        return null;
+      }
+
       // Refresh token is valid — issue a new access token
       const newAccessToken = await signToken({ userId: payload.userId }, "15m");
-      cookieStore.set("access_token", newAccessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 15 * 60,
-        path: "/",
-      });
+
+      // Issue #3 fix: cookies().set() can throw in Route Handlers.
+      // Wrap in try-catch so the session is still returned even if
+      // the cookie can't be refreshed in this context.
+      try {
+        cookieStore.set("access_token", newAccessToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 15 * 60,
+          path: "/",
+        });
+      } catch {
+        // In Route Handlers, cookies cannot be set directly.
+        // The session is still valid via the refresh token — the cookie
+        // will be refreshed on the next Server Action or page navigation.
+      }
+
       return payload;
     }
   }

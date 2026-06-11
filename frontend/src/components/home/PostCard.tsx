@@ -169,10 +169,10 @@ export default function PostCard({
       const res = await fetch(`/api/posts/${id}/like`, { method: "POST" });
       if (!res.ok) throw new Error("Failed to like post");
       const data = await res.json();
-      setLiked(data.liked);
-      setLikes(data.likeCount);
+      setLiked(data.isLiked);
+      setLikes(data.likesCount);
       if (onInteraction) {
-        onInteraction(id, { isLiked: data.liked, likesCount: data.likeCount });
+        onInteraction(id, { isLiked: data.isLiked, likesCount: data.likesCount });
       }
     } catch (error) {
       setLiked(oldLiked);
@@ -201,10 +201,10 @@ export default function PostCard({
       const res = await fetch(`/api/posts/${id}/repost`, { method: "POST" });
       if (!res.ok) throw new Error("Failed to repost");
       const data = await res.json();
-      setReposted(data.reposted);
-      setReposts(data.repostCount);
+      setReposted(data.isReposted);
+      setReposts(data.repostsCount);
       if (onInteraction) {
-        onInteraction(id, { isReposted: data.reposted, repostsCount: data.repostCount });
+        onInteraction(id, { isReposted: data.isReposted, repostsCount: data.repostsCount });
       }
     } catch (error) {
       setReposted(oldReposted);
@@ -233,10 +233,10 @@ export default function PostCard({
       const res = await fetch(`/api/posts/${id}/bookmark`, { method: "POST" });
       if (!res.ok) throw new Error("Failed to bookmark");
       const data = await res.json();
-      setBookmarked(data.bookmarked);
-      setBookmarks(data.bookmarkCount);
+      setBookmarked(data.isBookmarked);
+      setBookmarks(data.bookmarksCount);
       if (onInteraction) {
-        onInteraction(id, { isBookmarked: data.bookmarked, bookmarksCount: data.bookmarkCount });
+        onInteraction(id, { isBookmarked: data.isBookmarked, bookmarksCount: data.bookmarksCount });
       }
     } catch (error) {
       setBookmarked(oldBookmarked);
