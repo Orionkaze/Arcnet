@@ -15,14 +15,6 @@ export async function POST(
     const { postId } = await params;
     const userId = session.userId as string;
 
-    const post = await prisma.post.findUnique({
-      where: { id: postId },
-    });
-
-    if (!post) {
-      return NextResponse.json({ error: "Post not found" }, { status: 404 });
-    }
-
     const existingLike = await prisma.like.findUnique({
       where: {
         userId_postId: {
@@ -32,17 +24,10 @@ export async function POST(
       },
     });
 
-    let liked = false;
     if (existingLike) {
       await prisma.like.delete({
-        where: {
-          userId_postId: {
-            userId,
-            postId,
-          },
-        },
+        where: { id: existingLike.id },
       });
-      liked = false;
     } else {
       await prisma.like.create({
         data: {
@@ -50,14 +35,17 @@ export async function POST(
           postId,
         },
       });
-      liked = true;
     }
 
-    const likeCount = await prisma.like.count({
+    const likesCount = await prisma.like.count({
       where: { postId },
     });
 
-    return NextResponse.json({ liked, likeCount }, { status: 200 });
+    return NextResponse.json({ 
+      isLiked: !existingLike, 
+      likesCount 
+    }, { status: 200 });
+
   } catch (error) {
     console.error("Toggle Like Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

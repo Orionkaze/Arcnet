@@ -15,14 +15,6 @@ export async function POST(
     const { postId } = await params;
     const userId = session.userId as string;
 
-    const post = await prisma.post.findUnique({
-      where: { id: postId },
-    });
-
-    if (!post) {
-      return NextResponse.json({ error: "Post not found" }, { status: 404 });
-    }
-
     const existingBookmark = await prisma.bookmark.findUnique({
       where: {
         userId_postId: {
@@ -32,17 +24,10 @@ export async function POST(
       },
     });
 
-    let bookmarked = false;
     if (existingBookmark) {
       await prisma.bookmark.delete({
-        where: {
-          userId_postId: {
-            userId,
-            postId,
-          },
-        },
+        where: { id: existingBookmark.id },
       });
-      bookmarked = false;
     } else {
       await prisma.bookmark.create({
         data: {
@@ -50,14 +35,17 @@ export async function POST(
           postId,
         },
       });
-      bookmarked = true;
     }
 
-    const bookmarkCount = await prisma.bookmark.count({
+    const bookmarksCount = await prisma.bookmark.count({
       where: { postId },
     });
 
-    return NextResponse.json({ bookmarked, bookmarkCount }, { status: 200 });
+    return NextResponse.json({ 
+      isBookmarked: !existingBookmark, 
+      bookmarksCount 
+    }, { status: 200 });
+
   } catch (error) {
     console.error("Toggle Bookmark Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

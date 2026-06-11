@@ -15,14 +15,6 @@ export async function POST(
     const { postId } = await params;
     const userId = session.userId as string;
 
-    const post = await prisma.post.findUnique({
-      where: { id: postId },
-    });
-
-    if (!post) {
-      return NextResponse.json({ error: "Post not found" }, { status: 404 });
-    }
-
     const existingRepost = await prisma.repost.findUnique({
       where: {
         userId_postId: {
@@ -32,17 +24,10 @@ export async function POST(
       },
     });
 
-    let reposted = false;
     if (existingRepost) {
       await prisma.repost.delete({
-        where: {
-          userId_postId: {
-            userId,
-            postId,
-          },
-        },
+        where: { id: existingRepost.id },
       });
-      reposted = false;
     } else {
       await prisma.repost.create({
         data: {
@@ -50,14 +35,17 @@ export async function POST(
           postId,
         },
       });
-      reposted = true;
     }
 
-    const repostCount = await prisma.repost.count({
+    const repostsCount = await prisma.repost.count({
       where: { postId },
     });
 
-    return NextResponse.json({ reposted, repostCount }, { status: 200 });
+    return NextResponse.json({ 
+      isReposted: !existingRepost, 
+      repostsCount 
+    }, { status: 200 });
+
   } catch (error) {
     console.error("Toggle Repost Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
