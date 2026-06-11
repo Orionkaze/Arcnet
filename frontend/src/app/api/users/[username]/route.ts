@@ -36,6 +36,9 @@ export async function GET(
         location: true,
         skills: true,
         socialLinks: true,
+        experience: {
+          orderBy: { createdAt: "desc" },
+        },
         _count: {
           select: {
             posts: true,

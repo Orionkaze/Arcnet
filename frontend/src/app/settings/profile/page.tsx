@@ -774,6 +774,30 @@ export default function SettingsProfilePage() {
   const [skills, setSkills] = useState("");
   const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null);
 
+  interface ExperienceItem {
+    id: string;
+    role: string;
+    company: string;
+    startDate: string;
+    endDate: string | null;
+    current: boolean;
+    description: string | null;
+  }
+
+  const [experienceList, setExperienceList] = useState<ExperienceItem[]>([]);
+  const [isExperienceLoading, setIsExperienceLoading] = useState(false);
+
+  // New states for adding experience inline
+  const [showAddExperience, setShowAddExperience] = useState(false);
+  const [expRole, setExpRole] = useState("");
+  const [expCompany, setExpCompany] = useState("");
+  const [expStartDate, setExpStartDate] = useState("");
+  const [expEndDate, setExpEndDate] = useState("");
+  const [expCurrent, setExpCurrent] = useState(false);
+  const [expDescription, setExpDescription] = useState("");
+  const [expSubmitting, setExpSubmitting] = useState(false);
+  const [expError, setExpError] = useState("");
+
   // Avatar edit mode states
   const [avatarMode, setAvatarMode] = useState<"current" | "presets" | "camera">("current");
   const [presetIndex, setPresetIndex] = useState<number | null>(null);
@@ -823,6 +847,27 @@ export default function SettingsProfilePage() {
       } else {
         setSocialLinks([]);
       }
+
+      // Fetch Experience
+      const fetchExp = async () => {
+        setIsExperienceLoading(true);
+        try {
+          const cleanUsername = (user.username || "").trim().replace(/^@/, "");
+          if (!cleanUsername) return;
+          const res = await fetch(`/api/users/${cleanUsername}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.user && data.user.experience) {
+              setExperienceList(data.user.experience);
+            }
+          }
+        } catch (err) {
+          console.error("Failed to fetch experience", err);
+        } finally {
+          setIsExperienceLoading(false);
+        }
+      };
+      fetchExp();
     }
   }, [user]);
 
@@ -1018,6 +1063,60 @@ export default function SettingsProfilePage() {
 
   const handleRemove = (index: number) => {
     setSocialLinks(socialLinks.filter((_, i) => i !== index));
+  };
+
+  const handleAddExperience = async () => {
+    if (!expRole || !expCompany || !expStartDate) {
+      setExpError("Role, Company, and Start Date are required.");
+      return;
+    }
+    setExpSubmitting(true);
+    setExpError("");
+    try {
+      const res = await fetch("/api/users/me/experience", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          role: expRole,
+          company: expCompany,
+          startDate: expStartDate,
+          endDate: expEndDate,
+          current: expCurrent,
+          description: expDescription,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setExpError(data.error || "Failed to add experience");
+        return;
+      }
+      setExperienceList([data.experience, ...experienceList]);
+      setShowAddExperience(false);
+      setExpRole("");
+      setExpCompany("");
+      setExpStartDate("");
+      setExpEndDate("");
+      setExpCurrent(false);
+      setExpDescription("");
+    } catch (err) {
+      console.error(err);
+      setExpError("System error adding experience");
+    } finally {
+      setExpSubmitting(false);
+    }
+  };
+
+  const handleDeleteExperience = async (id: string) => {
+    try {
+      const res = await fetch(`/api/users/me/experience?id=${id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        setExperienceList(experienceList.filter(e => e.id !== id));
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
@@ -1331,6 +1430,145 @@ export default function SettingsProfilePage() {
                   />
                   <span className="form-desc">List your creator skills, separated by commas.</span>
                 </div>
+              </div>
+
+              {/* SECTION: Experience */}
+              <div className="social-connections-header">
+                <span className="social-connections-label">EXPERIENCE</span>
+                <div className="social-connections-line" />
+              </div>
+
+              <div className="experience-list flex flex-col gap-4 mb-8">
+                {isExperienceLoading ? (
+                  <div className="text-[#00EAFF] animate-pulse">Loading experience...</div>
+                ) : (
+                  <>
+                    {experienceList.map((exp) => (
+                      <div key={exp.id} className="p-4 border border-[#2A313C] rounded bg-[#10141A]/50 relative group">
+                        <h4 className="text-[#E0E0E0] font-medium">{exp.role} at {exp.company}</h4>
+                        <p className="text-sm text-[#8E95A3] mt-1">
+                          {exp.startDate} - {exp.current ? "Present" : exp.endDate}
+                        </p>
+                        {exp.description && (
+                          <p className="text-sm text-[#C8C7C7] mt-2 whitespace-pre-wrap">{exp.description}</p>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteExperience(exp.id)}
+                          className="absolute top-4 right-4 text-red-400 hover:text-red-300 opacity-0 group-hover:opacity-100 transition-opacity"
+                          title="Delete Experience"
+                        >
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
+
+                    {!showAddExperience && (
+                      <button
+                        type="button"
+                        onClick={() => setShowAddExperience(true)}
+                        className="btn-add-social w-fit"
+                      >
+                        <PlusIcon /> Add Experience
+                      </button>
+                    )}
+
+                    {showAddExperience && (
+                      <div className="p-4 border border-[#00EAFF]/30 rounded bg-[#10141A] flex flex-col gap-4 mt-2">
+                        <h4 className="text-[#00EAFF] text-sm tracking-wider font-chakra mb-2">ADD NEW EXPERIENCE</h4>
+                        {expError && <div className="text-red-400 text-sm mb-2">{expError}</div>}
+                        
+                        <div className="form-grid">
+                          <div className="form-group">
+                            <label className="form-label">Role *</label>
+                            <input
+                              type="text"
+                              value={expRole}
+                              onChange={(e) => setExpRole(e.target.value)}
+                              className="form-input"
+                              placeholder="e.g. Lead 3D Artist"
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">Company *</label>
+                            <input
+                              type="text"
+                              value={expCompany}
+                              onChange={(e) => setExpCompany(e.target.value)}
+                              className="form-input"
+                              placeholder="e.g. Epic Games"
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">Start Date *</label>
+                            <input
+                              type="month"
+                              value={expStartDate}
+                              onChange={(e) => setExpStartDate(e.target.value)}
+                              className="form-input"
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">End Date</label>
+                            <input
+                              type="month"
+                              value={expEndDate}
+                              onChange={(e) => setExpEndDate(e.target.value)}
+                              disabled={expCurrent}
+                              className="form-input disabled:opacity-50"
+                            />
+                            <div className="flex items-center gap-2 mt-2">
+                              <input
+                                type="checkbox"
+                                id="current"
+                                checked={expCurrent}
+                                onChange={(e) => {
+                                  setExpCurrent(e.target.checked);
+                                  if (e.target.checked) setExpEndDate("");
+                                }}
+                                className="w-4 h-4 rounded border-[#2A313C] bg-transparent text-[#00EAFF] focus:ring-[#00EAFF] focus:ring-offset-0"
+                              />
+                              <label htmlFor="current" className="text-sm text-[#8E95A3]">I currently work here</label>
+                            </div>
+                          </div>
+                          <div className="form-group full-width">
+                            <label className="form-label">Description</label>
+                            <textarea
+                              value={expDescription}
+                              onChange={(e) => setExpDescription(e.target.value)}
+                              className="form-textarea min-h-[100px]"
+                              placeholder="Describe your role and achievements..."
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex gap-3 justify-end mt-4">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowAddExperience(false);
+                              setExpError("");
+                            }}
+                            className="btn-editor-secondary"
+                            disabled={expSubmitting}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleAddExperience}
+                            className="btn-settings-save px-6 py-2"
+                            disabled={expSubmitting}
+                          >
+                            {expSubmitting ? "Adding..." : "Add Experience"}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
 
               {/* SECTION: Social Connections */}

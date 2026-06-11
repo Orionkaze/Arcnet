@@ -40,6 +40,21 @@ model User {
   messages                 Message[]
   messageReactions         MessageReaction[]
   portfolioProjects        PortfolioProject[]
+  experience               Experience[]
+}
+
+model Experience {
+  id          String   @id @default(cuid())
+  role        String
+  company     String
+  startDate   String
+  endDate     String?
+  current     Boolean  @default(false)
+  description String?
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Post {

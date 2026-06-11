@@ -1444,7 +1444,25 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                   {/* Experience */}
                   <div>
                     <h3 className="profile-about-section-label">Experience</h3>
-                    <p className="font-inter text-sm text-[#C8C7C7] italic">No experience added yet</p>
+                    {profileUser.experience && Array.isArray(profileUser.experience) && profileUser.experience.length > 0 ? (
+                      <div className="flex flex-col gap-4">
+                        {profileUser.experience.map((exp: { id: string; role: string; company: string; startDate: string; endDate?: string | null; current: boolean; description?: string | null }) => (
+                          <div key={exp.id} className="p-4 border border-[#2A313C] rounded bg-[#10141A]/50">
+                            <h4 className="text-[#E0E0E0] font-medium text-lg">{exp.role} <span className="text-[#00EAFF]">@ {exp.company}</span></h4>
+                            <p className="text-sm text-[#8E95A3] mt-1 font-chakra tracking-wide">
+                              {exp.startDate} — {exp.current ? "Present" : exp.endDate}
+                            </p>
+                            {exp.description && (
+                              <p className="text-sm text-[#C8C7C7] mt-3 whitespace-pre-wrap font-inter leading-relaxed">
+                                {exp.description}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="font-inter text-sm text-[#C8C7C7] italic">No experience added yet</p>
+                    )}
                   </div>
 
                   {/* Social Links */}
