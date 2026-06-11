@@ -10,6 +10,7 @@ import RightPanel from "@/components/home/RightPanel";
 import MobileBottomNav from "@/components/home/MobileBottomNav";
 import MobileDrawer from "@/components/home/MobileDrawer";
 import PostSkeleton from "@/components/home/PostSkeleton";
+import CreatePostModal from "@/components/feed/CreatePostModal";
 import { useAuthStore } from "@/store/useAuthStore";
 
 interface PostAuthor {
@@ -51,11 +52,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // New post form states
-  const [content, setContent] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
-  const [posting, setPosting] = useState(false);
-  const [postError, setPostError] = useState<string | null>(null);
+  const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false);
 
   // Polling states
   const [newPostsAvailable, setNewPostsAvailable] = useState(false);
@@ -91,18 +88,12 @@ export default function Home() {
     }
   };
 
-  const handleCreatePost = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!content.trim()) return;
-
-    setPosting(true);
-    setPostError(null);
-
+  const handleCreatePost = async (postContent: string, postImageUrl: string) => {
     try {
       const res = await fetch("/api/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: content.trim(), imageUrl: imageUrl.trim() || undefined }),
+        body: JSON.stringify({ content: postContent.trim(), imageUrl: postImageUrl.trim() || undefined }),
       });
 
       const data = await res.json();
@@ -114,16 +105,8 @@ export default function Home() {
       // Add new post to start of feed
       setPosts((prev) => [data.post, ...prev]);
       latestPostIdRef.current = data.post.id;
-      
-      setContent("");
-      setImageUrl("");
     } catch (err) {
-      const errMsg = err instanceof Error ? err.message : "Failed to create post";
-      setPostError(errMsg);
-      // Auto clear error after 5 seconds
-      setTimeout(() => setPostError(null), 5000);
-    } finally {
-      setPosting(false);
+      throw err;
     }
   };
 
@@ -223,59 +206,7 @@ export default function Home() {
         <LeftSidebar />
         
         <main className="center-feed relative">
-          {/* Post Creation Widget */}
-          {user && (
-            <div className="post-card" style={{ marginBottom: "1rem" }}>
-              <form onSubmit={handleCreatePost}>
-                <div className="flex gap-3">
-                  <div className="w-9 h-9 rounded-full bg-[#2A313C] flex-shrink-0 overflow-hidden flex items-center justify-center font-bold text-sm">
-                    {user.avatar ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={user.avatar} alt={user.firstName} className="w-full h-full object-cover" />
-                    ) : (
-                      user.firstName.charAt(0).toUpperCase()
-                    )}
-                  </div>
-                  <div className="flex-grow">
-                    <textarea
-                      placeholder="Share your game dev progress, rig designs, art assets..."
-                      value={content}
-                      onChange={(e) => setContent(e.target.value)}
-                      maxLength={500}
-                      rows={3}
-                      className="w-full bg-[#10141A] border-none text-white text-sm focus:outline-none resize-none font-inter"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Attachment Image URL (optional)"
-                      value={imageUrl}
-                      onChange={(e) => setImageUrl(e.target.value)}
-                      className="w-full bg-[#10141A] border-t border-[#2A313C] text-xs text-[#C8C7C7] py-2 focus:outline-none font-inter"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex justify-between items-center mt-3 pt-2 border-t border-[#2A313C]">
-                  <span className="text-xs text-[#C8C7C7] font-inter">
-                    {500 - content.length} characters remaining
-                  </span>
-                  <button
-                    type="submit"
-                    disabled={posting || !content.trim()}
-                    className="px-6 py-2 bg-[#00EAFF] hover:bg-[#00d0e0] text-[#10141A] font-bold font-chakra text-xs tracking-wider uppercase rounded transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {posting ? "Posting..." : "Post"}
-                  </button>
-                </div>
-              </form>
-
-              {postError && (
-                <div className="mt-2.5 text-red-500 font-chakra text-xs text-center border border-red-500/20 bg-red-500/5 p-2 rounded">
-                  {postError}
-                </div>
-              )}
-            </div>
-          )}
+          {/* Post Creation Modal removed from inline */}
 
           {/* New Posts Notification Pill */}
           {newPostsAvailable && (
@@ -369,32 +300,63 @@ export default function Home() {
 
         {/* Floating Grid Menu Button */}
         <div className="fixed top-[72px] right-6 z-50">
-          <button
-            className="w-9 h-9 rounded-full bg-[#10141A] border-2 border-[#00EAFF] flex items-center justify-center hover:bg-[rgba(0,234,255,0.1)] transition-colors cursor-pointer"
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-          >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#00EAFF"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+          <div className="relative">
+            <button
+              className="w-9 h-9 rounded-full bg-[#10141A] border-2 border-[#00EAFF] flex items-center justify-center hover:bg-[rgba(0,234,255,0.1)] transition-colors cursor-pointer"
+              onClick={() => setDropdownOpen(!dropdownOpen)}
             >
-              <rect x="3" y="3" width="7" height="7"></rect>
-              <rect x="14" y="3" width="7" height="7"></rect>
-              <rect x="14" y="14" width="7" height="7"></rect>
-              <rect x="3" y="14" width="7" height="7"></rect>
-            </svg>
-          </button>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#00EAFF"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+            </button>
+            
+            {dropdownOpen && (
+              <div className="absolute top-full mt-2 right-0 bg-[#14181F] border border-[#2A313C] rounded-lg shadow-2xl py-2 w-48 font-inter">
+                <button
+                  className="w-full text-left px-4 py-2 text-[#C8C7C7] hover:text-white hover:bg-[#1D232D] transition-colors text-sm"
+                  onClick={() => {
+                    setDropdownOpen(false);
+                  }}
+                >
+                  Join New Hub
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 text-white hover:bg-[#1D232D] transition-colors text-sm"
+                  onClick={() => {
+                    setDropdownOpen(false);
+                    setIsCreatePostModalOpen(true);
+                  }}
+                >
+                  Create Post
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
       <MobileBottomNav />
       <MobileDrawer
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
+      />
+      
+      <CreatePostModal
+        isOpen={isCreatePostModalOpen}
+        onClose={() => setIsCreatePostModalOpen(false)}
+        user={user as any}
+        onSubmit={handleCreatePost}
       />
     </div>
   );
