@@ -39,6 +39,7 @@ model User {
   hubMembers               HubMember[]
   messages                 Message[]
   messageReactions         MessageReaction[]
+  portfolioProjects        PortfolioProject[]
 }
 
 model Post {
@@ -173,4 +174,16 @@ model MessageReaction {
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   @@unique([messageId, userId, emoji])
+}
+
+model PortfolioProject {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  tags        String[] // Array of strings for tags e.g. ["UE5", "C++", "3D"]
+  link        String?  // Optional external link
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

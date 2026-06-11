@@ -676,13 +676,6 @@ const ProfileSocialBadge = ({ link }: { link: { platform: string; url: string } 
 };
 
 
-// Mock followers list for modal
-const MOCK_USERS = [
-  { id: "1", name: "Maya 3D", username: "maya_3d", handle: "@maya.artist.ANET", avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=maya", isFollowing: false },
-  { id: "2", name: "Deepak", username: "deepak", handle: "@deepak.founder.ANET", avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=deepak", isFollowing: true },
-  { id: "3", name: "Sarah Dev", username: "sarah_gamedev", handle: "@sarah.dev.ANET", avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=sarah", isFollowing: false },
-  { id: "4", name: "Rohan Animator", username: "rohan_anim", handle: "@rohan.anim.ANET", avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=rohan", isFollowing: true },
-];
 
 interface ProfileUser {
   id: string;
@@ -698,6 +691,12 @@ interface ProfileUser {
   location?: string | null;
   skills?: string | null;
   socialLinks?: { platform: string; url: string }[] | null;
+  _count?: {
+    posts: number;
+    followers: number;
+    following: number;
+    hubMembers: number;
+  };
 }
 
 const PRESETS = [
@@ -750,8 +749,14 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
   const [activeTab, setActiveTab] = useState<"posts" | "portfolio" | "hubs" | "about">("posts");
   const [isFollowed, setIsFollowed] = useState(false);
   const [modalOpen, setModalOpen] = useState<"followers" | "following" | null>(null);
-  const [followersList, setFollowersList] = useState(MOCK_USERS);
-  const [followingList, setFollowingList] = useState(MOCK_USERS.filter(u => u.isFollowing));
+  const [followersList, setFollowersList] = useState<any[]>([]);
+  const [followingList, setFollowingList] = useState<any[]>([]);
+  
+  // Tab Content States
+  const [userPosts, setUserPosts] = useState<any[]>([]);
+  const [userPortfolio, setUserPortfolio] = useState<any[]>([]);
+  const [userHubs, setUserHubs] = useState<any[]>([]);
+  const [isTabLoading, setIsTabLoading] = useState(false);
 
   // Edit Cover Modal States
   const [isEditCoverOpen, setIsEditCoverOpen] = useState(false);
@@ -903,40 +908,13 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
       try {
         const res = await fetch(`/api/users/${cleanUsername}`);
         if (!res.ok) {
-          // If user doesn't exist in DB but it's our requested mock user, simulate it
-          if (cleanUsername.toLowerCase() === "arcavon_akshit" || cleanUsername.toLowerCase() === "arcavon-akshit") {
-            setProfileUser({
-              id: "mock-id-arcavon",
-              firstName: "Arcavon",
-              lastName: "Akshit",
-              username: "Arcavon_Akshit",
-              avatar: null,
-              isVerified: true,
-              createdAt: "2024-01-01T00:00:00.000Z",
-            });
-            setIsLoading(false);
-            return;
-          }
           throw new Error("User not found");
         }
         const data = await res.json();
         setProfileUser(data.user);
+        setIsFollowed(data.isFollowed);
       } catch (err) {
-        const errMsg = err instanceof Error ? err.message : "Failed to load user profile";
-        // Fallback for demo purposes if it is Arcavon Akshit
-        if (cleanUsername.toLowerCase() === "arcavon_akshit" || cleanUsername.toLowerCase() === "arcavon-akshit") {
-          setProfileUser({
-            id: "mock-id-arcavon",
-            firstName: "Arcavon",
-            lastName: "Akshit",
-            username: "Arcavon_Akshit",
-            avatar: null,
-            isVerified: true,
-            createdAt: "2024-01-01T00:00:00.000Z",
-          });
-        } else {
-          setError(errMsg);
-        }
+        setError(err instanceof Error ? err.message : "Failed to load user profile");
       } finally {
         setIsLoading(false);
       }
@@ -944,6 +922,67 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
 
     fetchProfile();
   }, [cleanUsername]);
+
+  useEffect(() => {
+    const fetchTabData = async () => {
+      setIsTabLoading(true);
+      try {
+        if (activeTab === "posts") {
+          const res = await fetch(`/api/users/${cleanUsername}/posts`);
+          if (res.ok) {
+            const data = await res.json();
+            setUserPosts(data.posts || []);
+          }
+        } else if (activeTab === "portfolio") {
+          const res = await fetch(`/api/users/${cleanUsername}/portfolio`);
+          if (res.ok) {
+            const data = await res.json();
+            setUserPortfolio(data.projects || []);
+          }
+        } else if (activeTab === "hubs") {
+          const res = await fetch(`/api/users/${cleanUsername}/hubs`);
+          if (res.ok) {
+            const data = await res.json();
+            setUserHubs(data.hubs || []);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch tab data", error);
+      } finally {
+        setIsTabLoading(false);
+      }
+    };
+
+    if (profileUser) {
+      fetchTabData();
+    }
+  }, [cleanUsername, activeTab, profileUser]);
+
+  useEffect(() => {
+    const fetchFollowData = async () => {
+      try {
+        if (modalOpen === "followers") {
+          const res = await fetch(`/api/users/${cleanUsername}/followers`);
+          if (res.ok) {
+            const data = await res.json();
+            setFollowersList(data.users || []);
+          }
+        } else if (modalOpen === "following") {
+          const res = await fetch(`/api/users/${cleanUsername}/following`);
+          if (res.ok) {
+            const data = await res.json();
+            setFollowingList(data.users || []);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch follow data", error);
+      }
+    };
+
+    if (modalOpen) {
+      fetchFollowData();
+    }
+  }, [cleanUsername, modalOpen]);
 
   if (isLoading) {
     return (
@@ -982,107 +1021,66 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
   const initials = `${profileUser.firstName[0]}${profileUser.lastName[0]}`.toUpperCase();
 
   // Combine fetched user data with specified mock data for evaluation
-  const isMockUser = profileUser.username.toLowerCase() === "arcavon_akshit";
-  const bio = profileUser.bio || (isMockUser 
-    ? "Game developer and tech founder. Building ARCNET — the hub for game creators worldwide."
-    : "Building the future of gaming on ARCNET.");
-  const role = profileUser.role || (isMockUser ? "Game Developer" : "Game Creator");
-  const location = profileUser.location || (isMockUser ? "India" : "Global");
-  const joinedDate = isMockUser 
-    ? "January 2024"
-    : new Date(profileUser.createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  const bio = profileUser.bio || "No bio available.";
+  const role = profileUser.role || "User";
+  const location = profileUser.location || "Earth";
+  const joinedDate = new Date(profileUser.createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" });
   
   // Custom stats
-  const postsCount = isMockUser ? 48 : 12;
-  const followersCount = isMockUser ? "1.2K" : "0";
-  const followingCount = isMockUser ? "340" : "0";
-  const hubsCount = isMockUser ? 6 : 2;
-
-  // Mock Post List
-  const MOCK_POSTS = [
-    {
-      username: profileUser.username,
-      handle: isMockUser ? "@Tech.Hero.ANET" : `@${profileUser.username}.ANET`,
-      text: "Today I made this asset using all of my knowledge till now. It felt really good finishing it even after all the problem. See it in the image below",
-      isFollowing: isFollowed,
-      hasImage: true,
-      likes: 42,
-      comments: 8,
-      shares: 5,
-      reposts: 12,
-      avatar: profileUser.avatar
-    },
-    {
-      username: profileUser.username,
-      handle: isMockUser ? "@Tech.Hero.ANET" : `@${profileUser.username}.ANET`,
-      text: "Just released a patch update for my platformer! Added double jumping and fixed high-resolution camera tracking issues. Check out the project tab for the gameplay build link.",
-      isFollowing: isFollowed,
-      hasImage: false,
-      likes: 18,
-      comments: 3,
-      shares: 1,
-      reposts: 2,
-      avatar: profileUser.avatar
-    },
-    {
-      username: profileUser.username,
-      handle: isMockUser ? "@Tech.Hero.ANET" : `@${profileUser.username}.ANET`,
-      text: "Had a great brainstorming session with developers from the Game Developers Hub. ARCNET is really bringing game creators together. The AVGC sector in India is about to explode!",
-      isFollowing: isFollowed,
-      hasImage: false,
-      likes: 29,
-      comments: 7,
-      shares: 4,
-      reposts: 8,
-      avatar: profileUser.avatar
-    }
-  ];
-
-  // Portfolio items
-  const PORTFOLIO_ITEMS = [
-    { title: "Project Neon", desc: "Cyberpunk first-person shooter prototype built in Unreal Engine 5.", tags: ["UE5", "C++", "3D"] },
-    { title: "Space Odyssey", desc: "VR space flight simulator with realistic physics and orbital mechanics.", tags: ["Unity", "C#", "VR"] },
-    { title: "Retro Quest", desc: "A pixel-art 2D platformer for retro retro console lovers.", tags: ["Unity", "C#", "2D"] },
-    { title: "Medieval Realms", desc: "Multiplayer strategy game featuring procedurally generated terrain.", tags: ["Blender", "C#", "Multi"] }
-  ];
-
-  // Hubs items
-  const HUBS_ITEMS = [
-    { name: "Game Developers", members: "12.4K Members", role: "Moderator" },
-    { name: "2D / 3D Artists", members: "8.2K Members", role: "Member" },
-    { name: "Animators", members: "3.2K Members", role: "Member" },
-    { name: "Storywriters", members: "1.8K Members", role: "Member" }
-  ];
-
-  // Ecosystem items
-  const ECOSYSTEM_ITEMS = [
-    { name: "Game Jams", members: "5.6K Members", role: "Member" },
-    { name: "Find Team", members: "4.1K Members", role: "Moderator" }
-  ];
+  const postsCount = profileUser._count?.posts || 0;
+  const followersCount = profileUser._count?.followers || 0;
+  const followingCount = profileUser._count?.following || 0;
+  const hubsCount = profileUser._count?.hubMembers || 0;
 
   // Skills
   const SKILLS = profileUser.skills
     ? profileUser.skills.split(",").map(s => s.trim())
-    : (isMockUser 
-        ? ["Unity", "Unreal Engine", "Blender", "C#", "Game Design", "3D Modelling"]
-        : ["Unity", "C#", "Game Design"]);
+    : [];
 
   // Toggle follows inside modal
-  const handleToggleModalFollow = (userId: string, listType: "followers" | "following") => {
-    if (listType === "followers") {
-      setFollowersList(prev => prev.map(u => u.id === userId ? { ...u, isFollowing: !u.isFollowing } : u));
-      // Sync following list
-      const clickedUser = followersList.find(u => u.id === userId);
-      if (clickedUser) {
-        if (!clickedUser.isFollowing) {
-          setFollowingList(prev => [...prev, { ...clickedUser, isFollowing: true }]);
-        } else {
-          setFollowingList(prev => prev.filter(u => u.id !== userId));
-        }
+  const handleToggleModalFollow = async (userId: string, listType: "followers" | "following") => {
+    try {
+      const isCurrentlyFollowing = listType === "followers" 
+        ? followersList.find(u => u.id === userId)?.isFollowing 
+        : followingList.find(u => u.id === userId)?.isFollowing;
+
+      const endpoint = `/api/users/id/${userId}/follow`;
+      
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to follow/unfollow user");
       }
-    } else {
-      setFollowingList(prev => prev.filter(u => u.id !== userId));
-      setFollowersList(prev => prev.map(u => u.id === userId ? { ...u, isFollowing: false } : u));
+
+      const data = await res.json();
+      const newIsFollowing = data.isFollowing;
+
+      if (listType === "followers") {
+        setFollowersList(prev => prev.map(u => u.id === userId ? { ...u, isFollowing: newIsFollowing } : u));
+      } else {
+        setFollowingList(prev => prev.map(u => u.id === userId ? { ...u, isFollowing: newIsFollowing } : u));
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleToggleFollowProfile = async () => {
+    if (!profileUser) return;
+    try {
+      const endpoint = `/api/users/id/${profileUser.id}/follow`;
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!res.ok) throw new Error("Failed to follow/unfollow user");
+      const data = await res.json();
+      setIsFollowed(data.isFollowing);
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -1214,7 +1212,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                       <>
                         <button
                           className={`btn-follow ${isFollowed ? "following" : ""}`}
-                          onClick={() => setIsFollowed(!isFollowed)}
+                          onClick={handleToggleFollowProfile}
                         >
                           {isFollowed ? "Following" : "Follow"}
                         </button>
@@ -1286,7 +1284,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                 className={`profile-tab ${activeTab === "hubs" ? "active" : "inactive"}`}
                 onClick={() => setActiveTab("hubs")}
               >
-                Hubs / Ecosystem
+                Hubs
               </button>
               <button
                 className={`profile-tab ${activeTab === "about" ? "active" : "inactive"}`}
@@ -1298,66 +1296,83 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
 
             {/* TAB CONTENTS */}
             <section className="tab-content-area">
+              {isTabLoading && (
+                <div className="py-8 text-center text-[#00EAFF] animate-pulse font-chakra">
+                  LOADING DATA...
+                </div>
+              )}
               
               {/* TAB 1: POSTS */}
-              {activeTab === "posts" && (
-                <div className="profile-posts-list">
-                  {MOCK_POSTS.map((post, idx) => {
-                    const formattedPost = {
-                      id: `mock-post-${idx}`,
-                      content: post.text,
-                      imageUrl: post.hasImage ? "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=800" : null,
-                      createdAt: new Date(new Date(profileUser.createdAt).getTime() - idx * 24 * 60 * 60 * 1000).toISOString(),
-                      author: {
-                        id: profileUser.id,
-                        firstName: profileUser.firstName,
-                        lastName: profileUser.lastName,
-                        username: profileUser.username,
-                        avatar: profileUser.avatar,
-                        isVerified: !!profileUser.isVerified,
-                      },
-                      likesCount: post.likes,
-                      commentsCount: post.comments,
-                      repostsCount: post.reposts,
-                      bookmarksCount: 0,
-                      isLiked: false,
-                      isBookmarked: false,
-                      isReposted: false,
-                      isFollowing: post.isFollowing,
-                    };
-                    return (
-                      <PostCard 
-                        key={`${formattedPost.id}-${formattedPost.likesCount}-${formattedPost.isLiked}-${formattedPost.isBookmarked}-${formattedPost.isReposted}-${formattedPost.isFollowing}-${formattedPost.commentsCount}`} 
-                        {...formattedPost} 
-                      />
-                    );
-                  })}
+              {!isTabLoading && activeTab === "posts" && (
+                <div className="flex flex-col gap-4">
+                  {userPosts.length === 0 ? (
+                    <div className="py-8 text-center text-sm text-[#C8C7C7]">
+                      No posts yet.
+                    </div>
+                  ) : (
+                    userPosts.map((post) => {
+                      const formattedPost = {
+                        ...post,
+                        id: post.id,
+                        content: post.content,
+                        imageUrl: post.imageUrl,
+                        author: {
+                          id: post.author.id,
+                          firstName: post.author.firstName,
+                          lastName: post.author.lastName,
+                          username: post.author.username,
+                          avatar: post.author.avatar,
+                          isVerified: !!post.author.isVerified,
+                        },
+                        likesCount: post.likesCount,
+                        commentsCount: post.commentsCount,
+                        repostsCount: post.repostsCount,
+                        bookmarksCount: post.bookmarksCount,
+                        isLiked: post.isLiked,
+                        isBookmarked: post.isBookmarked,
+                        isReposted: post.isReposted,
+                        isFollowing: post.isFollowing,
+                      };
+                      return (
+                        <PostCard 
+                          key={formattedPost.id} 
+                          {...formattedPost} 
+                        />
+                      );
+                    })
+                  )}
                 </div>
               )}
 
               {/* TAB 2: PORTFOLIO */}
-              {activeTab === "portfolio" && (
+              {!isTabLoading && activeTab === "portfolio" && (
                 <div className="portfolio-grid">
-                  {PORTFOLIO_ITEMS.map((item, idx) => (
-                    <article key={idx} className="portfolio-card">
-                      <div className="portfolio-thumbnail">
-                        {/* Gamepad icon placeholder */}
-                        <svg className="portfolio-thumbnail-placeholder" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                          <rect x="2" y="6" width="20" height="12" rx="3" />
-                          <path d="M6 12h4M8 10v4M15 11h.01M18 13h.01" />
-                        </svg>
-                      </div>
-                      <div className="portfolio-card-info">
-                        <h3 className="portfolio-card-title">{item.title}</h3>
-                        <p className="portfolio-card-desc">{item.desc}</p>
-                        <div className="portfolio-tags-row">
-                          {item.tags.map((tag, tIdx) => (
-                            <span key={tIdx} className="portfolio-tag">{tag}</span>
-                          ))}
+                  {userPortfolio.length === 0 ? (
+                    <div className="py-8 text-center text-sm text-[#C8C7C7] col-span-full">
+                      No projects added yet.
+                    </div>
+                  ) : (
+                    userPortfolio.map((item) => (
+                      <article key={item.id} className="portfolio-card">
+                        <div className="portfolio-thumbnail">
+                          {/* Gamepad icon placeholder */}
+                          <svg className="portfolio-thumbnail-placeholder" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <rect x="2" y="6" width="20" height="12" rx="3" />
+                            <path d="M6 12h4M8 10v4M15 11h.01M18 13h.01" />
+                          </svg>
                         </div>
-                      </div>
-                    </article>
-                  ))}
+                        <div className="portfolio-card-info">
+                          <h3 className="portfolio-card-title">{item.title}</h3>
+                          <p className="portfolio-card-desc">{item.description}</p>
+                          <div className="portfolio-tags-row">
+                            {item.tags.map((tag: string, tIdx: number) => (
+                              <span key={tIdx} className="portfolio-tag">{tag}</span>
+                            ))}
+                          </div>
+                        </div>
+                      </article>
+                    ))
+                  )}
                   
                   {/* Own profile "+ Add Project" card */}
                   {isOwnProfile && (
@@ -1369,72 +1384,40 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                 </div>
               )}
 
-              {/* TAB 3: HUBS & ECOSYSTEM */}
-              {activeTab === "hubs" && (
+              {/* TAB 3: HUBS */}
+              {!isTabLoading && activeTab === "hubs" && (
                 <div className="flex flex-col gap-8 w-full">
                   {/* Hubs Section */}
                   <div>
-                    <h3 className="font-chakra text-xs font-semibold text-[#00EAFF] tracking-wider mb-4">PUBLIC HUBS</h3>
-                    <div className="hubs-grid">
-                      {HUBS_ITEMS.map((hub, idx) => (
-                        <article key={idx} className="hub-card">
-                          <div className="hub-card-header">
-                            <div className="hub-icon-circle">
-                              {/* Controller icon */}
-                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <rect x="2" y="6" width="20" height="12" rx="3" />
-                                <path d="M6 12h4M8 10v4" />
-                                <line x1="15" y1="12" x2="15.01" y2="12" />
-                                <line x1="18" y1="10" x2="18.01" y2="10" />
-                              </svg>
-                            </div>
-                            <div className="hub-meta">
-                              <h3 className="hub-name">{hub.name}</h3>
-                              <span className="hub-members">{hub.members}</span>
-                            </div>
-                          </div>
-                          <span className="hub-role-tag">{hub.role}</span>
-                        </article>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Ecosystem Section */}
-                  <div>
-                    <h3 className="font-chakra text-xs font-semibold text-[#00EAFF] tracking-wider mb-4">ECOSYSTEM</h3>
-                    <div className="hubs-grid">
-                      {ECOSYSTEM_ITEMS.map((eco, idx) => (
-                        <article key={idx} className="hub-card">
-                          <div className="hub-card-header">
-                            <div className="hub-icon-circle">
-                              {eco.name === "Game Jams" ? (
-                                /* Trophy icon */
+                    <h3 className="font-chakra text-xs font-semibold text-[#00EAFF] tracking-wider mb-4">JOINED HUBS</h3>
+                    {userHubs.length === 0 ? (
+                      <div className="py-8 text-center text-sm text-[#C8C7C7]">
+                        Not a member of any hubs yet.
+                      </div>
+                    ) : (
+                      <div className="hubs-grid">
+                        {userHubs.map((hub) => (
+                          <article key={hub.id} className="hub-card">
+                            <div className="hub-card-header">
+                              <div className="hub-icon-circle">
+                                {/* Controller icon */}
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                  <path d="M6 9H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3" />
-                                  <path d="M18 9h3a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-3" />
-                                  <path d="M6 4h12v6a6 6 0 0 1-12 0V4z" />
-                                  <line x1="12" y1="16" x2="12" y2="22" />
-                                  <line x1="8" y1="22" x2="16" y2="22" />
+                                  <rect x="2" y="6" width="20" height="12" rx="3" />
+                                  <path d="M6 12h4M8 10v4" />
+                                  <line x1="15" y1="12" x2="15.01" y2="12" />
+                                  <line x1="18" y1="10" x2="18.01" y2="10" />
                                 </svg>
-                              ) : (
-                                /* Users icon for Find Team */
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                                  <circle cx="9" cy="7" r="4" />
-                                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                                </svg>
-                              )}
+                              </div>
+                              <div className="hub-meta">
+                                <h3 className="hub-name">{hub.name}</h3>
+                                <span className="hub-members">{hub.memberCount} Members</span>
+                              </div>
                             </div>
-                            <div className="hub-meta">
-                              <h3 className="hub-name">{eco.name}</h3>
-                              <span className="hub-members">{eco.members}</span>
-                            </div>
-                          </div>
-                          <span className="hub-role-tag">{eco.role}</span>
-                        </article>
-                      ))}
-                    </div>
+                            <span className="hub-role-tag">{hub.role}</span>
+                          </article>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -1461,14 +1444,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                   {/* Experience */}
                   <div>
                     <h3 className="profile-about-section-label">Experience</h3>
-                    <div className="profile-exp-item">
-                      <h4 className="profile-exp-role">Lead Game Developer</h4>
-                      <span className="profile-exp-company-date">Arcavon Studios &bull; Jan 2024 - Present</span>
-                    </div>
-                    <div className="profile-exp-item">
-                      <h4 className="profile-exp-role">Indie Game Creator</h4>
-                      <span className="profile-exp-company-date">Self Employed &bull; 2020 - 2023</span>
-                    </div>
+                    <p className="font-inter text-sm text-[#C8C7C7] italic">No experience added yet</p>
                   </div>
 
                   {/* Social Links */}
@@ -1477,11 +1453,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                     {(() => {
                       const links = profileUser.socialLinks && Array.isArray(profileUser.socialLinks)
                         ? profileUser.socialLinks.slice(0, 8)
-                        : (isMockUser ? [
-                            { platform: "twitter", url: "https://x.com/arcavon_akshit" },
-                            { platform: "github", url: "https://github.com/arcavon_akshit" },
-                            { platform: "linkedin", url: "https://linkedin.com/in/arcavon_akshit" }
-                          ] : []);
+                        : [];
 
                       if (links.length === 0) {
                         return <p className="font-inter text-sm text-[#C8C7C7] italic">No social links added yet</p>;
@@ -1554,12 +1526,12 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <span>{usr.name.charAt(0).toUpperCase()}</span>
+                        <span>{usr.firstName.charAt(0).toUpperCase()}</span>
                       )}
                     </div>
                     <div className="modal-user-names">
-                      <span className="modal-user-name">{usr.name}</span>
-                      <span className="modal-user-handle">{usr.handle}</span>
+                      <span className="modal-user-name">{usr.firstName} {usr.lastName}</span>
+                      <span className="modal-user-handle">@{usr.username}</span>
                     </div>
                   </div>
                   <button

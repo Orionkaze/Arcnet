@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/auth";
 
 export async function GET(
   request: Request,
@@ -35,6 +36,14 @@ export async function GET(
         location: true,
         skills: true,
         socialLinks: true,
+        _count: {
+          select: {
+            posts: true,
+            followers: true,
+            following: true,
+            hubMembers: true,
+          }
+        }
       },
     });
 
@@ -42,7 +51,21 @@ export async function GET(
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ user }, { status: 200 });
+    let isFollowed = false;
+    const session = await getSession();
+    if (session && session.userId) {
+      const followRecord = await prisma.follow.findUnique({
+        where: {
+          followerId_followingId: {
+            followerId: session.userId as string,
+            followingId: user.id,
+          }
+        }
+      });
+      isFollowed = !!followRecord;
+    }
+
+    return NextResponse.json({ user, isFollowed }, { status: 200 });
   } catch (error) {
     console.error("Fetch User Profile Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
