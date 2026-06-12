@@ -144,6 +144,7 @@ export default function PostCard({
   const [animateShare, setAnimateShare] = useState(false);
   const [particles, setParticles] = useState<{ id: number; x: number; y: number; scale: number }[]>([]);
   const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [showLightbox, setShowLightbox] = useState(false);
 
   const showErrorToast = (msg: string) => {
     setErrorToast(msg);
@@ -484,12 +485,12 @@ export default function PostCard({
 
       {/* Optional image */}
       {imageUrl && (
-        <div className="post-image" style={{ position: "relative" }}>
+        <div className="post-image relative max-h-[500px] bg-[#10141A] rounded-lg overflow-hidden flex items-center justify-center cursor-pointer" onClick={() => setShowLightbox(true)}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={imageUrl}
             alt="Post Attachment"
-            className="w-full h-full object-cover rounded-lg"
+            className="max-w-full max-h-full object-contain rounded-lg"
           />
         </div>
       )}
@@ -880,6 +881,35 @@ export default function PostCard({
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Lightbox Modal */}
+      {showLightbox && imageUrl && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm animate-fade-in p-4"
+          onClick={() => setShowLightbox(false)}
+        >
+          <button 
+            className="absolute top-6 right-6 text-white hover:text-[#00EAFF] transition-colors p-2 bg-black/50 rounded-full"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowLightbox(false);
+            }}
+            aria-label="Close Lightbox"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={imageUrl}
+            alt="Enlarged Post Attachment"
+            className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
         </div>
       )}
     </article>
