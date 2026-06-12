@@ -108,6 +108,7 @@ export default function PostCard({ post }: { post: PostProps }) {
       {post.imageUrl && (
         <div className="w-full mt-2 rounded-2xl overflow-hidden border border-[#23262D]">
           {/* Note: In Next.js we use standard img or Image with proper sizing for placeholders */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={post.imageUrl} alt="Post media" className="w-full h-auto object-cover" />
         </div>
       )}

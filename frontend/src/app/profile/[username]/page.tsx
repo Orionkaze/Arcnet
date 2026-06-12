@@ -691,6 +691,15 @@ interface ProfileUser {
   location?: string | null;
   skills?: string | null;
   socialLinks?: { platform: string; url: string }[] | null;
+  experience?: {
+    id: string;
+    role: string;
+    company: string;
+    startDate: string;
+    endDate?: string | null;
+    current: boolean;
+    description?: string | null;
+  }[] | null;
   _count?: {
     posts: number;
     followers: number;
@@ -749,12 +758,17 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
   const [activeTab, setActiveTab] = useState<"posts" | "portfolio" | "hubs" | "about">("posts");
   const [isFollowed, setIsFollowed] = useState(false);
   const [modalOpen, setModalOpen] = useState<"followers" | "following" | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [followersList, setFollowersList] = useState<any[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [followingList, setFollowingList] = useState<any[]>([]);
   
   // Tab Content States
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [userPosts, setUserPosts] = useState<any[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [userPortfolio, setUserPortfolio] = useState<any[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [userHubs, setUserHubs] = useState<any[]>([]);
   const [isTabLoading, setIsTabLoading] = useState(false);
 
@@ -1040,10 +1054,6 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
   // Toggle follows inside modal
   const handleToggleModalFollow = async (userId: string, listType: "followers" | "following") => {
     try {
-      const isCurrentlyFollowing = listType === "followers" 
-        ? followersList.find(u => u.id === userId)?.isFollowing 
-        : followingList.find(u => u.id === userId)?.isFollowing;
-
       const endpoint = `/api/users/id/${userId}/follow`;
       
       const res = await fetch(endpoint, {

@@ -355,7 +355,7 @@ export default function Home() {
       <CreatePostModal
         isOpen={isCreatePostModalOpen}
         onClose={() => setIsCreatePostModalOpen(false)}
-        user={user as any}
+        user={user as unknown as React.ComponentProps<typeof CreatePostModal>["user"]}
         onSubmit={handleCreatePost}
       />
     </div>

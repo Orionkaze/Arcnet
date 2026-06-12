@@ -59,7 +59,7 @@ export async function GET(
     const session = await getSession();
     const currentUserId = session?.userId as string | undefined;
 
-    let followingIds = new Set<string>();
+    const followingIds = new Set<string>();
     if (currentUserId) {
       const follows = await prisma.follow.findMany({
         where: { followerId: currentUserId },

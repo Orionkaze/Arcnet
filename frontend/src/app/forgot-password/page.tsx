@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+
 import { ResponsiveAuthLayout } from "@/components/auth/ResponsiveAuthLayout";
 import { AuthInput, AuthButton } from "@/components/auth/AuthComponents";
 
@@ -52,7 +52,7 @@ export default function ForgotPasswordPage() {
         });
       }, 1000);
 
-    } catch (err) {
+    } catch {
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);

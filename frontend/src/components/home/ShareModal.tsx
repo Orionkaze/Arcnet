@@ -124,7 +124,7 @@ export default function ShareModal({ isOpen, onClose, postId, postContent }: Sha
         setTimeout(() => setCopiedText(null), 3000);
         setFollowedStatus((prev) => ({ ...prev, [userId]: isCurrentlyFollowing }));
       }
-    } catch (err) {
+    } catch {
       setCopiedText("Failed to follow creator");
       setTimeout(() => setCopiedText(null), 3000);
       setFollowedStatus((prev) => ({ ...prev, [userId]: isCurrentlyFollowing }));

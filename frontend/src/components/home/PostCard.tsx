@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
+
 import { useAuthStore } from "@/store/useAuthStore";
 import ShareModal from "./ShareModal";
 import Link from "next/link";
@@ -174,7 +174,7 @@ export default function PostCard({
       if (onInteraction) {
         onInteraction(id, { isLiked: data.isLiked, likesCount: data.likesCount });
       }
-    } catch (error) {
+    } catch {
       setLiked(oldLiked);
       setLikes(oldLikes);
       showErrorToast("Could not complete action. Please try again.");
@@ -206,7 +206,7 @@ export default function PostCard({
       if (onInteraction) {
         onInteraction(id, { isReposted: data.isReposted, repostsCount: data.repostsCount });
       }
-    } catch (error) {
+    } catch {
       setReposted(oldReposted);
       setReposts(oldReposts);
       showErrorToast("Could not complete action. Please try again.");
@@ -238,7 +238,7 @@ export default function PostCard({
       if (onInteraction) {
         onInteraction(id, { isBookmarked: data.isBookmarked, bookmarksCount: data.bookmarksCount });
       }
-    } catch (error) {
+    } catch {
       setBookmarked(oldBookmarked);
       setBookmarks(oldBookmarks);
       showErrorToast("Could not complete action. Please try again.");
@@ -264,7 +264,7 @@ export default function PostCard({
       if (onInteraction) {
         onInteraction(id, { isFollowing: data.following });
       }
-    } catch (error) {
+    } catch {
       setFollowing(oldFollowing);
       showErrorToast("Could not complete action. Please try again.");
     }
@@ -299,7 +299,7 @@ export default function PostCard({
       } else {
         showErrorToast("Failed to load comments.");
       }
-    } catch (error) {
+    } catch {
       showErrorToast("Failed to load comments.");
     } finally {
       setCommentsLoading(false);
@@ -351,7 +351,7 @@ export default function PostCard({
       if (onInteraction) {
         onInteraction(id, { commentsCount: commentsCountState + 1 });
       }
-    } catch (error) {
+    } catch {
       // Revert comments state
       setCommentsList((prev) => prev.filter((c) => c.id !== tempId));
       setCommentsCountState((prev) => prev - 1);

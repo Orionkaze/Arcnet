@@ -79,7 +79,7 @@ export default function FindTeamPage() {
           c.id === creatorId ? { ...c, isFollowing: data.following } : c
         )
       );
-    } catch (err) {
+    } catch {
       // Revert follow state
       setCreators((prev) =>
         prev.map((c) =>

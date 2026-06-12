@@ -1,0 +1,211 @@
+
+> frontend@0.1.0 lint
+> eslint
+
+
+/Users/Deepak/Desktop/ArcNet/frontend/clear_users.js
+  1:26  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  2:18  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  3:22  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+/Users/Deepak/Desktop/ArcNet/frontend/src/app/api/users/[username]/followers/route.ts
+  51:9  error  'currentUserFollowingIds' is never reassigned. Use 'const' instead  prefer-const
+
+/Users/Deepak/Desktop/ArcNet/frontend/src/app/api/users/[username]/following/route.ts
+  51:9  error  'currentUserFollowingIds' is never reassigned. Use 'const' instead  prefer-const
+
+/Users/Deepak/Desktop/ArcNet/frontend/src/app/api/users/[username]/posts/route.ts
+  62:9  error  'followingIds' is never reassigned. Use 'const' instead  prefer-const
+
+/Users/Deepak/Desktop/ArcNet/frontend/src/app/ecosystem/find-team/page.tsx
+  82:14  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/Deepak/Desktop/ArcNet/frontend/src/app/forgot-password/page.tsx
+   4:8   warning  'Link' is defined but never used  @typescript-eslint/no-unused-vars
+  55:14  warning  'err' is defined but never used   @typescript-eslint/no-unused-vars
+
+/Users/Deepak/Desktop/ArcNet/frontend/src/app/page.tsx
+  358:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/Deepak/Desktop/ArcNet/frontend/src/app/profile/[username]/page.tsx
+   761:54  error    Unexpected any. Specify a different type                   @typescript-eslint/no-explicit-any
+   762:54  error    Unexpected any. Specify a different type                   @typescript-eslint/no-explicit-any
+   765:46  error    Unexpected any. Specify a different type                   @typescript-eslint/no-explicit-any
+   766:54  error    Unexpected any. Specify a different type                   @typescript-eslint/no-explicit-any
+   767:44  error    Unexpected any. Specify a different type                   @typescript-eslint/no-explicit-any
+  1052:13  warning  'isCurrentlyFollowing' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/Deepak/Desktop/ArcNet/frontend/src/components/feed/PostActionBar.tsx
+  122:12  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+/Users/Deepak/Desktop/ArcNet/frontend/src/components/feed/PostActionBar.tsx:122:12
+  120 |       <div className="flex items-center gap-6">
+  121 |         <button onClick={toggleLike} className="flex items-center gap-2 hover:opacity-75 transition-opacity group">
+> 122 |           <LikeIcon />
+      |            ^^^^^^^^ This component is created during render
+  123 |           <span className={`text-sm ${isLiked ? 'text-[#00D2FF]' : 'text-gray-400 group-hover:text-gray-300'}`}>{likesCount > 0 ? likesCount : ""}</span>
+  124 |         </button>
+  125 |
+
+/Users/Deepak/Desktop/ArcNet/frontend/src/components/feed/PostActionBar.tsx:88:20
+  86 |
+  87 |   // SVGs for the icons
+> 88 |   const LikeIcon = () => (
+     |                    ^^^^^^^
+> 89 |     <svg className={`w-5 h-5 ${isLiked ? 'fill-[#00D2FF] text-[#00D2FF]' : 'fill-none text-gray-400'}`} stroke="currentColor" viewBox="0:0 24 24" strokeWidth="1.5">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 90 |       <path strokeLinecap="round" strokeLinejoin="round" d="M14:10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 91 |     </svg>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 92 |   );
+     | ^^^^ The component is created during render here
+  93 |
+  94 |   const CommentIcon = () => (
+  95 |     <svg className="w-5 h-5 fill-none text-gray-400" stroke="currentColor" viewBox="0:0 24 24" strokeWidth="1.5">  react-hooks/static-components
+  127:12  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+/Users/Deepak/Desktop/ArcNet/frontend/src/components/feed/PostActionBar.tsx:127:12
+  125 |
+  126 |         <button onClick={onToggleComments} className="flex items-center gap-2 hover:opacity-75 transition-opacity group">
+> 127 |           <CommentIcon />
+      |            ^^^^^^^^^^^ This component is created during render
+  128 |           <span className="text-sm text-gray-400 group-hover:text-gray-300">{post.commentsCount > 0 ? post.commentsCount : ""}</span>
+  129 |         </button>
+  130 |
+
+/Users/Deepak/Desktop/ArcNet/frontend/src/components/feed/PostActionBar.tsx:94:23
+   92 |   );
+   93 |
+>  94 |   const CommentIcon = () => (
+      |                       ^^^^^^^
+>  95 |     <svg className="w-5 h-5 fill-none text-gray-400" stroke="currentColor" viewBox="0:0 24 24" strokeWidth="1.5">
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  96 |       <path strokeLinecap="round" strokeLinejoin="round" d="M8:12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  97 |     </svg>
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  98 |   );
+      | ^^^^ The component is created during render here
+   99 |
+  100 |   const ShareIcon = () => (
+  101 |     <svg className="w-5 h-5 fill-none text-gray-400" stroke="currentColor" viewBox="0:0 24 24" strokeWidth="1.5">                                                                                                                                                                                                                                                                                                                                             react-hooks/static-components
+  132:12  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+/Users/Deepak/Desktop/ArcNet/frontend/src/components/feed/PostActionBar.tsx:132:12
+  130 |
+  131 |         <button onClick={handleShare} className="flex items-center gap-2 hover:opacity-75 transition-opacity group">
+> 132 |           <ShareIcon />
+      |            ^^^^^^^^^ This component is created during render
+  133 |         </button>
+  134 |
+  135 |         <button onClick={toggleRepost} className="flex items-center gap-2 hover:opacity-75 transition-opacity group">
+
+/Users/Deepak/Desktop/ArcNet/frontend/src/components/feed/PostActionBar.tsx:100:21
+   98 |   );
+   99 |
+> 100 |   const ShareIcon = () => (
+      |                     ^^^^^^^
+> 101 |     <svg className="w-5 h-5 fill-none text-gray-400" stroke="currentColor" viewBox="0:0 24 24" strokeWidth="1.5">
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 102 |       <path strokeLinecap="round" strokeLinejoin="round" d="M12:19l9 2-9-18-9 18 9-2zm0 0v-8" />
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 103 |     </svg>
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 104 |   );
+      | ^^^^ The component is created during render here
+  105 |
+  106 |   const RepostIcon = () => (
+  107 |     <svg className={`w-5 h-5 ${isReposted ? 'text-[#00D2FF]' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0:0 24 24" strokeWidth="1.5">                                                                                                                                                                                                                                                                                                                                                                                                                                                            react-hooks/static-components
+  136:12  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+/Users/Deepak/Desktop/ArcNet/frontend/src/components/feed/PostActionBar.tsx:136:12
+  134 |
+  135 |         <button onClick={toggleRepost} className="flex items-center gap-2 hover:opacity-75 transition-opacity group">
+> 136 |           <RepostIcon />
+      |            ^^^^^^^^^^ This component is created during render
+  137 |           <span className={`text-sm ${isReposted ? 'text-[#00D2FF]' : 'text-gray-400 group-hover:text-gray-300'}`}>{repostsCount > 0 ? repostsCount : ""}</span>
+  138 |         </button>
+  139 |       </div>
+
+/Users/Deepak/Desktop/ArcNet/frontend/src/components/feed/PostActionBar.tsx:106:22
+  104 |   );
+  105 |
+> 106 |   const RepostIcon = () => (
+      |                      ^^^^^^^
+> 107 |     <svg className={`w-5 h-5 ${isReposted ? 'text-[#00D2FF]' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0:0 24 24" strokeWidth="1.5">
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 108 |       <path strokeLinecap="round" strokeLinejoin="round" d="M4:4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 109 |     </svg>
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 110 |   );
+      | ^^^^ The component is created during render here
+  111 |
+  112 |   const BookmarkIcon = () => (
+  113 |     <svg className={`w-5 h-5 ${isBookmarked ? 'fill-gray-300 text-gray-300' : 'fill-none text-gray-400'}`} stroke="currentColor" viewBox="0:0 24 24" strokeWidth="1.5">                                                                                                                                 react-hooks/static-components
+  142:10  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+/Users/Deepak/Desktop/ArcNet/frontend/src/components/feed/PostActionBar.tsx:142:10
+  140 |
+  141 |       <button onClick={toggleBookmark} className="hover:opacity-75 transition-opacity">
+> 142 |         <BookmarkIcon />
+      |          ^^^^^^^^^^^^ This component is created during render
+  143 |       </button>
+  144 |     </div>
+  145 |   );
+
+/Users/Deepak/Desktop/ArcNet/frontend/src/components/feed/PostActionBar.tsx:112:24
+  110 |   );
+  111 |
+> 112 |   const BookmarkIcon = () => (
+      |                        ^^^^^^^
+> 113 |     <svg className={`w-5 h-5 ${isBookmarked ? 'fill-gray-300 text-gray-300' : 'fill-none text-gray-400'}`} stroke="currentColor" viewBox="0:0 24 24" strokeWidth="1.5">
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 114 |       <path strokeLinecap="round" strokeLinejoin="round" d="M5:5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 115 |     </svg>
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 116 |   );
+      | ^^^^ The component is created during render here
+  117 |
+  118 |   return (
+  119 |     <div className="flex items-center justify-between mt-2">                                                                                                                                                                                                                                                                                                                                                                                                                                                                react-hooks/static-components
+
+/Users/Deepak/Desktop/ArcNet/frontend/src/components/feed/PostCard.tsx
+  111:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/Deepak/Desktop/ArcNet/frontend/src/components/home/PostCard.tsx
+    4:8   warning  'Image' is defined but never used  @typescript-eslint/no-unused-vars
+  177:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  209:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  241:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  267:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  302:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  354:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/Deepak/Desktop/ArcNet/frontend/src/components/home/ShareModal.tsx
+  127:14  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/Deepak/Desktop/ArcNet/frontend/src/components/latest/NewsCard.tsx
+  2:8  warning  'Image' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/Deepak/Desktop/ArcNet/frontend/src/store/useAuthStore.ts
+  67:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/Deepak/Desktop/ArcNet/frontend/test.js
+  1:26  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+✖ 33 problems (18 errors, 15 warnings)
+  3 errors and 0 warnings potentially fixable with the `--fix` option.
+
