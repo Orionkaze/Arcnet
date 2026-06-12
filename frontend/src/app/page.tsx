@@ -120,8 +120,13 @@ export default function Home() {
       isBookmarked?: boolean;
       isFollowing?: boolean;
       commentsCount?: number;
+      isDeleted?: boolean;
     }
   ) => {
+    if (updatedFields.isDeleted) {
+      setPosts((prev) => prev.filter((post) => post.id !== postId));
+      return;
+    }
     setPosts((prev) =>
       prev.map((post) =>
         post.id === postId ? { ...post, ...updatedFields } : post

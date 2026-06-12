@@ -54,6 +54,7 @@ interface PostCardProps {
     bookmarksCount?: number;
     isFollowing?: boolean;
     commentsCount?: number;
+    isDeleted?: boolean;
   }) => void;
 }
 
@@ -111,6 +112,29 @@ export default function PostCard({
   const [commentsCountState, setCommentsCountState] = useState(commentsCount);
 
   const [errorToast, setErrorToast] = useState<string | null>(null);
+  const [showMenu, setShowMenu] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeletePost = () => {
+    setShowMenu(false);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`/api/posts/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed to delete");
+      if (onInteraction) {
+        onInteraction(id, { isDeleted: true });
+      }
+    } catch {
+      showErrorToast("Failed to delete post");
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
 
   // Animation states
   const [animateLike, setAnimateLike] = useState(false);
@@ -426,6 +450,32 @@ export default function PostCard({
           >
             {following ? "Following" : "+ Follow"}
           </button>
+        )}
+
+        {isOwnPost && (
+          <div className="relative ml-auto">
+            <button
+              onClick={() => setShowMenu(!showMenu)}
+              className="text-[#8E95A3] hover:text-[#00EAFF] transition-colors p-1"
+              aria-label="Post Options"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="1" />
+                <circle cx="12" cy="5" r="1" />
+                <circle cx="12" cy="19" r="1" />
+              </svg>
+            </button>
+            {showMenu && (
+              <div className="absolute right-0 mt-2 w-36 bg-[#10141A] border border-[#2A313C] rounded-lg shadow-lg overflow-hidden z-50 animate-fade-in">
+                <button
+                  onClick={handleDeletePost}
+                  className="w-full text-left px-4 py-2 text-sm font-inter text-[#FF3366] hover:bg-[#1A202A] transition-colors"
+                >
+                  Delete Post
+                </button>
+              </div>
+            )}
+          </div>
         )}
       </div>
 
@@ -794,6 +844,44 @@ export default function PostCard({
           animation: slideDownIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
       `}</style>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm animate-fade-in">
+          <div className="bg-[#10141A] border border-[#2A313C] p-6 rounded-lg shadow-2xl max-w-sm w-full mx-4">
+            <h3 className="text-xl font-chakra font-bold text-[#E0E0E0] mb-3">Delete Post</h3>
+            <p className="text-[#8E95A3] text-sm font-inter mb-6">
+              Are you sure you want to delete this post? This action cannot be undone.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={isDeleting}
+                className="px-4 py-2 rounded font-inter font-medium text-sm text-[#E0E0E0] bg-[#1c2331] hover:bg-[#2A313C] transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                disabled={isDeleting}
+                className="px-4 py-2 rounded font-inter font-medium text-sm text-white bg-[#FF3366] hover:bg-[#FF1A53] transition-colors disabled:opacity-50 flex items-center gap-2"
+              >
+                {isDeleting ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Deleting...
+                  </>
+                ) : (
+                  "Delete"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </article>
   );
 }

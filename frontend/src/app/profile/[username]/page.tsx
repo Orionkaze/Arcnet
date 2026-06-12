@@ -1094,6 +1094,43 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
     }
   };
 
+  const handlePostInteraction = (
+    postId: string,
+    updatedFields: {
+      isLiked?: boolean;
+      likesCount?: number;
+      isReposted?: boolean;
+      repostsCount?: number;
+      isBookmarked?: boolean;
+      isFollowing?: boolean;
+      commentsCount?: number;
+      isDeleted?: boolean;
+    }
+  ) => {
+    if (updatedFields.isDeleted) {
+      setUserPosts((prev) => prev.filter((post) => post.id !== postId));
+      // Optionally decrement posts count if it's the own profile
+      if (isOwnProfile && profileUser) {
+        setProfileUser((prev) => prev ? {
+          ...prev,
+          _count: {
+            ...prev._count,
+            posts: Math.max(0, (prev._count?.posts || 0) - 1),
+            followers: prev._count?.followers || 0,
+            following: prev._count?.following || 0,
+            hubMembers: prev._count?.hubMembers || 0,
+          }
+        } : null);
+      }
+      return;
+    }
+    setUserPosts((prev) =>
+      prev.map((post) =>
+        post.id === postId ? { ...post, ...updatedFields } : post
+      )
+    );
+  };
+
   return (
     <div className="profile-layout">
       {/* Top Navbar */}
@@ -1347,6 +1384,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                         <PostCard 
                           key={formattedPost.id} 
                           {...formattedPost} 
+                          onInteraction={handlePostInteraction}
                         />
                       );
                     })
