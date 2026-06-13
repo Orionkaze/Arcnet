@@ -168,12 +168,32 @@ export default function LeftSidebar() {
             <span>AI Match</span>
           </Link>
         </div>
+
+        {/* Bottom: Private Hub */}
+        <div className="sidebar-bottom" style={{ width: '100%' }}>
+          <div style={{ height: '1px', backgroundColor: '#6B7280', width: '100%', marginBottom: '16px' }} />
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ 
+              fontFamily: 'var(--font-verdana), sans-serif', 
+              fontSize: '13px', 
+              color: '#C8C7C7'
+            }}>
+              Private Hub
+            </span>
+            <button className="private-hub-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 8v8M8 12h8" />
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Bottom: Private Hub */}
+      {/* Bottom: Private Hub
       <div className="sidebar-bottom">
         <button className="private-hub-btn">PRIVATE HUB +</button>
-      </div>
+      </div> */}
     </aside>
   );
 }
