@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import gameDevLogo from "./LeftSideBarLogos/GameDeveloperHub.png";
 import gameTesterLogo from "./LeftSideBarLogos/GameTesterHub.png";
-// import 2D3DArtistLogo from "./LeftSideBarLogos/2D3DArtistHub.png";
+import Artist from "./LeftSideBarLogos/Artists.png";
 import AnimatorLogo from "./LeftSideBarLogos/Animators.png";
 import StoryWriterLogo from "./LeftSideBarLogos/StoryWriterHub.png";
 import GameJam from "./LeftSideBarLogos/GameJam.png";
@@ -59,12 +59,13 @@ export default function LeftSidebar() {
             className={`sidebar-item ${isActive("/hub/2d-3d-artists") ? "active" : ""}`}
           >
             {/* Palette icon */}
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {/* <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 2a10 10 0 00-1 19.95c.6.05 1-.4 1-1v-1.67a1 1 0 00-1.06-1C7.56 18 6 16.5 6 14c0-1.5.8-3 2-4s1.5-2.5 1.5-4a4.5 4.5 0 019 0c0 1.5-.5 3 1.5 4s2 2.5 2 4c0 2.5-1.56 4-4.94 4.28a1 1 0 00-1.06 1V21c0 .6.4 1.05 1 1A10 10 0 0012 2z" />
               <circle cx="8" cy="10" r="1.5" fill="currentColor" />
               <circle cx="12" cy="7" r="1.5" fill="currentColor" />
               <circle cx="16" cy="10" r="1.5" fill="currentColor" />
-            </svg>
+            </svg>  */}
+            <img src={Artist.src} alt="2D/3D Artist Hub" style={{width: '20px', height: '20px'}} />
             <span>2D / 3D Artists</span>
           </Link>
 
