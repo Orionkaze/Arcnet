@@ -3,6 +3,11 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import gameDevLogo from "./LeftSideBarLogos/GameDeveloperHub.png";
+import gameTesterLogo from "./LeftSideBarLogos/GameTesterHub.png";
+// import 2D3DArtistLogo from "./LeftSideBarLogos/2D3DArtistHub.png";
+// import AnimatorLogo from "./LeftSideBarLogos/AnimatorHub.png";
+import StoryWriterLogo from "./LeftSideBarLogos/StoryWriterHub.png";
 
 export default function LeftSidebar() {
   const pathname = usePathname();
@@ -34,12 +39,13 @@ export default function LeftSidebar() {
             className={`sidebar-item ${isActive("/hub/game-developers") ? "active" : ""}`}
           >
             {/* Controller icon */}
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {/* <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="2" y="6" width="20" height="12" rx="3" />
               <path d="M6 12h4M8 10v4" />
               <circle cx="17" cy="10" r="1" fill="currentColor" />
               <circle cx="15" cy="13" r="1" fill="currentColor" />
-            </svg>
+            </svg> */}
+            <img src={gameDevLogo.src} alt="Game Developer Hub" style={{width: '20px', height: '20px'}} />
             <span>Game Developers</span>
           </Link>
 
@@ -73,10 +79,11 @@ export default function LeftSidebar() {
             className={`sidebar-item ${isActive("/hub/storywriters") ? "active" : ""}`}
           >
             {/* Pen icon */}
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {/* <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 20h9" />
               <path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
-            </svg>
+            </svg> */}
+            <img src={StoryWriterLogo.src} alt="Story Writer Hub" style={{width: '20px', height: '20px'}} />
             <span>Storywriters</span>
           </Link>
 
@@ -85,11 +92,12 @@ export default function LeftSidebar() {
             className={`sidebar-item ${isActive("/hub/game-testers") ? "active" : ""}`}
           >
             {/* Bug icon */}
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {/* <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="8" y="6" width="8" height="14" rx="4" />
               <path d="M6 10H2M22 10h-4M6 18H2M22 18h-4M8 6l-2-4M16 6l2-4" />
               <line x1="12" y1="6" x2="12" y2="2" />
-            </svg>
+            </svg> */}
+            <img src={gameTesterLogo.src} alt="Game Tester Hub" style={{width: '20px', height: '20px'}} />
             <span>Game Testers</span>
           </Link>
         </div>
