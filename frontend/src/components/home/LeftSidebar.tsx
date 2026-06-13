@@ -6,8 +6,13 @@ import { usePathname } from "next/navigation";
 import gameDevLogo from "./LeftSideBarLogos/GameDeveloperHub.png";
 import gameTesterLogo from "./LeftSideBarLogos/GameTesterHub.png";
 // import 2D3DArtistLogo from "./LeftSideBarLogos/2D3DArtistHub.png";
-// import AnimatorLogo from "./LeftSideBarLogos/AnimatorHub.png";
+import AnimatorLogo from "./LeftSideBarLogos/Animators.png";
 import StoryWriterLogo from "./LeftSideBarLogos/StoryWriterHub.png";
+import GameJam from "./LeftSideBarLogos/GameJam.png";
+import FindTeam from "./LeftSideBarLogos/FindTeam.png";
+import Mentors from "./LeftSideBarLogos/Mentor.png";
+import Jobs from "./LeftSideBarLogos/Jobs.png";
+import AIMatch from "./LeftSideBarLogos/AI-Match.png";
 
 export default function LeftSidebar() {
   const pathname = usePathname();
@@ -68,9 +73,10 @@ export default function LeftSidebar() {
             className={`sidebar-item ${isActive("/hub/animators") ? "active" : ""}`}
           >
             {/* Play icon */}
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {/* <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polygon points="5,3 19,12 5,21 5,3" />
-            </svg>
+            </svg> */}
+            <img src={AnimatorLogo.src} alt="Animator Hub" style={{width: '20px', height: '20px'}} />
             <span>Animators</span>
           </Link>
 
@@ -114,14 +120,15 @@ export default function LeftSidebar() {
             className={`sidebar-item ${isActive("/ecosystem/game-jams") ? "active" : ""}`}
           >
             {/* Trophy icon */}
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {/* <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M6 9H3a1 1 0 01-1-1V5a1 1 0 011-1h3" />
               <path d="M18 9h3a1 1 0 001-1V5a1 1 0 00-1-1h-3" />
               <path d="M6 4h12v6a6 6 0 01-12 0V4z" />
               <path d="M12 16v2" />
               <path d="M8 22h8" />
               <path d="M8 22v-4M16 22v-4" />
-            </svg>
+            </svg> */}
+            <img src={GameJam.src} alt="Game Jam" style={{width: '20px', height: '20px'}} />
             <span>Game Jams</span>
           </Link>
 
@@ -130,12 +137,13 @@ export default function LeftSidebar() {
             className={`sidebar-item ${isActive("/ecosystem/find-team") ? "active" : ""}`}
           >
             {/* People icon */}
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {/* <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
               <circle cx="9" cy="7" r="4" />
               <path d="M23 21v-2a4 4 0 00-3-3.87" />
               <path d="M16 3.13a4 4 0 010 7.75" />
-            </svg>
+            </svg> */}
+            <img src={FindTeam.src} alt="Find Team" style={{width: '20px', height: '20px'}} />
             <span>Find Team</span>
           </Link>
 
@@ -144,11 +152,12 @@ export default function LeftSidebar() {
             className={`sidebar-item ${isActive("/ecosystem/mentors") ? "active" : ""}`}
           >
             {/* Graduation cap icon */}
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {/* <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polygon points="12,2 2,7 12,12 22,7" />
               <path d="M2 7v6c0 3 4.5 6 10 6s10-3 10-6V7" />
               <path d="M22 7v8" />
-            </svg>
+            </svg> */}
+            <img src={Mentors.src} alt="Mentors" style={{width: '20px', height: '20px'}} />
             <span>Mentors</span>
           </Link>
 
@@ -157,11 +166,12 @@ export default function LeftSidebar() {
             className={`sidebar-item ${isActive("/ecosystem/jobs") ? "active" : ""}`}
           >
             {/* Briefcase icon */}
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {/* <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="2" y="7" width="20" height="14" rx="2" />
               <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" />
               <path d="M2 12h20" />
-            </svg>
+            </svg> */}
+            <img src={Jobs.src} alt="Jobs" style={{width: '20px', height: '20px'}} />
             <span>Jobs</span>
           </Link>
 
@@ -170,9 +180,10 @@ export default function LeftSidebar() {
             className={`sidebar-item ${isActive("/ecosystem/ai-match") ? "active" : ""}`}
           >
             {/* Spark / AI icon */}
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {/* <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 2l2 7h7l-5.5 4 2 7L12 16l-5.5 4 2-7L3 9h7l2-7z" />
-            </svg>
+            </svg> */}
+            <img src={AIMatch.src} alt="AI Match" style={{width: '20px', height: '20px'}} />
             <span>AI Match</span>
           </Link>
         </div>
