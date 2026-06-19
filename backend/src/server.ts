@@ -2,6 +2,7 @@ import express from "express";
 import http from "http";
 import { Server } from "socket.io";
 import dotenv from "dotenv";
+import { createClient } from "redis";
 
 dotenv.config();
 
@@ -20,10 +21,95 @@ app.get("/health", (req, res) => {
   res.status(200).json({ status: "Backend is running!" });
 });
 
+// Redis setup for Pub/Sub
+const redisClient = createClient({ url: process.env.REDIS_URL || "redis://localhost:6379" });
+
+redisClient.on("error", (err) => console.log("Redis Client Error", err));
+
+async function startRedis() {
+  await redisClient.connect();
+  
+  // Subscribe to channel
+  await redisClient.subscribe("chat_messages", (messageStr) => {
+    try {
+      const data = JSON.parse(messageStr);
+      if (data.channelId && data.message) {
+        io.to(data.channelId).emit("new_message", data.message);
+      }
+    } catch(err) {
+      console.error("Error parsing redis message", err);
+    }
+  });
+}
+startRedis();
+
+// Socket state tracking
+const userSockets = new Map<string, string>(); // socketId -> userId
+const hubUsers = new Map<string, Set<string>>(); // hubId -> Set<userId>
+
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
+
+  // When a user identifies themselves
+  socket.on("identify", ({ userId }) => {
+    userSockets.set(socket.id, userId);
+  });
   
+  // Join a specific chat channel to receive messages
+  socket.on("join_channel", (channelId) => {
+    socket.join(channelId);
+  });
+
+  socket.on("leave_channel", (channelId) => {
+    socket.leave(channelId);
+  });
+
+  // Join a hub to receive and broadcast online status
+  socket.on("join_hub", (hubId) => {
+    socket.join(`hub_${hubId}`);
+    const userId = userSockets.get(socket.id);
+    if (userId) {
+      if (!hubUsers.has(hubId)) {
+        hubUsers.set(hubId, new Set());
+      }
+      hubUsers.get(hubId)!.add(userId);
+      // Broadcast online status to others in the hub
+      io.to(`hub_${hubId}`).emit("user_online", userId);
+      // Send the current list of online users to the joining user
+      socket.emit("online_users", Array.from(hubUsers.get(hubId)!));
+    }
+  });
+
+  socket.on("leave_hub", (hubId) => {
+    socket.leave(`hub_${hubId}`);
+    const userId = userSockets.get(socket.id);
+    if (userId && hubUsers.has(hubId)) {
+      hubUsers.get(hubId)!.delete(userId);
+      io.to(`hub_${hubId}`).emit("user_offline", userId);
+    }
+  });
+
+  // Typing indicators
+  socket.on("typing", ({ channelId, userId, username }) => {
+    socket.to(channelId).emit("user_typing", { userId, username });
+  });
+
+  socket.on("stop_typing", ({ channelId, userId }) => {
+    socket.to(channelId).emit("user_stop_typing", { userId });
+  });
+
   socket.on("disconnect", () => {
+    const userId = userSockets.get(socket.id);
+    if (userId) {
+      // Remove user from all hubs they were in
+      hubUsers.forEach((users, hubId) => {
+        if (users.has(userId)) {
+          users.delete(userId);
+          io.to(`hub_${hubId}`).emit("user_offline", userId);
+        }
+      });
+      userSockets.delete(socket.id);
+    }
     console.log("User disconnected:", socket.id);
   });
 });

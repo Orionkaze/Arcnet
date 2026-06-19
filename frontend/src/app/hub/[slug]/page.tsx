@@ -7,6 +7,7 @@ import Navbar from "@/components/home/Navbar";
 import PostCard from "@/components/home/PostCard";
 import PostSkeleton from "@/components/home/PostSkeleton";
 import { useAuthStore } from "@/store/useAuthStore";
+import { io, Socket } from "socket.io-client";
 import "../../home.css";
 
 interface Channel {
@@ -218,9 +219,11 @@ export default function HubPage() {
   // Emoji picker states
   const [showEmojiPickerForId, setShowEmojiPickerForId] = useState<string | null>(null);
 
-  // Scroll references
+  // Scroll and typing references
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
+  const socketRef = useRef<Socket | null>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const emojiList = ["👍", "❤️", "🔥", "🚀", "😂", "👏", "😮", "🎉"];
 
@@ -284,47 +287,92 @@ export default function HubPage() {
     fetchChannelMessages();
   }, [selectedChannel]);
 
-  // 3. Poll for messages in active channel every 3 seconds
+  // 3. Socket.io Connection & Presence
   useEffect(() => {
-    if (!selectedChannel || viewMode !== "chat") return;
+    if (!user) return;
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5001";
+    const socket = io(backendUrl);
+    socketRef.current = socket;
 
-    const interval = setInterval(async () => {
-      try {
-        const res = await fetch(`/api/channels/${selectedChannel.id}/messages`);
-        if (res.ok) {
-          const data = await res.json();
-          const newMsgs: Message[] = data.messages || [];
-
-          // Compare lengths or ids to see if we should scroll to bottom
-          setMessages((prev) => {
-            const hasNew = newMsgs.length > prev.length || (newMsgs.length > 0 && prev.length > 0 && newMsgs[newMsgs.length - 1].id !== prev[prev.length - 1].id);
-            if (hasNew) {
-              // Scroll to bottom if user was already at bottom or if it is our message
-              if (isScrolledToBottom) {
-                setTimeout(() => {
-                  messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-                }, 50);
-              }
-              // Simulating random typing indicator on new incoming message to make it lively
-              const otherAuthors = newMsgs
-                .filter((m) => m.authorId !== user?.id)
-                .map((m) => m.author.firstName);
-              if (otherAuthors.length > 0 && Math.random() > 0.4) {
-                const randomAuthor = otherAuthors[Math.floor(Math.random() * otherAuthors.length)];
-                setTypingUsers([randomAuthor]);
-                setTimeout(() => setTypingUsers([]), 2500);
-              }
-            }
-            return newMsgs;
-          });
-        }
-      } catch (err) {
-        console.warn("Polling error:", err);
+    socket.on("connect", () => {
+      socket.emit("identify", { userId: user.id });
+      if (hub) {
+        socket.emit("join_hub", hub.id);
       }
-    }, 3000);
+    });
 
-    return () => clearInterval(interval);
-  }, [selectedChannel, viewMode, isScrolledToBottom, user]);
+    socket.on("online_users", (userIds: string[]) => {
+      setMembers((prev) =>
+        prev.map((m) =>
+          userIds.includes(m.user.id) ? { ...m, user: { ...m.user, isOnline: true } } : m
+        )
+      );
+    });
+
+    socket.on("user_online", (userId: string) => {
+      setMembers((prev) =>
+        prev.map((m) => (m.user.id === userId ? { ...m, user: { ...m.user, isOnline: true } } : m))
+      );
+    });
+
+    socket.on("user_offline", (userId: string) => {
+      setMembers((prev) =>
+        prev.map((m) => (m.user.id === userId ? { ...m, user: { ...m.user, isOnline: false } } : m))
+      );
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [user, hub]);
+
+  // 4. Socket.io Channel Subscription & Real-time Messages
+  useEffect(() => {
+    if (!selectedChannel || !socketRef.current) return;
+
+    const socket = socketRef.current;
+    socket.emit("join_channel", selectedChannel.id);
+
+    const handleNewMessage = (newMsg: Message) => {
+      setMessages((prev) => {
+        // Prevent duplicate appending if we optimistically added it
+        if (prev.some((m) => m.id === newMsg.id)) return prev;
+        
+        // Auto scroll to bottom if already scrolled to bottom
+        setTimeout(() => {
+          if (isScrolledToBottom) {
+            messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+          }
+        }, 50);
+        
+        return [...prev, newMsg];
+      });
+    };
+
+    socket.on("new_message", handleNewMessage);
+
+    // Typing indicators (Private only)
+    const handleTyping = ({ username }: { userId: string, username: string }) => {
+      setTypingUsers((prev) => {
+        if (!prev.includes(username)) return [...prev, username];
+        return prev;
+      });
+    };
+
+    const handleStopTyping = ({ username }: { userId: string, username: string }) => {
+      setTypingUsers((prev) => prev.filter((name) => name !== username));
+    };
+
+    socket.on("user_typing", handleTyping);
+    socket.on("user_stop_typing", handleStopTyping);
+
+    return () => {
+      socket.emit("leave_channel", selectedChannel.id);
+      socket.off("new_message", handleNewMessage);
+      socket.off("user_typing", handleTyping);
+      socket.off("user_stop_typing", handleStopTyping);
+    };
+  }, [selectedChannel, isScrolledToBottom]);
 
   // 4. Fetch community feed posts when tab is changed to feed
   useEffect(() => {
@@ -407,6 +455,21 @@ export default function HubPage() {
       console.warn(err);
     } finally {
       setJoining(false);
+    }
+  };
+
+  // When message text changes
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setMessageText(e.target.value);
+    
+    // Only emit typing for Private Hubs as requested
+    if (hub?.isPrivate && socketRef.current && selectedChannel && user) {
+      socketRef.current.emit("typing", { channelId: selectedChannel.id, userId: user.id, username: user.firstName });
+      
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = setTimeout(() => {
+        socketRef.current?.emit("stop_typing", { channelId: selectedChannel.id, userId: user.id, username: user.firstName });
+      }, 1500);
     }
   };
 
@@ -1051,16 +1114,25 @@ export default function HubPage() {
                 )}
 
                 {/* Chat Form Area */}
-                <div className="p-4 border-t border-[#2A313C] bg-[#10141A] flex-shrink-0">
+                <div className="p-4 border-t border-[#2A313C] bg-[#10141A] flex-shrink-0 relative">
+                  {/* Typing Indicator */}
+                  {typingUsers.length > 0 && (
+                    <div className="absolute -top-6 left-4 text-[10px] font-chakra text-[#00EAFF] italic tracking-widest flex items-center gap-1 animate-pulse select-none">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#00EAFF] inline-block animate-bounce" style={{ animationDelay: "0ms" }} />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#00EAFF] inline-block animate-bounce" style={{ animationDelay: "150ms" }} />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#00EAFF] inline-block animate-bounce" style={{ animationDelay: "300ms" }} />
+                      <span className="ml-1">
+                        {typingUsers.join(", ")} {typingUsers.length === 1 ? "is typing..." : "are typing..."}
+                      </span>
+                    </div>
+                  )}
                   {hub.joined ? (
                     <form onSubmit={handleSendMessage} className="flex gap-2 items-center">
                       <div className="flex-grow bg-[#161c24] border border-[#2A313C] rounded-lg px-3 py-2 flex flex-col">
                         <textarea
                           placeholder={`Message #${selectedChannel?.name || "channel"}`}
                           value={messageText}
-                          onChange={(e) => {
-                            setMessageText(e.target.value);
-                          }}
+                          onChange={handleTextChange}
                           onKeyDown={(e) => {
                             if (e.key === "Enter" && !e.shiftKey) {
                               e.preventDefault();

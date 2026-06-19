@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { checkRateLimit } from "@/lib/rateLimit";
+import { createClient } from "redis";
 
 export async function GET(
   request: Request,
@@ -205,6 +206,21 @@ export async function POST(
         },
       },
     });
+
+    // Publish to Redis
+    try {
+      const redisClient = createClient({ url: process.env.REDIS_URL || "redis://localhost:6379" });
+      redisClient.on("error", (err: unknown) => console.error("Redis error:", err));
+      await redisClient.connect();
+      await redisClient.publish("chat_messages", JSON.stringify({
+        channelId,
+        message
+      }));
+      await redisClient.quit();
+    } catch (redisErr) {
+      console.error("Failed to publish to redis", redisErr);
+      // We don't fail the request if redis publish fails, as it's already in the DB.
+    }
 
     return NextResponse.json({ message }, { status: 201 });
   } catch (error) {
