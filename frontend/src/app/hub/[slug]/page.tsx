@@ -86,6 +86,8 @@ interface HubData {
   memberCount: number;
   onlineCount: number;
   isPrivate?: boolean;
+  joinCode?: string | null;
+  allowMembersToInvite?: boolean;
   channels: Channel[];
   joined: boolean;
   userRole: string | null;
@@ -177,6 +179,12 @@ export default function HubPage() {
   const [joinRequests, setJoinRequests] = useState<HubJoinRequest[]>([]);
   const [requestsLoading, setRequestsLoading] = useState(false);
 
+  // Hub Details & Group Settings
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [updatingSettings, setUpdatingSettings] = useState(false);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+
   // Fetch join requests when manage modal opens
   useEffect(() => {
     if (!isManageRequestsOpen || !hub || hub.userRole !== "owner") return;
@@ -226,6 +234,63 @@ export default function HubPage() {
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const emojiList = ["👍", "❤️", "🔥", "🚀", "😂", "👏", "😮", "🎉"];
+
+  const handleToggleSettings = async (allow: boolean) => {
+    if (!hub) return;
+    setUpdatingSettings(true);
+    try {
+      const res = await fetch(`/api/hubs/${hub.slug}/settings`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ allowMembersToInvite: allow }),
+      });
+      if (res.ok) {
+        setHub({ ...hub, allowMembersToInvite: allow });
+      } else {
+        const data = await res.json();
+        alert(data.error || "Failed to update settings");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("An error occurred");
+    } finally {
+      setUpdatingSettings(false);
+    }
+  };
+
+  const handleMemberAction = async (targetUserId: string, action: "promote" | "demote" | "kick") => {
+    if (!hub) return;
+    if (action === "kick") {
+      if (!confirm("Are you sure you want to remove this user from the hub?")) return;
+    }
+    setActionLoading(`${action}-${targetUserId}`);
+    try {
+      const res = await fetch(`/api/hubs/${hub.slug}/members/${targetUserId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action }),
+      });
+      if (res.ok) {
+        // Refresh members
+        const membersRes = await fetch(`/api/hubs/${slug}/members?onlineOnly=${onlineOnly ? "true" : "false"}&search=${membersSearch}`);
+        if (membersRes.ok) {
+          const data = await membersRes.json();
+          setMembers(data.members || []);
+        }
+        if (action === "kick") {
+          setHub((prev) => prev ? { ...prev, memberCount: prev.memberCount - 1 } : prev);
+        }
+      } else {
+        const data = await res.json();
+        alert(data.error || `Failed to ${action} user`);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("An error occurred");
+    } finally {
+      setActionLoading(null);
+    }
+  };
 
   // 1. Fetch Hub metadata & channels on load
   useEffect(() => {
@@ -713,15 +778,24 @@ export default function HubPage() {
             <div className="flex flex-col overflow-y-auto space-y-4 pr-1">
               
               {/* Hub Meta Card */}
-              <div className="p-3 bg-[#161c24] border border-[#2A313C] rounded-lg">
+              <div className="p-3 bg-[#161c24] border border-[#2A313C] rounded-lg relative">
                 <div className="flex items-center gap-3">
                   <span className="text-3xl">{hub.icon}</span>
                   <div>
-                    <h2 className="font-chakra font-bold text-base text-white tracking-wider">
+                    <h2 
+                      className="font-chakra font-bold text-base text-white tracking-wider cursor-pointer hover:text-[#00EAFF] transition-colors flex items-center gap-1.5"
+                      onClick={() => setIsDetailsOpen(true)}
+                      title="View Hub Details"
+                    >
                       {hub.name}
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                      </svg>
                     </h2>
                     <span className="text-[10px] font-chakra text-[#00EAFF] uppercase tracking-widest">
-                      Public Hub
+                      {hub.isPrivate ? "Private Hub" : "Public Hub"}
                     </span>
                   </div>
                 </div>
@@ -1526,6 +1600,232 @@ export default function HubPage() {
                   ))}
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Hub Details Modal */}
+      {isDetailsOpen && hub && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-[#10141A] border border-[#2A313C] rounded-lg w-[500px] max-w-[90vw] shadow-2xl relative overflow-hidden flex flex-col">
+            
+            {/* Header */}
+            <div className="px-6 py-5 border-b border-[#2A313C] flex justify-between items-center bg-[#161c24]">
+              <h2 className="text-lg font-chakra font-bold text-white tracking-wider flex items-center gap-2">
+                <span className="text-2xl">{hub.icon}</span> {hub.name} Details
+              </h2>
+              <button
+                onClick={() => setIsDetailsOpen(false)}
+                className="text-[#C8C7C7] hover:text-white transition-colors p-1"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-6 space-y-6">
+              <div>
+                <h3 className="text-[11px] font-chakra text-[#00EAFF] uppercase tracking-widest mb-2">Description</h3>
+                <p className="text-sm text-[#C8C7C7] font-inter leading-relaxed">
+                  {hub.description || "No description provided."}
+                </p>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="flex-1 bg-[#161c24] border border-[#2A313C] rounded-md p-3 flex flex-col items-center justify-center">
+                  <span className="text-2xl font-chakra font-bold text-white">{hub.memberCount}</span>
+                  <span className="text-[10px] font-chakra text-[#C8C7C7] uppercase tracking-widest mt-1">Members</span>
+                </div>
+                <div className="flex-1 bg-[#161c24] border border-[#2A313C] rounded-md p-3 flex flex-col items-center justify-center">
+                  <span className="text-2xl font-chakra font-bold text-white">{hub.isPrivate ? "Private" : "Public"}</span>
+                  <span className="text-[10px] font-chakra text-[#C8C7C7] uppercase tracking-widest mt-1">Status</span>
+                </div>
+              </div>
+
+              {/* Invite Code (if available) */}
+              {hub.isPrivate && hub.joinCode && (
+                <div className="bg-[#161c24] border border-[#2A313C] rounded-md p-4 flex flex-col items-center">
+                  <span className="text-[11px] font-chakra text-[#00EAFF] uppercase tracking-widest mb-2">Invite Code</span>
+                  <div className="flex items-center gap-3 w-full max-w-[200px]">
+                    <code className="flex-1 bg-black/50 border border-[#2A313C] text-[#00EAFF] font-chakra font-bold text-center py-2 rounded tracking-[0.2em] text-lg select-all">
+                      {hub.joinCode}
+                    </code>
+                    <button
+                      onClick={() => {
+                        if (hub.joinCode) {
+                          navigator.clipboard.writeText(hub.joinCode);
+                          alert("Invite code copied!");
+                        }
+                      }}
+                      className="p-2.5 rounded bg-[#2A313C] hover:bg-[#3b4351] text-white transition-colors"
+                      title="Copy to clipboard"
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-[#C8C7C7] mt-3 text-center">Share this code with others so they can request to join.</p>
+                </div>
+              )}
+
+              {/* Admin button */}
+              {(hub.userRole === "admin" || hub.userRole === "owner") && (
+                <button
+                  onClick={() => {
+                    setIsDetailsOpen(false);
+                    setIsSettingsOpen(true);
+                  }}
+                  className="w-full py-2.5 rounded bg-[#00EAFF]/10 border border-[#00EAFF]/30 text-[#00EAFF] font-chakra font-bold text-sm uppercase hover:bg-[#00EAFF] hover:text-[#10141A] transition-all flex items-center justify-center gap-2"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                  </svg>
+                  Group Settings
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Group Settings Modal */}
+      {isSettingsOpen && hub && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-[#10141A] border border-[#2A313C] rounded-lg w-[600px] max-w-[90vw] h-[80vh] flex flex-col shadow-2xl relative overflow-hidden">
+            
+            {/* Header */}
+            <div className="px-6 py-4 border-b border-[#2A313C] flex justify-between items-center bg-[#161c24] flex-shrink-0">
+              <h2 className="text-lg font-chakra font-bold text-white tracking-wider flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    setIsSettingsOpen(false);
+                    setIsDetailsOpen(true);
+                  }}
+                  className="mr-2 text-[#C8C7C7] hover:text-white transition-colors"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                  </svg>
+                </button>
+                Group Settings
+              </h2>
+              <button
+                onClick={() => setIsSettingsOpen(false)}
+                className="text-[#C8C7C7] hover:text-white transition-colors p-1"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto flex-1 flex flex-col gap-8">
+              
+              {/* Settings Section */}
+              <section>
+                <h3 className="text-[11px] font-chakra text-[#00EAFF] uppercase tracking-widest mb-4">Permissions</h3>
+                <div className="flex items-center justify-between p-4 bg-[#161c24] border border-[#2A313C] rounded-lg">
+                  <div>
+                    <h4 className="text-sm font-bold text-white font-inter">Allow members to view invite code</h4>
+                    <p className="text-xs text-[#C8C7C7] mt-1">If enabled, any member can see and share the invite code.</p>
+                  </div>
+                  <button
+                    disabled={updatingSettings}
+                    onClick={() => handleToggleSettings(!hub.allowMembersToInvite)}
+                    className={`w-12 h-6 rounded-full relative transition-colors ${hub.allowMembersToInvite ? "bg-[#00E676]" : "bg-[#2A313C]"}`}
+                  >
+                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${hub.allowMembersToInvite ? "left-[26px]" : "left-1"}`} />
+                  </button>
+                </div>
+              </section>
+
+              {/* Members Management Section */}
+              <section className="flex-1 flex flex-col min-h-0">
+                <h3 className="text-[11px] font-chakra text-[#00EAFF] uppercase tracking-widest mb-4 flex justify-between items-end">
+                  <span>Role Management</span>
+                  <span className="text-[#C8C7C7] lowercase tracking-normal">{members.length} total members</span>
+                </h3>
+                
+                <div className="bg-[#161c24] border border-[#2A313C] rounded-lg flex-1 overflow-hidden flex flex-col">
+                  <div className="overflow-y-auto flex-1 p-2 space-y-1">
+                    {membersLoading && members.length === 0 ? (
+                      <div className="flex justify-center text-[#00EAFF] font-chakra py-8">
+                        <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-[#00EAFF] mr-3"></div>
+                      </div>
+                    ) : (
+                      members.map(member => (
+                        <div key={member.id} className="flex items-center justify-between p-2 hover:bg-[#2A313C]/30 rounded transition-colors group">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-[#2A313C] overflow-hidden flex items-center justify-center font-bold text-[10px] select-none text-white">
+                              {member.user.avatar ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={member.user.avatar} alt={member.user.firstName} className="w-full h-full object-cover" />
+                              ) : (
+                                member.user.firstName.charAt(0).toUpperCase()
+                              )}
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="text-sm font-inter font-bold text-white flex items-center gap-2">
+                                {member.user.firstName} {member.user.lastName}
+                                {member.role === "owner" && <span className="bg-[#FF9100]/20 text-[#FF9100] text-[9px] px-1.5 py-0.5 rounded uppercase font-chakra">Owner</span>}
+                                {member.role === "admin" && <span className="bg-[#00EAFF]/20 text-[#00EAFF] text-[9px] px-1.5 py-0.5 rounded uppercase font-chakra">Admin</span>}
+                              </span>
+                              <span className="text-xs text-[#C8C7C7]">@{member.user.username}</span>
+                            </div>
+                          </div>
+
+                          {/* Actions */}
+                          <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2">
+                            {actionLoading === `promote-${member.user.id}` || actionLoading === `demote-${member.user.id}` || actionLoading === `kick-${member.user.id}` ? (
+                               <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-[#00EAFF]"></div>
+                            ) : (
+                              <>
+                                {/* Admins can promote members to admin */}
+                                {member.role === "member" && (
+                                  <button
+                                    onClick={() => handleMemberAction(member.user.id, "promote")}
+                                    className="px-2 py-1 bg-[#2A313C] hover:bg-[#00EAFF] text-white hover:text-black rounded text-[10px] font-chakra uppercase transition-colors"
+                                  >
+                                    Promote
+                                  </button>
+                                )}
+                                {/* Only owner can demote admins */}
+                                {member.role === "admin" && hub.userRole === "owner" && (
+                                  <button
+                                    onClick={() => handleMemberAction(member.user.id, "demote")}
+                                    className="px-2 py-1 bg-[#2A313C] hover:bg-[#FF9100] text-white hover:text-black rounded text-[10px] font-chakra uppercase transition-colors"
+                                  >
+                                    Demote
+                                  </button>
+                                )}
+                                {/* Kick User */}
+                                {member.role !== "owner" && (
+                                  // Admins can kick members, Owners can kick admins/members
+                                  ((member.role === "member") || (member.role === "admin" && hub.userRole === "owner")) && (
+                                    <button
+                                      onClick={() => handleMemberAction(member.user.id, "kick")}
+                                      className="px-2 py-1 bg-[#2A313C] hover:bg-[#FF4D4D] text-white rounded text-[10px] font-chakra uppercase transition-colors"
+                                    >
+                                      Kick
+                                    </button>
+                                  )
+                                )}
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </section>
             </div>
           </div>
         </div>

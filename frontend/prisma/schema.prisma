@@ -143,6 +143,7 @@ model Hub {
   memberCount Int         @default(0)
   isPrivate   Boolean     @default(false)
   joinCode    String?     @unique
+  allowMembersToInvite Boolean @default(false)
   members     HubMember[]
   joinRequests HubJoinRequest[]
   channels    Channel[]

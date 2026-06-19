@@ -76,9 +76,21 @@ export async function GET(
       },
     });
 
+    // Determine if user can see join code
+    let canSeeJoinCode = false;
+    if (hub.isPrivate) {
+      if (userRole === "admin" || userRole === "owner") {
+        canSeeJoinCode = true;
+      } else if (userRole === "member" && hub.allowMembersToInvite) {
+        canSeeJoinCode = true;
+      }
+    }
+
     return NextResponse.json({
       hub: {
         ...hub,
+        joinCode: canSeeJoinCode ? hub.joinCode : null,
+        allowMembersToInvite: hub.allowMembersToInvite,
         isPrivate: hub.isPrivate,
         onlineCount,
         joined,
