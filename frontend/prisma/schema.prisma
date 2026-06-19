@@ -37,6 +37,7 @@ model User {
   followers                Follow[]  @relation("following")
   following                Follow[]  @relation("follower")
   hubMembers               HubMember[]
+  hubJoinRequests          HubJoinRequest[]
   messages                 Message[]
   messageReactions         MessageReaction[]
   portfolioProjects        PortfolioProject[]
@@ -125,10 +126,10 @@ model Follow {
 
 model Notification {
   id         String   @id @default(cuid())
-  type       String   // e.g. "share"
+  type       String   // e.g. "share", "hub_request"
   userId     String   // Recipient user ID
   fromUserId String   // Sender user ID
-  postId     String   // Target Post ID
+  postId     String?  // Target Post ID (optional for non-post notifications)
   isRead     Boolean  @default(false)
   createdAt  DateTime @default(now())
 }
@@ -140,7 +141,10 @@ model Hub {
   description String
   icon        String
   memberCount Int         @default(0)
+  isPrivate   Boolean     @default(false)
+  joinCode    String?     @unique
   members     HubMember[]
+  joinRequests HubJoinRequest[]
   channels    Channel[]
   posts       Post[]
   createdAt   DateTime    @default(now())
@@ -154,6 +158,18 @@ model HubMember {
   hub       Hub      @relation(fields: [hubId], references: [id])
   user      User     @relation(fields: [userId], references: [id])
   joinedAt  DateTime @default(now())
+  @@unique([hubId, userId])
+}
+
+model HubJoinRequest {
+  id        String   @id @default(cuid())
+  hubId     String
+  userId    String
+  status    String   @default("pending") // pending, approved, rejected
+  hub       Hub      @relation(fields: [hubId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+
   @@unique([hubId, userId])
 }
 

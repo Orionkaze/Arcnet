@@ -53,6 +53,39 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
 
   const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false);
+  const [isJoinHubModalOpen, setIsJoinHubModalOpen] = useState(false);
+  const [joinCode, setJoinCode] = useState("");
+  const [joinError, setJoinError] = useState("");
+  const [joinSuccess, setJoinSuccess] = useState("");
+  const [isJoining, setIsJoining] = useState(false);
+
+  const handleJoinHub = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!joinCode.trim()) return;
+    setIsJoining(true);
+    setJoinError("");
+    setJoinSuccess("");
+
+    try {
+      const res = await fetch("/api/hubs/join-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ joinCode }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to join hub");
+      }
+      setJoinSuccess("Request sent! Waiting for owner's approval.");
+      setJoinCode("");
+    } catch (err) {
+      const error = err as Error;
+      setJoinError(error.message);
+    } finally {
+      setIsJoining(false);
+    }
+  };
 
   // Polling states
   const [newPostsAvailable, setNewPostsAvailable] = useState(false);
@@ -333,6 +366,7 @@ export default function Home() {
                   className="w-full text-left px-4 py-2 text-[#C8C7C7] hover:text-white hover:bg-[#1D232D] transition-colors text-sm"
                   onClick={() => {
                     setDropdownOpen(false);
+                    setIsJoinHubModalOpen(true);
                   }}
                 >
                   Join New Hub
@@ -363,6 +397,53 @@ export default function Home() {
         user={user as unknown as React.ComponentProps<typeof CreatePostModal>["user"]}
         onSubmit={handleCreatePost}
       />
+
+      {/* JOIN HUB MODAL */}
+      {isJoinHubModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-[#10141A] border border-[#2A313C] rounded-lg p-6 w-[400px] max-w-[90vw] shadow-2xl relative">
+            <button
+              onClick={() => {
+                setIsJoinHubModalOpen(false);
+                setJoinCode("");
+                setJoinError("");
+                setJoinSuccess("");
+              }}
+              className="absolute top-4 right-4 text-[#C8C7C7] hover:text-white transition-colors"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
+            </button>
+            <h2 className="text-xl font-chakra font-bold text-white mb-4">Join a Private Hub</h2>
+            <form onSubmit={handleJoinHub} className="space-y-4">
+              {joinError && <div className="text-[#FF4D4D] text-sm font-chakra">{joinError}</div>}
+              {joinSuccess && <div className="text-[#00EAFF] text-sm font-chakra">{joinSuccess}</div>}
+              <div>
+                <label className="block text-xs font-chakra text-[#C8C7C7] mb-1 uppercase tracking-wider">
+                  Enter Hub Code
+                </label>
+                <input
+                  type="text"
+                  value={joinCode}
+                  onChange={(e) => setJoinCode(e.target.value)}
+                  required
+                  maxLength={6}
+                  className="w-full bg-[#161c24] border border-[#2A313C] rounded p-2 text-white font-mono text-center text-2xl tracking-[0.5em] focus:outline-none focus:border-[#00EAFF] transition-colors uppercase"
+                  placeholder="------"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={isJoining || !!joinSuccess}
+                className="w-full py-2.5 rounded bg-[#00EAFF] text-[#10141A] font-chakra font-bold text-sm uppercase tracking-wider hover:bg-[#00d0e0] transition-colors mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isJoining ? "Sending..." : "Request"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

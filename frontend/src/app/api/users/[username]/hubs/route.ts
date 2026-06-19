@@ -28,7 +28,12 @@ export async function GET(
     }
 
     const hubMemberships = await prisma.hubMember.findMany({
-      where: { userId: targetUser.id },
+      where: { 
+        userId: targetUser.id,
+        hub: {
+          isPrivate: false,
+        }
+      },
       include: {
         hub: {
           select: {

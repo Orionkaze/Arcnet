@@ -79,6 +79,7 @@ export async function GET(
     return NextResponse.json({
       hub: {
         ...hub,
+        isPrivate: hub.isPrivate,
         onlineCount,
         joined,
         userRole,

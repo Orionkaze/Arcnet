@@ -84,6 +84,7 @@ interface HubData {
   icon: string;
   memberCount: number;
   onlineCount: number;
+  isPrivate?: boolean;
   channels: Channel[];
   joined: boolean;
   userRole: string | null;
@@ -158,6 +159,61 @@ export default function HubPage() {
   const [membersSearch, setMembersSearch] = useState("");
   const [onlineOnly, setOnlineOnly] = useState(false);
   const [showMembersPanel, setShowMembersPanel] = useState(true);
+
+  // Manage Requests Modal
+  interface HubJoinRequest {
+    id: string;
+    status: string;
+    user: {
+      id: string;
+      firstName: string;
+      lastName: string;
+      username: string;
+      avatar: string | null;
+    };
+  }
+  const [isManageRequestsOpen, setIsManageRequestsOpen] = useState(false);
+  const [joinRequests, setJoinRequests] = useState<HubJoinRequest[]>([]);
+  const [requestsLoading, setRequestsLoading] = useState(false);
+
+  // Fetch join requests when manage modal opens
+  useEffect(() => {
+    if (!isManageRequestsOpen || !hub || hub.userRole !== "owner") return;
+
+    async function fetchRequests() {
+      setRequestsLoading(true);
+      try {
+        const res = await fetch(`/api/hubs/${hub?.slug}/requests`);
+        if (res.ok) {
+          const data = await res.json();
+          setJoinRequests(data.requests || []);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setRequestsLoading(false);
+      }
+    }
+    fetchRequests();
+  }, [isManageRequestsOpen, hub]);
+
+  const handleRequestAction = async (requestId: string, action: "approve" | "reject") => {
+    try {
+      const res = await fetch(`/api/hubs/${hub?.slug}/requests/${requestId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action }),
+      });
+      if (res.ok) {
+        setJoinRequests((prev) => prev.filter((r) => r.id !== requestId));
+        if (action === "approve") {
+          setHub((prev) => prev ? { ...prev, memberCount: prev.memberCount + 1 } : null);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   // Emoji picker states
   const [showEmojiPickerForId, setShowEmojiPickerForId] = useState<string | null>(null);
@@ -699,6 +755,14 @@ export default function HubPage() {
               </div>
 
               <div className="flex items-center gap-3">
+                {hub.userRole === "owner" && (
+                  <button
+                    onClick={() => setIsManageRequestsOpen(true)}
+                    className="p-1.5 px-3 rounded border border-[#00EAFF] text-[#00EAFF] hover:bg-[#00EAFF]/10 text-xs font-chakra font-bold uppercase tracking-wider transition-all"
+                  >
+                    Manage Requests
+                  </button>
+                )}
                 {/* Members Panel toggle */}
                 <button
                   onClick={() => setShowMembersPanel(!showMembersPanel)}
@@ -717,8 +781,23 @@ export default function HubPage() {
               </div>
             </header>
 
-            {/* CHATROOM SECTION */}
-            {viewMode === "chat" && (
+            {/* Check Privacy Access */}
+            {hub.isPrivate && !hub.joined ? (
+              <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#10141A]">
+                <div className="w-16 h-16 rounded-full bg-[#161c24] border border-[#2A313C] flex items-center justify-center shadow-lg mb-4 text-3xl">
+                  🔒
+                </div>
+                <h2 className="font-chakra font-bold text-xl text-white mb-2 uppercase tracking-widest">
+                  Private Hub
+                </h2>
+                <p className="font-inter text-sm text-[#C8C7C7] max-w-sm leading-relaxed mb-6">
+                  You need to be a member to view messages, channels, and feed in this hub. Enter the join code in the Join New Hub menu to request access.
+                </p>
+              </div>
+            ) : (
+              <>
+                {/* CHATROOM SECTION */}
+                {viewMode === "chat" && (
               <div className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
                 
                 {/* rate limit notification toast */}
@@ -1128,10 +1207,11 @@ export default function HubPage() {
 
               </div>
             )}
-
+              </>
+            )}
           </main>
 
-          {/* COLUMN 3: RIGHT MEMBERS LIST PANEL (online/offline groups, toggle trigger, search filter, slide layout) */}
+          {/* COLUMN 3: RIGHT PANEL (Members List) */}
           <aside
             className={`h-full border-l border-[#2A313C] bg-[#10141A] flex flex-col select-none transition-all duration-300 ${
               showMembersPanel ? "w-[260px] opacity-100" : "w-0 opacity-0 overflow-hidden border-l-0"
@@ -1281,6 +1361,81 @@ export default function HubPage() {
             </div>
           </aside>
 
+        </div>
+      )}
+
+      {/* Manage Join Requests Modal */}
+      {isManageRequestsOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-[#10141A] border border-[#2A313C] rounded-lg w-[500px] max-w-[90vw] max-h-[80vh] flex flex-col shadow-2xl relative">
+            
+            <header className="px-6 py-4 border-b border-[#2A313C] flex justify-between items-center flex-shrink-0">
+              <h2 className="text-lg font-chakra font-bold text-white tracking-wider uppercase">
+                Manage Join Requests
+              </h2>
+              <button
+                onClick={() => setIsManageRequestsOpen(false)}
+                className="text-[#C8C7C7] hover:text-white transition-colors p-1"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
+            </header>
+
+            <div className="p-6 overflow-y-auto flex-1">
+              {requestsLoading ? (
+                <div className="flex justify-center text-[#00EAFF] font-chakra py-8">
+                  <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-[#00EAFF] mr-3"></div>
+                  Loading requests...
+                </div>
+              ) : joinRequests.length === 0 ? (
+                <div className="text-center py-8 text-[#C8C7C7] font-inter text-sm">
+                  No pending requests.
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {joinRequests.map((req) => (
+                    <div key={req.id} className="flex items-center justify-between p-3 bg-[#161c24] border border-[#2A313C] rounded hover:border-[#00EAFF]/30 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-[#2A313C] overflow-hidden flex items-center justify-center font-bold text-xs select-none">
+                          {req.user.avatar ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={req.user.avatar} alt={req.user.firstName} className="w-full h-full object-cover" />
+                          ) : (
+                            req.user.firstName.charAt(0).toUpperCase()
+                          )}
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-sm font-inter font-bold text-white">
+                            {req.user.firstName} {req.user.lastName}
+                          </span>
+                          <span className="text-xs text-[#C8C7C7]">
+                            @{req.user.username}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleRequestAction(req.id, "approve")}
+                          className="px-3 py-1.5 rounded bg-[#00EAFF]/10 text-[#00EAFF] border border-[#00EAFF]/30 hover:bg-[#00EAFF] hover:text-[#10141A] font-chakra font-bold text-xs uppercase transition-all"
+                        >
+                          Approve
+                        </button>
+                        <button
+                          onClick={() => handleRequestAction(req.id, "reject")}
+                          className="px-3 py-1.5 rounded bg-transparent text-[#FF4D4D] border border-[#FF4D4D]/30 hover:bg-[#FF4D4D]/10 font-chakra font-bold text-xs uppercase transition-all"
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
 
