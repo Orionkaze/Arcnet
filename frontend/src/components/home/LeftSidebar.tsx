@@ -24,6 +24,23 @@ export default function LeftSidebar() {
   const [isCreating, setIsCreating] = useState(false);
   const [createdHubCode, setCreatedHubCode] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [privateHubs, setPrivateHubs] = useState<{ id: string; slug: string; name: string }[]>([]);
+
+  // Fetch Private Hubs
+  React.useEffect(() => {
+    async function fetchPrivateHubs() {
+      try {
+        const res = await fetch("/api/hubs/private/mine");
+        if (res.ok) {
+          const data = await res.json();
+          setPrivateHubs(data.hubs || []);
+        }
+      } catch (err) {
+        console.error("Failed to fetch private hubs", err);
+      }
+    }
+    fetchPrivateHubs();
+  }, []);
 
   const handleCreatePrivateHub = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -227,7 +244,7 @@ export default function LeftSidebar() {
           </Link>
         </div>
 
-        {/* Bottom: Private Hub */}
+        {/* Bottom: Private Hubs */}
         <div className="sidebar-bottom" style={{ width: '100%' }}>
           <div style={{ height: '1px', backgroundColor: '#6B7280', width: '100%', marginBottom: '16px' }} />
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -236,7 +253,7 @@ export default function LeftSidebar() {
               fontSize: '13px', 
               color: '#C8C7C7'
             }}>
-              Private Hub
+              Private Hubs
             </span>
             <button className="private-hub-btn" onClick={() => setIsCreateHubOpen(true)}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -245,6 +262,22 @@ export default function LeftSidebar() {
               </svg>
             </button>
           </div>
+
+          {/* List joined private hubs */}
+          {privateHubs.length > 0 && (
+            <div className="mt-4 flex flex-col gap-2">
+              {privateHubs.map(hub => (
+                <Link
+                  key={hub.id}
+                  href={`/hub/${hub.slug}`}
+                  className={`sidebar-item ${isActive(`/hub/${hub.slug}`) ? "active" : ""}`}
+                >
+                  <span className="text-sm">🔒</span>
+                  <span>{hub.name}</span>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
