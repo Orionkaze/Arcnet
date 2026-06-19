@@ -94,8 +94,8 @@ io.on("connection", (socket) => {
     socket.to(channelId).emit("user_typing", { userId, username });
   });
 
-  socket.on("stop_typing", ({ channelId, userId }) => {
-    socket.to(channelId).emit("user_stop_typing", { userId });
+  socket.on("stop_typing", ({ channelId, userId, username }) => {
+    socket.to(channelId).emit("user_stop_typing", { userId, username });
   });
 
   socket.on("disconnect", () => {

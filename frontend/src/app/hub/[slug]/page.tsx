@@ -338,10 +338,14 @@ export default function HubPage() {
         // Prevent duplicate appending if we optimistically added it
         if (prev.some((m) => m.id === newMsg.id)) return prev;
         
-        // Auto scroll to bottom if already scrolled to bottom
+        // Auto scroll to bottom if already near the bottom
         setTimeout(() => {
-          if (isScrolledToBottom) {
-            messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+          const container = chatContainerRef.current;
+          if (container) {
+            const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 150;
+            if (isNearBottom) {
+              messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+            }
           }
         }, 50);
         
@@ -360,6 +364,7 @@ export default function HubPage() {
     };
 
     const handleStopTyping = ({ username }: { userId: string, username: string }) => {
+      if (!username) return; // defensive check
       setTypingUsers((prev) => prev.filter((name) => name !== username));
     };
 
@@ -372,7 +377,7 @@ export default function HubPage() {
       socket.off("user_typing", handleTyping);
       socket.off("user_stop_typing", handleStopTyping);
     };
-  }, [selectedChannel, isScrolledToBottom]);
+  }, [selectedChannel]);
 
   // 4. Fetch community feed posts when tab is changed to feed
   useEffect(() => {
@@ -490,6 +495,12 @@ export default function HubPage() {
     const replyId = replyingTo?.id || null;
     setReplyingTo(null);
 
+    // Stop typing immediately when sending
+    if (hub?.isPrivate && socketRef.current && user) {
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+      socketRef.current.emit("stop_typing", { channelId: selectedChannel.id, userId: user.id, username: user.firstName });
+    }
+
     // Optimistic message append
     const tempId = Math.random().toString();
     const optimisticMessage: Message = {
@@ -547,10 +558,15 @@ export default function HubPage() {
       }
 
       const data = await res.json();
-      // Replace optimistic message with actual db message
-      setMessages((prev) =>
-        prev.map((m) => (m.id === tempId ? data.message : m))
-      );
+      // Replace optimistic message with actual db message, but check if the socket beat us to it
+      setMessages((prev) => {
+        if (prev.some((m) => m.id === data.message.id)) {
+          // Socket already added the real message, just remove the temp one
+          return prev.filter((m) => m.id !== tempId);
+        }
+        // Otherwise replace the temp one with the real one
+        return prev.map((m) => (m.id === tempId ? data.message : m));
+      });
     } catch (err) {
       console.warn(err);
       setMessages((prev) => prev.filter((m) => m.id !== tempId));
@@ -1348,15 +1364,17 @@ export default function HubPage() {
                             </h4>
                             {onlineGroup.map((m) => (
                               <div key={m.id} className="flex items-center gap-2.5 py-1">
-                                <div className="relative w-7 h-7 rounded-full bg-[#2A313C] overflow-hidden flex items-center justify-center font-bold text-xs flex-shrink-0">
-                                  {m.user.avatar ? (
-                                    // eslint-disable-next-line @next/next/no-img-element
-                                    <img src={m.user.avatar} alt={m.user.firstName} className="w-full h-full object-cover" />
-                                  ) : (
-                                    m.user.firstName.charAt(0).toUpperCase()
-                                  )}
+                                <div className="relative flex-shrink-0">
+                                  <div className="w-7 h-7 rounded-full bg-[#2A313C] overflow-hidden flex items-center justify-center font-bold text-xs">
+                                    {m.user.avatar ? (
+                                      // eslint-disable-next-line @next/next/no-img-element
+                                      <img src={m.user.avatar} alt={m.user.firstName} className="w-full h-full object-cover" />
+                                    ) : (
+                                      m.user.firstName.charAt(0).toUpperCase()
+                                    )}
+                                  </div>
                                   {/* Online green indicator dot */}
-                                  <span className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-[#00E676] border-2 border-[#10141A]"></span>
+                                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-[#00E676] border-2 border-[#10141A] z-10 translate-x-[10%] translate-y-[10%]"></span>
                                 </div>
                                 <div className="truncate flex-1 min-w-0">
                                   <div className="flex items-center gap-1">
@@ -1391,15 +1409,17 @@ export default function HubPage() {
                             </h4>
                             {offlineGroup.map((m) => (
                               <div key={m.id} className="flex items-center gap-2.5 py-1 opacity-70">
-                                <div className="relative w-7 h-7 rounded-full bg-[#2A313C] overflow-hidden flex items-center justify-center font-bold text-xs flex-shrink-0">
-                                  {m.user.avatar ? (
-                                    // eslint-disable-next-line @next/next/no-img-element
-                                    <img src={m.user.avatar} alt={m.user.firstName} className="w-full h-full object-cover" />
-                                  ) : (
-                                    m.user.firstName.charAt(0).toUpperCase()
-                                  )}
+                                <div className="relative flex-shrink-0">
+                                  <div className="w-7 h-7 rounded-full bg-[#2A313C] overflow-hidden flex items-center justify-center font-bold text-xs">
+                                    {m.user.avatar ? (
+                                      // eslint-disable-next-line @next/next/no-img-element
+                                      <img src={m.user.avatar} alt={m.user.firstName} className="w-full h-full object-cover" />
+                                    ) : (
+                                      m.user.firstName.charAt(0).toUpperCase()
+                                    )}
+                                  </div>
                                   {/* Offline grey indicator dot */}
-                                  <span className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-[#C8C7C7]/50 border-2 border-[#10141A]"></span>
+                                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-[#8b949e] border-2 border-[#10141A] z-10 translate-x-[10%] translate-y-[10%]"></span>
                                 </div>
                                 <div className="truncate flex-1 min-w-0">
                                   <div className="flex items-center gap-1">
