@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import "../../home.css";
 import Navbar from "@/components/home/Navbar";
 import LeftSidebar from "@/components/home/LeftSidebar";
@@ -147,26 +148,28 @@ export default function FindTeamPage() {
                 <div key={creator.id} className="creator-card">
                   <div className="flex gap-4 items-start">
                     {/* Avatar */}
-                    <div className="w-12 h-12 rounded-full bg-[#2A313C] overflow-hidden flex-shrink-0 flex items-center justify-center font-bold text-lg border border-[#2A313C]">
-                      {creator.avatar ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={creator.avatar} alt={creator.firstName} className="w-full h-full object-cover" />
-                      ) : (
-                        creator.firstName.charAt(0).toUpperCase()
-                      )}
-                    </div>
+                    <Link href={`/profile/${creator.username}`} className="flex-shrink-0 cursor-pointer block">
+                      <div className="w-12 h-12 rounded-full bg-[#2A313C] overflow-hidden flex items-center justify-center font-bold text-lg border border-[#2A313C] hover:border-[#00EAFF] transition-colors">
+                        {creator.avatar ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={creator.avatar} alt={creator.firstName} className="w-full h-full object-cover" />
+                        ) : (
+                          creator.firstName.charAt(0).toUpperCase()
+                        )}
+                      </div>
+                    </Link>
 
                     {/* Meta info */}
                     <div className="flex-grow min-w-0">
                       <div className="flex justify-between items-start">
-                        <div className="truncate pr-2">
+                        <Link href={`/profile/${creator.username}`} className="truncate pr-2 cursor-pointer hover:opacity-80 transition-opacity block">
                           <h3 className="font-inter text-sm font-bold text-white leading-tight truncate">
                             {creator.firstName} {creator.lastName}
                           </h3>
                           <span className="font-inter text-xs text-[#C8C7C7]">
                             @{creator.username}
                           </span>
-                        </div>
+                        </Link>
                         {user && user.id !== creator.id && (
                           <button
                             onClick={() => handleFollowToggle(creator.id, creator.username)}

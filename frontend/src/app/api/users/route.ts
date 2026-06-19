@@ -15,6 +15,8 @@ export async function GET(request: Request) {
       where: {
         AND: [
           userId ? { id: { not: userId } } : {},
+          { isOnboarded: true },
+          { username: { not: null } },
           search
             ? {
                 OR: [
