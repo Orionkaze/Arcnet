@@ -7,7 +7,7 @@ import gameDevLogo from "./LeftSideBarLogos/GameDeveloperHub.png";
 import gameTesterLogo from "./LeftSideBarLogos/GameTesterHub.png";
 import Artist from "./LeftSideBarLogos/Artists.png";
 import AnimatorLogo from "./LeftSideBarLogos/Animators.png";
-import StoryWriterLogo from "./LeftSideBarLogos/StoryWriterHub.png";
+import StoryWriterLogo from "./LeftSideBarLogos/StorywriterHub.png";
 import GameJam from "./LeftSideBarLogos/GameJam.png";
 import FindTeam from "./LeftSideBarLogos/FindTeam.png";
 import Mentors from "./LeftSideBarLogos/Mentor.png";
