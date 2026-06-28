@@ -21,25 +21,53 @@ app.get("/health", (req, res) => {
   res.status(200).json({ status: "Backend is running!" });
 });
 
-// Redis setup for Pub/Sub
-const redisClient = createClient({ url: process.env.REDIS_URL || "redis://localhost:6379" });
+app.post("/api/broadcast", (req, res) => {
+  const { channelId, message } = req.body;
+  if (channelId && message) {
+    io.to(channelId).emit("new_message", message);
+    res.status(200).json({ status: "Broadcasted successfully" });
+  } else {
+    res.status(400).json({ error: "Missing channelId or message" });
+  }
+});
 
-redisClient.on("error", (err) => console.log("Redis Client Error", err));
+// Redis setup for Pub/Sub
+const redisClient = createClient({
+  url: process.env.REDIS_URL || "redis://localhost:6379",
+  socket: {
+    reconnectStrategy: (retries) => {
+      if (retries > 2) {
+        // Stop retrying after 2 attempts to avoid flooding logs
+        return false;
+      }
+      return 1000; // retry after 1s
+    }
+  }
+});
+
+redisClient.on("error", (err) => {
+  // Only log if connection was actually established once, or let the start function handle initial failure
+});
 
 async function startRedis() {
-  await redisClient.connect();
-  
-  // Subscribe to channel
-  await redisClient.subscribe("chat_messages", (messageStr) => {
-    try {
-      const data = JSON.parse(messageStr);
-      if (data.channelId && data.message) {
-        io.to(data.channelId).emit("new_message", data.message);
+  try {
+    await redisClient.connect();
+    
+    // Subscribe to channel
+    await redisClient.subscribe("chat_messages", (messageStr) => {
+      try {
+        const data = JSON.parse(messageStr);
+        if (data.channelId && data.message) {
+          io.to(data.channelId).emit("new_message", data.message);
+        }
+      } catch(err) {
+        console.error("Error parsing redis message", err);
       }
-    } catch(err) {
-      console.error("Error parsing redis message", err);
-    }
-  });
+    });
+    console.log("Connected to Redis successfully.");
+  } catch (err) {
+    console.log("Could not connect to Redis. Local fallback mode enabled.");
+  }
 }
 startRedis();
 

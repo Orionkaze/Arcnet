@@ -208,18 +208,45 @@ export async function POST(
     });
 
     // Publish to Redis
+    let published = false;
     try {
-      const redisClient = createClient({ url: process.env.REDIS_URL || "redis://localhost:6379" });
-      redisClient.on("error", (err: unknown) => console.error("Redis error:", err));
+      const redisClient = createClient({
+        url: process.env.REDIS_URL || "redis://localhost:6379",
+        socket: {
+          connectTimeout: 2000 // fail fast if local redis is not running
+        }
+      });
+      redisClient.on("error", () => {}); // silence connection errors
       await redisClient.connect();
       await redisClient.publish("chat_messages", JSON.stringify({
         channelId,
         message
       }));
       await redisClient.quit();
+      published = true;
     } catch (redisErr) {
-      console.error("Failed to publish to redis", redisErr);
-      // We don't fail the request if redis publish fails, as it's already in the DB.
+      console.log("Redis publish failed, falling back to HTTP broadcast");
+    }
+
+    if (!published) {
+      try {
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5001";
+        const response = await fetch(`${backendUrl}/api/broadcast`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            channelId,
+            message,
+          }),
+        });
+        if (!response.ok) {
+          console.error("HTTP broadcast failed:", response.status);
+        }
+      } catch (httpErr) {
+        console.error("Failed to broadcast via HTTP:", httpErr);
+      }
     }
 
     return NextResponse.json({ message }, { status: 201 });
