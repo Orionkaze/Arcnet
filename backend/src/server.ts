@@ -17,11 +17,13 @@ const io = new Server(server, {
 
 app.use(express.json());
 
-app.get("/health", (req, res) => {
+const apiRouter = express.Router();
+
+apiRouter.get("/health", (req, res) => {
   res.status(200).json({ status: "Backend is running!" });
 });
 
-app.post("/api/broadcast", (req, res) => {
+apiRouter.post("/api/broadcast", (req, res) => {
   const { channelId, message } = req.body;
   if (channelId && message) {
     io.to(channelId).emit("new_message", message);
@@ -30,6 +32,10 @@ app.post("/api/broadcast", (req, res) => {
     res.status(400).json({ error: "Missing channelId or message" });
   }
 });
+
+// Mount router under root and sub-route for Firebase compatibility
+app.use("/", apiRouter);
+app.use("/_/backend", apiRouter);
 
 // Redis setup for Pub/Sub
 const redisClient = createClient({
