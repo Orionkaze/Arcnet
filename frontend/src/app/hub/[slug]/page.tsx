@@ -120,6 +120,85 @@ interface PostType {
   } | null;
 }
 
+// Maps a hub's stored emoji icon (DB/seed value) to a matching inline SVG icon
+// so the render layer never shows a raw emoji glyph. Falls back to a generic
+// hash/hub icon for unknown values. The DB/seed data is left untouched.
+function renderHubIcon(icon: string, size: number) {
+  const common = {
+    width: size,
+    height: size,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 2,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+  };
+
+  switch (icon) {
+    case "🎮":
+      return (
+        <svg {...common}>
+          <line x1="6" y1="12" x2="10" y2="12" />
+          <line x1="8" y1="10" x2="8" y2="14" />
+          <line x1="15" y1="13" x2="15.01" y2="13" />
+          <line x1="18" y1="11" x2="18.01" y2="11" />
+          <rect x="2" y="6" width="20" height="12" rx="2" />
+        </svg>
+      );
+    case "🎨":
+      return (
+        <svg {...common}>
+          <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+          <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+          <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+          <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+          <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z" />
+        </svg>
+      );
+    case "🎬":
+      return (
+        <svg {...common}>
+          <rect x="2" y="2" width="20" height="20" rx="2" />
+          <line x1="7" y1="2" x2="7" y2="22" />
+          <line x1="17" y1="2" x2="17" y2="22" />
+          <line x1="2" y1="12" x2="22" y2="12" />
+          <line x1="2" y1="7" x2="7" y2="7" />
+          <line x1="2" y1="17" x2="7" y2="17" />
+          <line x1="17" y1="17" x2="22" y2="17" />
+          <line x1="17" y1="7" x2="22" y2="7" />
+        </svg>
+      );
+    case "✍️":
+      return (
+        <svg {...common}>
+          <path d="M12 20h9" />
+          <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z" />
+        </svg>
+      );
+    case "🐛":
+      return (
+        <svg {...common}>
+          <rect x="8" y="6" width="8" height="14" rx="4" />
+          <path d="M19 7l-3 2M5 7l3 2M19 19l-3-2M5 19l3-2M22 13h-4M6 13H2" />
+        </svg>
+      );
+    case "🔒":
+      return (
+        <svg {...common}>
+          <rect x="3" y="11" width="18" height="11" rx="2" />
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        </svg>
+      );
+    default:
+      return (
+        <svg {...common}>
+          <path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18" />
+        </svg>
+      );
+  }
+}
+
 export default function HubPage() {
   const { slug } = useParams() as { slug: string };
   const { user } = useAuthStore();
@@ -829,7 +908,7 @@ export default function HubPage() {
               {/* Hub Meta Card */}
               <div className="p-3 bg-[#161c24] border border-[#2A313C] rounded-lg relative">
                 <div className="flex items-center gap-3">
-                  <span className="text-3xl">{hub.icon}</span>
+                  <span className="text-white">{renderHubIcon(hub.icon, 28)}</span>
                   <div>
                     <h2 
                       className="font-chakra font-bold text-base text-white tracking-wider cursor-pointer hover:text-[#00EAFF] transition-colors flex items-center gap-1.5"
@@ -986,8 +1065,11 @@ export default function HubPage() {
             {/* Check Privacy Access */}
             {hub.isPrivate && !hub.joined ? (
               <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#10141A]">
-                <div className="w-16 h-16 rounded-full bg-[#161c24] border border-[#2A313C] flex items-center justify-center shadow-lg mb-4 text-3xl">
-                  🔒
+                <div className="w-16 h-16 rounded-full bg-[#161c24] border border-[#2A313C] flex items-center justify-center shadow-lg mb-4 text-white">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
                 </div>
                 <h2 className="font-chakra font-bold text-xl text-white mb-2 uppercase tracking-widest">
                   Private Hub
@@ -1026,7 +1108,17 @@ export default function HubPage() {
                         joinRequestFeedback.type === "success" ? "text-[#00E676]" : "text-[#FF4D4D]"
                       }`}
                     >
-                      {joinRequestFeedback.type === "success" ? "✓ " : "⚠️ "}
+                      {joinRequestFeedback.type === "success" ? (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block align-[-2px] mr-1">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      ) : (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block align-[-2px] mr-1">
+                          <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                          <line x1="12" y1="9" x2="12" y2="13" />
+                          <line x1="12" y1="17" x2="12.01" y2="17" />
+                        </svg>
+                      )}
                       {joinRequestFeedback.text}
                     </p>
                   )}
@@ -1041,7 +1133,12 @@ export default function HubPage() {
                 {/* rate limit notification toast */}
                 {rateLimitError && (
                   <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-[#FF4D4D] text-[#10141A] font-chakra font-bold text-xs py-2 px-4 rounded-md shadow-[0_0_15px_rgba(255,77,77,0.4)] z-30 animate-pulse">
-                    ⚠️ {rateLimitError}
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block align-[-2px] mr-1">
+                      <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                      <line x1="12" y1="9" x2="12" y2="13" />
+                      <line x1="12" y1="17" x2="12.01" y2="17" />
+                    </svg>
+                    {rateLimitError}
                   </div>
                 )}
 
@@ -1049,7 +1146,12 @@ export default function HubPage() {
                 {pinnedMessage && (
                   <div className="bg-[#161c24] border-b border-[#2A313C] px-4 py-2 flex items-center justify-between text-xs font-inter z-10 flex-shrink-0">
                     <div className="flex items-center gap-2 truncate">
-                      <span className="text-[#00EAFF]">📌</span>
+                      <span className="text-[#00EAFF]">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="12" y1="17" x2="12" y2="22" />
+                          <path d="M5 17h14l-1.6-2.1a2 2 0 0 1-.4-1.2V8a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v5.7a2 2 0 0 1-.4 1.2z" />
+                        </svg>
+                      </span>
                       <span className="text-[#C8C7C7] truncate">
                         <strong>@{pinnedMessage.author.username}</strong>: {pinnedMessage.content}
                       </span>
@@ -1075,7 +1177,11 @@ export default function HubPage() {
                     </div>
                   ) : messages.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center text-center text-[#C8C7C7] px-6 select-none">
-                      <span className="text-4xl mb-2">💬</span>
+                      <span className="mb-2">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                        </svg>
+                      </span>
                       <h3 className="font-chakra font-bold text-sm text-white mb-1">
                         Welcome to #{selectedChannel?.name}!
                       </h3>
@@ -1167,7 +1273,12 @@ export default function HubPage() {
                                 {/* Reply details if message is nested */}
                                 {msg.replyTo && (
                                   <div className="mt-1 flex items-center gap-2 bg-[#161c24] border-l-2 border-[#00EAFF] px-2 py-1 rounded text-[11px] text-[#C8C7C7] select-none truncate max-w-lg">
-                                    <span className="text-[#00EAFF]">↪</span>
+                                    <span className="text-[#00EAFF]">
+                                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <polyline points="9 14 4 9 9 4" />
+                                        <path d="M20 20v-7a4 4 0 0 0-4-4H4" />
+                                      </svg>
+                                    </span>
                                     <span>
                                       <strong>@{msg.replyTo.author.username}</strong>: {msg.replyTo.content}
                                     </span>
@@ -1294,7 +1405,10 @@ export default function HubPage() {
                     }}
                     className="absolute bottom-[90px] right-6 bg-[#00EAFF] text-[#10141A] font-chakra font-bold text-[10px] tracking-wider uppercase px-3 py-1.5 rounded-full shadow-[0_0_12px_rgba(0,234,255,0.4)] hover:scale-105 transition-transform cursor-pointer z-10"
                   >
-                    ⬇ Jump to bottom
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block align-[-2px] mr-1">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                    Jump to bottom
                   </button>
                 )}
 
@@ -1302,7 +1416,13 @@ export default function HubPage() {
                 {replyingTo && (
                   <div className="bg-[#161c24] border-t border-[#2A313C] px-4 py-2 flex items-center justify-between text-xs font-inter flex-shrink-0 select-none">
                     <div className="flex items-center gap-2 truncate">
-                      <span className="text-[#00EAFF]">↪ Replying to</span>
+                      <span className="text-[#00EAFF] flex items-center gap-1">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="9 14 4 9 9 4" />
+                          <path d="M20 20v-7a4 4 0 0 0-4-4H4" />
+                        </svg>
+                        Replying to
+                      </span>
                       <span className="text-white font-bold truncate">@{replyingTo.author.username}</span>
                       <span className="text-[#C8C7C7] truncate italic">&ldquo;{replyingTo.content}&rdquo;</span>
                     </div>
@@ -1353,7 +1473,13 @@ export default function HubPage() {
                               onClick={() => setShowInputEmojiPicker((prev) => !prev)}
                               className="hover:text-[#00EAFF] transition-colors"
                             >
-                              😊 Insert Emoji
+                              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block align-[-2px] mr-1">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                                <line x1="9" y1="9" x2="9.01" y2="9" />
+                                <line x1="15" y1="9" x2="15.01" y2="9" />
+                              </svg>
+                              Insert Emoji
                             </button>
                             {showInputEmojiPicker && (
                               <div className="absolute bottom-6 left-0 bg-[#10141A] border border-[#2A313C] rounded-lg shadow-xl p-1.5 flex gap-1 z-30 animate-fade-in">
@@ -1443,7 +1569,12 @@ export default function HubPage() {
 
                       {postError && (
                         <div className="text-[#FF4D4D] text-xs font-chakra pl-11">
-                          ⚠️ {postError}
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block align-[-2px] mr-1">
+                            <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                            <line x1="12" y1="9" x2="12" y2="13" />
+                            <line x1="12" y1="17" x2="12.01" y2="17" />
+                          </svg>
+                          {postError}
                         </div>
                       )}
 
@@ -1471,7 +1602,12 @@ export default function HubPage() {
                   </div>
                 ) : posts.length === 0 ? (
                   <div className="text-center py-10 text-[#C8C7C7] select-none">
-                    <span className="text-4xl">📭</span>
+                    <span className="inline-block">
+                      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
+                        <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
+                      </svg>
+                    </span>
                     <h3 className="font-chakra font-bold text-sm text-white mt-2 mb-1">
                       No posts in this Hub yet
                     </h3>
@@ -1737,7 +1873,7 @@ export default function HubPage() {
             {/* Header */}
             <div className="px-6 py-5 border-b border-[#2A313C] flex justify-between items-center bg-[#161c24]">
               <h2 className="text-lg font-chakra font-bold text-white tracking-wider flex items-center gap-2">
-                <span className="text-2xl">{hub.icon}</span> {hub.name} Details
+                <span className="text-white">{renderHubIcon(hub.icon, 22)}</span> {hub.name} Details
               </h2>
               <button
                 onClick={() => setIsDetailsOpen(false)}

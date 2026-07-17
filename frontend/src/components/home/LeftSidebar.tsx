@@ -272,7 +272,12 @@ export default function LeftSidebar() {
                   href={`/hub/${hub.slug}`}
                   className={`sidebar-item ${isActive(`/hub/${hub.slug}`) ? "active" : ""}`}
                 >
-                  <span className="text-sm">🔒</span>
+                  <span className="text-sm">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="11" width="18" height="11" rx="2" />
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                  </span>
                   <span>{hub.name}</span>
                 </Link>
               ))}
@@ -300,7 +305,12 @@ export default function LeftSidebar() {
             
             {createdHubCode ? (
               <div className="text-center py-6">
-                <div className="mb-4 text-[#00EAFF] text-5xl">🎉</div>
+                <div className="mb-4 text-[#00EAFF] flex justify-center">
+                  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 3l1.9 5.7L20 10l-6.1 1.3L12 17l-1.9-5.7L4 10l6.1-1.3z" />
+                    <path d="M19 15l.7 2.1L22 18l-2.3.9L19 21l-.7-2.1L16 18l2.3-.9z" opacity="0.7" />
+                  </svg>
+                </div>
                 <h3 className="text-white font-chakra font-bold text-lg mb-2">Hub Created!</h3>
                 <p className="text-[#C8C7C7] text-sm mb-6">Share this code with your friends so they can request to join:</p>
                 <div className="bg-[#161c24] border border-[#2A313C] rounded px-4 py-3 text-2xl font-mono text-[#00EAFF] tracking-widest font-bold">
