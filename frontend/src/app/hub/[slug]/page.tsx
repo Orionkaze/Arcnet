@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, notFound } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/home/Navbar";
 import PostCard from "@/components/home/PostCard";
@@ -123,7 +123,6 @@ interface PostType {
 export default function HubPage() {
   const { slug } = useParams() as { slug: string };
   const { user } = useAuthStore();
-  const router = useRouter();
 
   // Navigation / views
   const [viewMode, setViewMode] = useState<"chat" | "feed">("chat");
@@ -145,7 +144,55 @@ export default function HubPage() {
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
   const [pinnedMessage, setPinnedMessage] = useState<Message | null>(null);
   const [rateLimitError, setRateLimitError] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
+
+  // Private-hub join-request gate state
+  const [joinCodeInput, setJoinCodeInput] = useState("");
+  const [joinRequestLoading, setJoinRequestLoading] = useState(false);
+  const [joinRequestFeedback, setJoinRequestFeedback] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+  // Emoji picker for the chat input
+  const [showInputEmojiPicker, setShowInputEmojiPicker] = useState(false);
+
+  // Show a transient in-UI toast (~3s)
+  const showToast = (message: string) => {
+    setToast(message);
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  // Request access to a private hub via join code
+  const handleRequestToJoin = async () => {
+    if (!user) {
+      showToast("Please log in to request access.");
+      return;
+    }
+    const code = joinCodeInput.trim();
+    if (!code) {
+      setJoinRequestFeedback({ type: "error", text: "Enter a join code to request access." });
+      return;
+    }
+    setJoinRequestLoading(true);
+    setJoinRequestFeedback(null);
+    try {
+      const res = await fetch("/api/hubs/join-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ joinCode: code }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setJoinRequestFeedback({ type: "success", text: "Request sent — you'll get access once approved." });
+        setJoinCodeInput("");
+      } else {
+        setJoinRequestFeedback({ type: "error", text: data.error || "Failed to send request." });
+      }
+    } catch {
+      setJoinRequestFeedback({ type: "error", text: "Something went wrong. Please try again." });
+    } finally {
+      setJoinRequestLoading(false);
+    }
+  };
   const [isScrolledToBottom, setIsScrolledToBottom] = useState(true);
 
   // Community Feed View
@@ -248,11 +295,11 @@ export default function HubPage() {
         setHub({ ...hub, allowMembersToInvite: allow });
       } else {
         const data = await res.json();
-        alert(data.error || "Failed to update settings");
+        showToast(data.error || "Failed to update settings");
       }
     } catch (error) {
       console.error(error);
-      alert("An error occurred");
+      showToast("An error occurred");
     } finally {
       setUpdatingSettings(false);
     }
@@ -282,11 +329,11 @@ export default function HubPage() {
         }
       } else {
         const data = await res.json();
-        alert(data.error || `Failed to ${action} user`);
+        showToast(data.error || `Failed to ${action} user`);
       }
     } catch (error) {
       console.error(error);
-      alert("An error occurred");
+      showToast("An error occurred");
     } finally {
       setActionLoading(null);
     }
@@ -300,7 +347,7 @@ export default function HubPage() {
         const res = await fetch(`/api/hubs/${slug}`);
         if (!res.ok) {
           if (res.status === 404) {
-            router.push("/404");
+            notFound();
           }
           throw new Error("Failed to load hub metadata");
         }
@@ -317,7 +364,7 @@ export default function HubPage() {
       }
     }
     fetchHubMetadata();
-  }, [slug, router]);
+  }, [slug]);
 
   // 2. Fetch Chat messages when channel changes
   useEffect(() => {
@@ -330,11 +377,6 @@ export default function HubPage() {
         if (res.ok) {
           const data = await res.json();
           setMessages(data.messages || []);
-          // Set initial pinned message locally (e.g. first reply or just pick first message containing tag)
-          if (data.messages && data.messages.length > 0) {
-            const potentialPin = data.messages.find((m: Message) => m.content.toLowerCase().includes("pin") || m.content.length > 50);
-            if (potentialPin) setPinnedMessage(potentialPin);
-          }
         }
       } catch (err) {
         console.warn(err);
@@ -511,7 +553,7 @@ export default function HubPage() {
   // Join or leave hub toggle
   const handleJoinToggle = async () => {
     if (!user) {
-      alert("Please log in to join hubs.");
+      showToast("Please log in to join hubs.");
       return;
     }
     setJoining(true);
@@ -552,7 +594,7 @@ export default function HubPage() {
     if (!text) return;
 
     if (text.length > 1000) {
-      alert("Message cannot exceed 1000 characters");
+      showToast("Message cannot exceed 1000 characters");
       return;
     }
 
@@ -615,7 +657,7 @@ export default function HubPage() {
           setRateLimitError(errData.error || "Rate limit reached. Try again later.");
           setTimeout(() => setRateLimitError(null), 5000);
         } else {
-          alert(errData.error || "Failed to send message");
+          showToast(errData.error || "Failed to send message");
         }
         // Remove optimistic message
         setMessages((prev) => prev.filter((m) => m.id !== tempId));
@@ -760,6 +802,13 @@ export default function HubPage() {
   return (
     <div className="home-layout flex flex-col h-screen w-screen overflow-hidden bg-[#10141A]">
       <Navbar onMenuToggle={() => setIsDrawerOpen(!isDrawerOpen)} />
+
+      {/* Global in-UI toast */}
+      {toast && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 bg-[#00EAFF] text-[#10141A] font-chakra font-bold text-xs py-2 px-4 rounded-md shadow-[0_0_15px_rgba(0,234,255,0.4)] z-[200] animate-fade-in">
+          {toast}
+        </div>
+      )}
 
       {hubLoading ? (
         <div className="flex-1 flex flex-col items-center justify-center text-[#00EAFF] font-chakra mt-14">
@@ -944,8 +993,44 @@ export default function HubPage() {
                   Private Hub
                 </h2>
                 <p className="font-inter text-sm text-[#C8C7C7] max-w-sm leading-relaxed mb-6">
-                  You need to be a member to view messages, channels, and feed in this hub. Enter the join code in the Join New Hub menu to request access.
+                  You need to be a member to view messages, channels, and feed in this hub. Enter the join code below to request access.
                 </p>
+
+                {/* Join-code request affordance */}
+                <div className="w-full max-w-sm flex flex-col gap-3">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={joinCodeInput}
+                      onChange={(e) => setJoinCodeInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleRequestToJoin();
+                        }
+                      }}
+                      placeholder="Enter join code"
+                      className="flex-1 bg-[#161c24] border border-[#2A313C] text-white text-xs px-3 py-2.5 rounded-lg focus:outline-none focus:border-[#00EAFF] font-chakra tracking-[0.15em] uppercase text-center placeholder:tracking-normal placeholder:normal-case"
+                    />
+                    <button
+                      onClick={handleRequestToJoin}
+                      disabled={joinRequestLoading}
+                      className="px-4 py-2.5 bg-[#00EAFF] text-[#10141A] font-chakra font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-[#00d0e0] shadow-[0_0_10px_rgba(0,234,255,0.25)] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                    >
+                      {joinRequestLoading ? "Sending..." : "Request to Join"}
+                    </button>
+                  </div>
+                  {joinRequestFeedback && (
+                    <p
+                      className={`text-xs font-chakra ${
+                        joinRequestFeedback.type === "success" ? "text-[#00E676]" : "text-[#FF4D4D]"
+                      }`}
+                    >
+                      {joinRequestFeedback.type === "success" ? "✓ " : "⚠️ "}
+                      {joinRequestFeedback.text}
+                    </p>
+                  )}
+                </div>
               </div>
             ) : (
               <>
@@ -1023,25 +1108,52 @@ export default function HubPage() {
                             <div className="group flex gap-3 hover:bg-[#161c24]/30 p-1.5 rounded-lg transition-colors relative">
                               
                               {/* Avatar */}
-                              <div className="w-8 h-8 rounded-full bg-[#2A313C] overflow-hidden flex-shrink-0 flex items-center justify-center font-bold text-xs select-none">
-                                {msg.author.avatar ? (
-                                  // eslint-disable-next-line @next/next/no-img-element
-                                  <img
-                                    src={msg.author.avatar}
-                                    alt={msg.author.firstName}
-                                    className="w-full h-full object-cover"
-                                  />
-                                ) : (
-                                  msg.author.firstName.charAt(0).toUpperCase()
-                                )}
-                              </div>
+                              {msg.author.username ? (
+                                <Link
+                                  href={`/profile/${msg.author.username}`}
+                                  className="w-8 h-8 rounded-full bg-[#2A313C] overflow-hidden flex-shrink-0 flex items-center justify-center font-bold text-xs select-none hover:ring-2 hover:ring-[#00EAFF] transition-all"
+                                >
+                                  {msg.author.avatar ? (
+                                    // eslint-disable-next-line @next/next/no-img-element
+                                    <img
+                                      src={msg.author.avatar}
+                                      alt={msg.author.firstName}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    msg.author.firstName.charAt(0).toUpperCase()
+                                  )}
+                                </Link>
+                              ) : (
+                                <div className="w-8 h-8 rounded-full bg-[#2A313C] overflow-hidden flex-shrink-0 flex items-center justify-center font-bold text-xs select-none">
+                                  {msg.author.avatar ? (
+                                    // eslint-disable-next-line @next/next/no-img-element
+                                    <img
+                                      src={msg.author.avatar}
+                                      alt={msg.author.firstName}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    msg.author.firstName.charAt(0).toUpperCase()
+                                  )}
+                                </div>
+                              )}
 
                               {/* Message Details */}
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 select-none">
-                                  <span className="font-inter font-bold text-xs text-white hover:underline cursor-pointer">
-                                    {msg.author.firstName} {msg.author.lastName}
-                                  </span>
+                                  {msg.author.username ? (
+                                    <Link
+                                      href={`/profile/${msg.author.username}`}
+                                      className="font-inter font-bold text-xs text-white hover:underline cursor-pointer"
+                                    >
+                                      {msg.author.firstName} {msg.author.lastName}
+                                    </Link>
+                                  ) : (
+                                    <span className="font-inter font-bold text-xs text-white">
+                                      {msg.author.firstName} {msg.author.lastName}
+                                    </span>
+                                  )}
                                   {msg.author.isVerified && (
                                     <svg width="10" height="10" viewBox="0 0 24 24" fill="#00EAFF">
                                       <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
@@ -1234,20 +1346,32 @@ export default function HubPage() {
                           className="bg-transparent border-none text-white text-xs w-full focus:outline-none resize-none font-inter leading-relaxed"
                         />
                         <div className="flex justify-between items-center mt-2 text-[10px] font-chakra text-[#C8C7C7] select-none pt-1 border-t border-[#2A313C]/20">
-                          <div className="flex gap-2">
-                            {/* Emoji trigger pill */}
+                          <div className="flex gap-2 relative">
+                            {/* Emoji picker trigger */}
                             <button
                               type="button"
-                              onClick={() => {
-                                // Add random emoji to input
-                                const emojis = ["👍", "🔥", "🚀", "😂", "🎉", "🎨", "🎮", "❤️"];
-                                const rand = emojis[Math.floor(Math.random() * emojis.length)];
-                                setMessageText((prev) => prev + rand);
-                              }}
+                              onClick={() => setShowInputEmojiPicker((prev) => !prev)}
                               className="hover:text-[#00EAFF] transition-colors"
                             >
                               😊 Insert Emoji
                             </button>
+                            {showInputEmojiPicker && (
+                              <div className="absolute bottom-6 left-0 bg-[#10141A] border border-[#2A313C] rounded-lg shadow-xl p-1.5 flex gap-1 z-30 animate-fade-in">
+                                {["👍", "🔥", "🚀", "😂", "🎉", "🎨", "🎮", "❤️"].map((emoji) => (
+                                  <button
+                                    key={emoji}
+                                    type="button"
+                                    onClick={() => {
+                                      setMessageText((prev) => prev + emoji);
+                                      setShowInputEmojiPicker(false);
+                                    }}
+                                    className="hover:scale-125 transition-transform text-sm cursor-pointer p-0.5"
+                                  >
+                                    {emoji}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
                           </div>
                           <span className={messageText.length > 900 ? "text-[#FF4D4D]" : ""}>
                             {messageText.length} / 1000
@@ -1657,7 +1781,7 @@ export default function HubPage() {
                       onClick={() => {
                         if (hub.joinCode) {
                           navigator.clipboard.writeText(hub.joinCode);
-                          alert("Invite code copied!");
+                          showToast("Invite code copied!");
                         }
                       }}
                       className="p-2.5 rounded bg-[#2A313C] hover:bg-[#3b4351] text-white transition-colors"
