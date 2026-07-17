@@ -128,7 +128,8 @@ export default function Navbar({ onMenuToggle }: NavbarProps) {
         </button>
 
         {/* Bell icon */}
-        <button
+        <Link
+          href="/notifications"
           className="navbar-icon-btn"
           aria-label="Notifications"
           onClick={handleNotificationClick}
@@ -161,7 +162,7 @@ export default function Navbar({ onMenuToggle }: NavbarProps) {
               }}
             />
           )}
-        </button>
+        </Link>
 
         {/* Vertical divider */}
         <span className="navbar-divider" />
