@@ -772,6 +772,15 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
   const [userHubs, setUserHubs] = useState<any[]>([]);
   const [isTabLoading, setIsTabLoading] = useState(false);
 
+  // Add Project Modal States
+  const [isAddProjectOpen, setIsAddProjectOpen] = useState(false);
+  const [projectTitle, setProjectTitle] = useState("");
+  const [projectDescription, setProjectDescription] = useState("");
+  const [projectTags, setProjectTags] = useState("");
+  const [projectLink, setProjectLink] = useState("");
+  const [projectError, setProjectError] = useState("");
+  const [isSavingProject, setIsSavingProject] = useState(false);
+
   // Edit Cover Modal States
   const [isEditCoverOpen, setIsEditCoverOpen] = useState(false);
   const [activeCoverTab, setActiveCoverTab] = useState<"presets" | "custom">("presets");
@@ -842,6 +851,48 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
     setUploadError("");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
+    }
+  };
+
+  const handleCloseAddProject = () => {
+    setIsAddProjectOpen(false);
+    setProjectTitle("");
+    setProjectDescription("");
+    setProjectTags("");
+    setProjectLink("");
+    setProjectError("");
+    setIsSavingProject(false);
+  };
+
+  const handleSaveProject = async () => {
+    if (!projectTitle.trim() || !projectDescription.trim()) {
+      setProjectError("Title and description are required.");
+      return;
+    }
+    setIsSavingProject(true);
+    setProjectError("");
+    try {
+      const res = await fetch(`/api/users/${cleanUsername}/portfolio`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: projectTitle.trim(),
+          description: projectDescription.trim(),
+          tags: projectTags,
+          link: projectLink.trim() || undefined,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setProjectError(data.error || "Failed to add project.");
+        setIsSavingProject(false);
+        return;
+      }
+      setUserPortfolio((prev) => [data.project, ...prev]);
+      handleCloseAddProject();
+    } catch {
+      setProjectError("Something went wrong. Please try again.");
+      setIsSavingProject(false);
     }
   };
 
@@ -1263,9 +1314,12 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                         >
                           {isFollowed ? "Following" : "Follow"}
                         </button>
-                        <button className="btn-message">
+                        <Link
+                          href={`/messages?to=${profileUser.username}`}
+                          className="btn-message"
+                        >
                           Message
-                        </button>
+                        </Link>
                       </>
                     )}
                   </div>
@@ -1424,7 +1478,11 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                   
                   {/* Own profile "+ Add Project" card */}
                   {isOwnProfile && (
-                    <button className="add-project-card" aria-label="Add project portfolio item">
+                    <button
+                      className="add-project-card"
+                      aria-label="Add project portfolio item"
+                      onClick={() => setIsAddProjectOpen(true)}
+                    >
                       <div className="add-project-icon">+</div>
                       <span className="add-project-text">Add Project</span>
                     </button>
@@ -1613,6 +1671,178 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                   No users found in this list.
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Project Modal */}
+      {isAddProjectOpen && (
+        <div className="modal-overlay" onClick={handleCloseAddProject}>
+          <div
+            className="modal-container"
+            onClick={(e) => e.stopPropagation()}
+            style={{ background: "#10141A", border: "1px solid #2A313C" }}
+          >
+            <div className="modal-header">
+              <h2 className="modal-title">Add Project</h2>
+              <button
+                className="modal-close-btn"
+                onClick={handleCloseAddProject}
+                aria-label="Close modal"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+            <div className="modal-content" style={{ padding: "20px" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <label
+                    className="font-chakra"
+                    style={{ fontSize: "12px", fontWeight: 600, color: "#00EAFF", letterSpacing: "0.05em" }}
+                  >
+                    TITLE
+                  </label>
+                  <input
+                    type="text"
+                    value={projectTitle}
+                    onChange={(e) => setProjectTitle(e.target.value)}
+                    placeholder="Project title"
+                    className="font-inter"
+                    style={{
+                      background: "#0A0D12",
+                      border: "1px solid #2A313C",
+                      borderRadius: "8px",
+                      padding: "10px 12px",
+                      color: "#FFFFFF",
+                      fontSize: "14px",
+                      outline: "none",
+                    }}
+                  />
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <label
+                    className="font-chakra"
+                    style={{ fontSize: "12px", fontWeight: 600, color: "#00EAFF", letterSpacing: "0.05em" }}
+                  >
+                    DESCRIPTION
+                  </label>
+                  <textarea
+                    value={projectDescription}
+                    onChange={(e) => setProjectDescription(e.target.value)}
+                    placeholder="What is this project about?"
+                    rows={4}
+                    className="font-inter"
+                    style={{
+                      background: "#0A0D12",
+                      border: "1px solid #2A313C",
+                      borderRadius: "8px",
+                      padding: "10px 12px",
+                      color: "#FFFFFF",
+                      fontSize: "14px",
+                      outline: "none",
+                      resize: "vertical",
+                    }}
+                  />
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <label
+                    className="font-chakra"
+                    style={{ fontSize: "12px", fontWeight: 600, color: "#00EAFF", letterSpacing: "0.05em" }}
+                  >
+                    TAGS
+                  </label>
+                  <input
+                    type="text"
+                    value={projectTags}
+                    onChange={(e) => setProjectTags(e.target.value)}
+                    placeholder="Comma-separated, e.g. Unity, 3D, Shader"
+                    className="font-inter"
+                    style={{
+                      background: "#0A0D12",
+                      border: "1px solid #2A313C",
+                      borderRadius: "8px",
+                      padding: "10px 12px",
+                      color: "#FFFFFF",
+                      fontSize: "14px",
+                      outline: "none",
+                    }}
+                  />
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <label
+                    className="font-chakra"
+                    style={{ fontSize: "12px", fontWeight: 600, color: "#00EAFF", letterSpacing: "0.05em" }}
+                  >
+                    LINK (OPTIONAL)
+                  </label>
+                  <input
+                    type="url"
+                    value={projectLink}
+                    onChange={(e) => setProjectLink(e.target.value)}
+                    placeholder="https://..."
+                    className="font-inter"
+                    style={{
+                      background: "#0A0D12",
+                      border: "1px solid #2A313C",
+                      borderRadius: "8px",
+                      padding: "10px 12px",
+                      color: "#FFFFFF",
+                      fontSize: "14px",
+                      outline: "none",
+                    }}
+                  />
+                </div>
+
+                {projectError && (
+                  <div className="font-inter" style={{ color: "#FF5C5C", fontSize: "13px" }}>
+                    {projectError}
+                  </div>
+                )}
+
+                <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "4px" }}>
+                  <button
+                    type="button"
+                    onClick={handleCloseAddProject}
+                    disabled={isSavingProject}
+                    className="font-chakra"
+                    style={{
+                      background: "transparent",
+                      border: "1px solid #2A313C",
+                      borderRadius: "8px",
+                      padding: "10px 18px",
+                      color: "#C8C7C7",
+                      fontSize: "14px",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSaveProject}
+                    disabled={isSavingProject}
+                    className="font-chakra"
+                    style={{
+                      background: "#00EAFF",
+                      border: "none",
+                      borderRadius: "8px",
+                      padding: "10px 18px",
+                      color: "#0A0D12",
+                      fontSize: "14px",
+                      fontWeight: 700,
+                      cursor: isSavingProject ? "not-allowed" : "pointer",
+                      opacity: isSavingProject ? 0.6 : 1,
+                    }}
+                  >
+                    {isSavingProject ? "Saving..." : "Add Project"}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

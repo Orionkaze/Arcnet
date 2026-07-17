@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, notFound } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/home/Navbar";
 import PostCard from "@/components/home/PostCard";
@@ -120,10 +120,88 @@ interface PostType {
   } | null;
 }
 
+// Maps a hub's stored emoji icon (DB/seed value) to a matching inline SVG icon
+// so the render layer never shows a raw emoji glyph. Falls back to a generic
+// hash/hub icon for unknown values. The DB/seed data is left untouched.
+function renderHubIcon(icon: string, size: number) {
+  const common = {
+    width: size,
+    height: size,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 2,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+  };
+
+  switch (icon) {
+    case "🎮":
+      return (
+        <svg {...common}>
+          <line x1="6" y1="12" x2="10" y2="12" />
+          <line x1="8" y1="10" x2="8" y2="14" />
+          <line x1="15" y1="13" x2="15.01" y2="13" />
+          <line x1="18" y1="11" x2="18.01" y2="11" />
+          <rect x="2" y="6" width="20" height="12" rx="2" />
+        </svg>
+      );
+    case "🎨":
+      return (
+        <svg {...common}>
+          <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+          <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+          <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+          <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+          <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z" />
+        </svg>
+      );
+    case "🎬":
+      return (
+        <svg {...common}>
+          <rect x="2" y="2" width="20" height="20" rx="2" />
+          <line x1="7" y1="2" x2="7" y2="22" />
+          <line x1="17" y1="2" x2="17" y2="22" />
+          <line x1="2" y1="12" x2="22" y2="12" />
+          <line x1="2" y1="7" x2="7" y2="7" />
+          <line x1="2" y1="17" x2="7" y2="17" />
+          <line x1="17" y1="17" x2="22" y2="17" />
+          <line x1="17" y1="7" x2="22" y2="7" />
+        </svg>
+      );
+    case "✍️":
+      return (
+        <svg {...common}>
+          <path d="M12 20h9" />
+          <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z" />
+        </svg>
+      );
+    case "🐛":
+      return (
+        <svg {...common}>
+          <rect x="8" y="6" width="8" height="14" rx="4" />
+          <path d="M19 7l-3 2M5 7l3 2M19 19l-3-2M5 19l3-2M22 13h-4M6 13H2" />
+        </svg>
+      );
+    case "🔒":
+      return (
+        <svg {...common}>
+          <rect x="3" y="11" width="18" height="11" rx="2" />
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        </svg>
+      );
+    default:
+      return (
+        <svg {...common}>
+          <path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18" />
+        </svg>
+      );
+  }
+}
+
 export default function HubPage() {
   const { slug } = useParams() as { slug: string };
   const { user } = useAuthStore();
-  const router = useRouter();
 
   // Navigation / views
   const [viewMode, setViewMode] = useState<"chat" | "feed">("chat");
@@ -145,7 +223,55 @@ export default function HubPage() {
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
   const [pinnedMessage, setPinnedMessage] = useState<Message | null>(null);
   const [rateLimitError, setRateLimitError] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
+
+  // Private-hub join-request gate state
+  const [joinCodeInput, setJoinCodeInput] = useState("");
+  const [joinRequestLoading, setJoinRequestLoading] = useState(false);
+  const [joinRequestFeedback, setJoinRequestFeedback] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+  // Emoji picker for the chat input
+  const [showInputEmojiPicker, setShowInputEmojiPicker] = useState(false);
+
+  // Show a transient in-UI toast (~3s)
+  const showToast = (message: string) => {
+    setToast(message);
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  // Request access to a private hub via join code
+  const handleRequestToJoin = async () => {
+    if (!user) {
+      showToast("Please log in to request access.");
+      return;
+    }
+    const code = joinCodeInput.trim();
+    if (!code) {
+      setJoinRequestFeedback({ type: "error", text: "Enter a join code to request access." });
+      return;
+    }
+    setJoinRequestLoading(true);
+    setJoinRequestFeedback(null);
+    try {
+      const res = await fetch("/api/hubs/join-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ joinCode: code }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setJoinRequestFeedback({ type: "success", text: "Request sent — you'll get access once approved." });
+        setJoinCodeInput("");
+      } else {
+        setJoinRequestFeedback({ type: "error", text: data.error || "Failed to send request." });
+      }
+    } catch {
+      setJoinRequestFeedback({ type: "error", text: "Something went wrong. Please try again." });
+    } finally {
+      setJoinRequestLoading(false);
+    }
+  };
   const [isScrolledToBottom, setIsScrolledToBottom] = useState(true);
 
   // Community Feed View
@@ -248,11 +374,11 @@ export default function HubPage() {
         setHub({ ...hub, allowMembersToInvite: allow });
       } else {
         const data = await res.json();
-        alert(data.error || "Failed to update settings");
+        showToast(data.error || "Failed to update settings");
       }
     } catch (error) {
       console.error(error);
-      alert("An error occurred");
+      showToast("An error occurred");
     } finally {
       setUpdatingSettings(false);
     }
@@ -282,11 +408,11 @@ export default function HubPage() {
         }
       } else {
         const data = await res.json();
-        alert(data.error || `Failed to ${action} user`);
+        showToast(data.error || `Failed to ${action} user`);
       }
     } catch (error) {
       console.error(error);
-      alert("An error occurred");
+      showToast("An error occurred");
     } finally {
       setActionLoading(null);
     }
@@ -300,7 +426,7 @@ export default function HubPage() {
         const res = await fetch(`/api/hubs/${slug}`);
         if (!res.ok) {
           if (res.status === 404) {
-            router.push("/404");
+            notFound();
           }
           throw new Error("Failed to load hub metadata");
         }
@@ -317,7 +443,7 @@ export default function HubPage() {
       }
     }
     fetchHubMetadata();
-  }, [slug, router]);
+  }, [slug]);
 
   // 2. Fetch Chat messages when channel changes
   useEffect(() => {
@@ -330,11 +456,6 @@ export default function HubPage() {
         if (res.ok) {
           const data = await res.json();
           setMessages(data.messages || []);
-          // Set initial pinned message locally (e.g. first reply or just pick first message containing tag)
-          if (data.messages && data.messages.length > 0) {
-            const potentialPin = data.messages.find((m: Message) => m.content.toLowerCase().includes("pin") || m.content.length > 50);
-            if (potentialPin) setPinnedMessage(potentialPin);
-          }
         }
       } catch (err) {
         console.warn(err);
@@ -511,7 +632,7 @@ export default function HubPage() {
   // Join or leave hub toggle
   const handleJoinToggle = async () => {
     if (!user) {
-      alert("Please log in to join hubs.");
+      showToast("Please log in to join hubs.");
       return;
     }
     setJoining(true);
@@ -552,7 +673,7 @@ export default function HubPage() {
     if (!text) return;
 
     if (text.length > 1000) {
-      alert("Message cannot exceed 1000 characters");
+      showToast("Message cannot exceed 1000 characters");
       return;
     }
 
@@ -615,7 +736,7 @@ export default function HubPage() {
           setRateLimitError(errData.error || "Rate limit reached. Try again later.");
           setTimeout(() => setRateLimitError(null), 5000);
         } else {
-          alert(errData.error || "Failed to send message");
+          showToast(errData.error || "Failed to send message");
         }
         // Remove optimistic message
         setMessages((prev) => prev.filter((m) => m.id !== tempId));
@@ -761,6 +882,13 @@ export default function HubPage() {
     <div className="home-layout flex flex-col h-screen w-screen overflow-hidden bg-[#10141A]">
       <Navbar onMenuToggle={() => setIsDrawerOpen(!isDrawerOpen)} />
 
+      {/* Global in-UI toast */}
+      {toast && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 bg-[#00EAFF] text-[#10141A] font-chakra font-bold text-xs py-2 px-4 rounded-md shadow-[0_0_15px_rgba(0,234,255,0.4)] z-[200] animate-fade-in">
+          {toast}
+        </div>
+      )}
+
       {hubLoading ? (
         <div className="flex-1 flex flex-col items-center justify-center text-[#00EAFF] font-chakra mt-14">
           <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#00EAFF] mb-4"></div>
@@ -780,7 +908,7 @@ export default function HubPage() {
               {/* Hub Meta Card */}
               <div className="p-3 bg-[#161c24] border border-[#2A313C] rounded-lg relative">
                 <div className="flex items-center gap-3">
-                  <span className="text-3xl">{hub.icon}</span>
+                  <span className="text-white">{renderHubIcon(hub.icon, 28)}</span>
                   <div>
                     <h2 
                       className="font-chakra font-bold text-base text-white tracking-wider cursor-pointer hover:text-[#00EAFF] transition-colors flex items-center gap-1.5"
@@ -937,15 +1065,64 @@ export default function HubPage() {
             {/* Check Privacy Access */}
             {hub.isPrivate && !hub.joined ? (
               <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#10141A]">
-                <div className="w-16 h-16 rounded-full bg-[#161c24] border border-[#2A313C] flex items-center justify-center shadow-lg mb-4 text-3xl">
-                  🔒
+                <div className="w-16 h-16 rounded-full bg-[#161c24] border border-[#2A313C] flex items-center justify-center shadow-lg mb-4 text-white">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
                 </div>
                 <h2 className="font-chakra font-bold text-xl text-white mb-2 uppercase tracking-widest">
                   Private Hub
                 </h2>
                 <p className="font-inter text-sm text-[#C8C7C7] max-w-sm leading-relaxed mb-6">
-                  You need to be a member to view messages, channels, and feed in this hub. Enter the join code in the Join New Hub menu to request access.
+                  You need to be a member to view messages, channels, and feed in this hub. Enter the join code below to request access.
                 </p>
+
+                {/* Join-code request affordance */}
+                <div className="w-full max-w-sm flex flex-col gap-3">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={joinCodeInput}
+                      onChange={(e) => setJoinCodeInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleRequestToJoin();
+                        }
+                      }}
+                      placeholder="Enter join code"
+                      className="flex-1 bg-[#161c24] border border-[#2A313C] text-white text-xs px-3 py-2.5 rounded-lg focus:outline-none focus:border-[#00EAFF] font-chakra tracking-[0.15em] uppercase text-center placeholder:tracking-normal placeholder:normal-case"
+                    />
+                    <button
+                      onClick={handleRequestToJoin}
+                      disabled={joinRequestLoading}
+                      className="px-4 py-2.5 bg-[#00EAFF] text-[#10141A] font-chakra font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-[#00d0e0] shadow-[0_0_10px_rgba(0,234,255,0.25)] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                    >
+                      {joinRequestLoading ? "Sending..." : "Request to Join"}
+                    </button>
+                  </div>
+                  {joinRequestFeedback && (
+                    <p
+                      className={`text-xs font-chakra ${
+                        joinRequestFeedback.type === "success" ? "text-[#00E676]" : "text-[#FF4D4D]"
+                      }`}
+                    >
+                      {joinRequestFeedback.type === "success" ? (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block align-[-2px] mr-1">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      ) : (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block align-[-2px] mr-1">
+                          <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                          <line x1="12" y1="9" x2="12" y2="13" />
+                          <line x1="12" y1="17" x2="12.01" y2="17" />
+                        </svg>
+                      )}
+                      {joinRequestFeedback.text}
+                    </p>
+                  )}
+                </div>
               </div>
             ) : (
               <>
@@ -956,7 +1133,12 @@ export default function HubPage() {
                 {/* rate limit notification toast */}
                 {rateLimitError && (
                   <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-[#FF4D4D] text-[#10141A] font-chakra font-bold text-xs py-2 px-4 rounded-md shadow-[0_0_15px_rgba(255,77,77,0.4)] z-30 animate-pulse">
-                    ⚠️ {rateLimitError}
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block align-[-2px] mr-1">
+                      <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                      <line x1="12" y1="9" x2="12" y2="13" />
+                      <line x1="12" y1="17" x2="12.01" y2="17" />
+                    </svg>
+                    {rateLimitError}
                   </div>
                 )}
 
@@ -964,7 +1146,12 @@ export default function HubPage() {
                 {pinnedMessage && (
                   <div className="bg-[#161c24] border-b border-[#2A313C] px-4 py-2 flex items-center justify-between text-xs font-inter z-10 flex-shrink-0">
                     <div className="flex items-center gap-2 truncate">
-                      <span className="text-[#00EAFF]">📌</span>
+                      <span className="text-[#00EAFF]">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="12" y1="17" x2="12" y2="22" />
+                          <path d="M5 17h14l-1.6-2.1a2 2 0 0 1-.4-1.2V8a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v5.7a2 2 0 0 1-.4 1.2z" />
+                        </svg>
+                      </span>
                       <span className="text-[#C8C7C7] truncate">
                         <strong>@{pinnedMessage.author.username}</strong>: {pinnedMessage.content}
                       </span>
@@ -990,7 +1177,11 @@ export default function HubPage() {
                     </div>
                   ) : messages.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center text-center text-[#C8C7C7] px-6 select-none">
-                      <span className="text-4xl mb-2">💬</span>
+                      <span className="mb-2">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                        </svg>
+                      </span>
                       <h3 className="font-chakra font-bold text-sm text-white mb-1">
                         Welcome to #{selectedChannel?.name}!
                       </h3>
@@ -1023,25 +1214,52 @@ export default function HubPage() {
                             <div className="group flex gap-3 hover:bg-[#161c24]/30 p-1.5 rounded-lg transition-colors relative">
                               
                               {/* Avatar */}
-                              <div className="w-8 h-8 rounded-full bg-[#2A313C] overflow-hidden flex-shrink-0 flex items-center justify-center font-bold text-xs select-none">
-                                {msg.author.avatar ? (
-                                  // eslint-disable-next-line @next/next/no-img-element
-                                  <img
-                                    src={msg.author.avatar}
-                                    alt={msg.author.firstName}
-                                    className="w-full h-full object-cover"
-                                  />
-                                ) : (
-                                  msg.author.firstName.charAt(0).toUpperCase()
-                                )}
-                              </div>
+                              {msg.author.username ? (
+                                <Link
+                                  href={`/profile/${msg.author.username}`}
+                                  className="w-8 h-8 rounded-full bg-[#2A313C] overflow-hidden flex-shrink-0 flex items-center justify-center font-bold text-xs select-none hover:ring-2 hover:ring-[#00EAFF] transition-all"
+                                >
+                                  {msg.author.avatar ? (
+                                    // eslint-disable-next-line @next/next/no-img-element
+                                    <img
+                                      src={msg.author.avatar}
+                                      alt={msg.author.firstName}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    msg.author.firstName.charAt(0).toUpperCase()
+                                  )}
+                                </Link>
+                              ) : (
+                                <div className="w-8 h-8 rounded-full bg-[#2A313C] overflow-hidden flex-shrink-0 flex items-center justify-center font-bold text-xs select-none">
+                                  {msg.author.avatar ? (
+                                    // eslint-disable-next-line @next/next/no-img-element
+                                    <img
+                                      src={msg.author.avatar}
+                                      alt={msg.author.firstName}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    msg.author.firstName.charAt(0).toUpperCase()
+                                  )}
+                                </div>
+                              )}
 
                               {/* Message Details */}
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 select-none">
-                                  <span className="font-inter font-bold text-xs text-white hover:underline cursor-pointer">
-                                    {msg.author.firstName} {msg.author.lastName}
-                                  </span>
+                                  {msg.author.username ? (
+                                    <Link
+                                      href={`/profile/${msg.author.username}`}
+                                      className="font-inter font-bold text-xs text-white hover:underline cursor-pointer"
+                                    >
+                                      {msg.author.firstName} {msg.author.lastName}
+                                    </Link>
+                                  ) : (
+                                    <span className="font-inter font-bold text-xs text-white">
+                                      {msg.author.firstName} {msg.author.lastName}
+                                    </span>
+                                  )}
                                   {msg.author.isVerified && (
                                     <svg width="10" height="10" viewBox="0 0 24 24" fill="#00EAFF">
                                       <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
@@ -1055,7 +1273,12 @@ export default function HubPage() {
                                 {/* Reply details if message is nested */}
                                 {msg.replyTo && (
                                   <div className="mt-1 flex items-center gap-2 bg-[#161c24] border-l-2 border-[#00EAFF] px-2 py-1 rounded text-[11px] text-[#C8C7C7] select-none truncate max-w-lg">
-                                    <span className="text-[#00EAFF]">↪</span>
+                                    <span className="text-[#00EAFF]">
+                                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <polyline points="9 14 4 9 9 4" />
+                                        <path d="M20 20v-7a4 4 0 0 0-4-4H4" />
+                                      </svg>
+                                    </span>
                                     <span>
                                       <strong>@{msg.replyTo.author.username}</strong>: {msg.replyTo.content}
                                     </span>
@@ -1182,7 +1405,10 @@ export default function HubPage() {
                     }}
                     className="absolute bottom-[90px] right-6 bg-[#00EAFF] text-[#10141A] font-chakra font-bold text-[10px] tracking-wider uppercase px-3 py-1.5 rounded-full shadow-[0_0_12px_rgba(0,234,255,0.4)] hover:scale-105 transition-transform cursor-pointer z-10"
                   >
-                    ⬇ Jump to bottom
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block align-[-2px] mr-1">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                    Jump to bottom
                   </button>
                 )}
 
@@ -1190,7 +1416,13 @@ export default function HubPage() {
                 {replyingTo && (
                   <div className="bg-[#161c24] border-t border-[#2A313C] px-4 py-2 flex items-center justify-between text-xs font-inter flex-shrink-0 select-none">
                     <div className="flex items-center gap-2 truncate">
-                      <span className="text-[#00EAFF]">↪ Replying to</span>
+                      <span className="text-[#00EAFF] flex items-center gap-1">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="9 14 4 9 9 4" />
+                          <path d="M20 20v-7a4 4 0 0 0-4-4H4" />
+                        </svg>
+                        Replying to
+                      </span>
                       <span className="text-white font-bold truncate">@{replyingTo.author.username}</span>
                       <span className="text-[#C8C7C7] truncate italic">&ldquo;{replyingTo.content}&rdquo;</span>
                     </div>
@@ -1234,20 +1466,38 @@ export default function HubPage() {
                           className="bg-transparent border-none text-white text-xs w-full focus:outline-none resize-none font-inter leading-relaxed"
                         />
                         <div className="flex justify-between items-center mt-2 text-[10px] font-chakra text-[#C8C7C7] select-none pt-1 border-t border-[#2A313C]/20">
-                          <div className="flex gap-2">
-                            {/* Emoji trigger pill */}
+                          <div className="flex gap-2 relative">
+                            {/* Emoji picker trigger */}
                             <button
                               type="button"
-                              onClick={() => {
-                                // Add random emoji to input
-                                const emojis = ["👍", "🔥", "🚀", "😂", "🎉", "🎨", "🎮", "❤️"];
-                                const rand = emojis[Math.floor(Math.random() * emojis.length)];
-                                setMessageText((prev) => prev + rand);
-                              }}
+                              onClick={() => setShowInputEmojiPicker((prev) => !prev)}
                               className="hover:text-[#00EAFF] transition-colors"
                             >
-                              😊 Insert Emoji
+                              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block align-[-2px] mr-1">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                                <line x1="9" y1="9" x2="9.01" y2="9" />
+                                <line x1="15" y1="9" x2="15.01" y2="9" />
+                              </svg>
+                              Insert Emoji
                             </button>
+                            {showInputEmojiPicker && (
+                              <div className="absolute bottom-6 left-0 bg-[#10141A] border border-[#2A313C] rounded-lg shadow-xl p-1.5 flex gap-1 z-30 animate-fade-in">
+                                {["👍", "🔥", "🚀", "😂", "🎉", "🎨", "🎮", "❤️"].map((emoji) => (
+                                  <button
+                                    key={emoji}
+                                    type="button"
+                                    onClick={() => {
+                                      setMessageText((prev) => prev + emoji);
+                                      setShowInputEmojiPicker(false);
+                                    }}
+                                    className="hover:scale-125 transition-transform text-sm cursor-pointer p-0.5"
+                                  >
+                                    {emoji}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
                           </div>
                           <span className={messageText.length > 900 ? "text-[#FF4D4D]" : ""}>
                             {messageText.length} / 1000
@@ -1319,7 +1569,12 @@ export default function HubPage() {
 
                       {postError && (
                         <div className="text-[#FF4D4D] text-xs font-chakra pl-11">
-                          ⚠️ {postError}
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block align-[-2px] mr-1">
+                            <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                            <line x1="12" y1="9" x2="12" y2="13" />
+                            <line x1="12" y1="17" x2="12.01" y2="17" />
+                          </svg>
+                          {postError}
                         </div>
                       )}
 
@@ -1347,7 +1602,12 @@ export default function HubPage() {
                   </div>
                 ) : posts.length === 0 ? (
                   <div className="text-center py-10 text-[#C8C7C7] select-none">
-                    <span className="text-4xl">📭</span>
+                    <span className="inline-block">
+                      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
+                        <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
+                      </svg>
+                    </span>
                     <h3 className="font-chakra font-bold text-sm text-white mt-2 mb-1">
                       No posts in this Hub yet
                     </h3>
@@ -1613,7 +1873,7 @@ export default function HubPage() {
             {/* Header */}
             <div className="px-6 py-5 border-b border-[#2A313C] flex justify-between items-center bg-[#161c24]">
               <h2 className="text-lg font-chakra font-bold text-white tracking-wider flex items-center gap-2">
-                <span className="text-2xl">{hub.icon}</span> {hub.name} Details
+                <span className="text-white">{renderHubIcon(hub.icon, 22)}</span> {hub.name} Details
               </h2>
               <button
                 onClick={() => setIsDetailsOpen(false)}
@@ -1657,7 +1917,7 @@ export default function HubPage() {
                       onClick={() => {
                         if (hub.joinCode) {
                           navigator.clipboard.writeText(hub.joinCode);
-                          alert("Invite code copied!");
+                          showToast("Invite code copied!");
                         }
                       }}
                       className="p-2.5 rounded bg-[#2A313C] hover:bg-[#3b4351] text-white transition-colors"

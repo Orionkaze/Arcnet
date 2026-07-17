@@ -112,7 +112,7 @@ export default function Navbar({ onMenuToggle }: NavbarProps) {
       {/* Right — Actions */}
       <div className="navbar-right">
         {/* Chat bubble icon */}
-        <button className="navbar-icon-btn" aria-label="Messages">
+        <Link href="/messages" className="navbar-icon-btn" aria-label="Messages">
           <svg
             width="20"
             height="20"
@@ -125,7 +125,7 @@ export default function Navbar({ onMenuToggle }: NavbarProps) {
           >
             <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" />
           </svg>
-        </button>
+        </Link>
 
         {/* Bell icon */}
         <Link
