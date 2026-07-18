@@ -153,7 +153,6 @@ const MENTORS: Mentor[] = [
 export default function MentorsPage() {
   const { checkAuth } = useAuthStore();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const [search, setSearch] = useState("");
   const [activeSpecialty, setActiveSpecialty] = useState("All");
@@ -323,30 +322,6 @@ export default function MentorsPage() {
         </main>
 
         <RightPanel />
-
-        {/* Floating Grid Menu Button */}
-        <div className="fixed top-[72px] right-6 z-50">
-          <button
-            className="w-9 h-9 rounded-full bg-[#10141A] border-2 border-[#00EAFF] flex items-center justify-center hover:bg-[rgba(0,234,255,0.1)] transition-colors cursor-pointer"
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-          >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#00EAFF"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <rect x="3" y="3" width="7" height="7"></rect>
-              <rect x="14" y="3" width="7" height="7"></rect>
-              <rect x="14" y="14" width="7" height="7"></rect>
-              <rect x="3" y="14" width="7" height="7"></rect>
-            </svg>
-          </button>
-        </div>
       </div>
       <MobileBottomNav />
       <MobileDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />

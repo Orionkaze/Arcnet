@@ -82,8 +82,54 @@ export async function GET(
     // Reverse to get oldest to newest chronologically
     const chronologicalMessages = [...messages].reverse();
 
+    // Load the channel's pinned message (if any) so clients can render the banner
+    let pinnedMessage = null;
+    if (channel.pinnedMessageId) {
+      pinnedMessage = await prisma.message.findUnique({
+        where: { id: channel.pinnedMessageId },
+        include: {
+          author: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              username: true,
+              avatar: true,
+              isVerified: true,
+            },
+          },
+          replyTo: {
+            include: {
+              author: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  username: true,
+                  avatar: true,
+                },
+              },
+            },
+          },
+          reactions: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  username: true,
+                },
+              },
+            },
+          },
+        },
+      });
+    }
+
     return NextResponse.json({
       messages: chronologicalMessages,
+      pinnedMessage,
       hasMore: messages.length === limit,
     });
   } catch (error) {

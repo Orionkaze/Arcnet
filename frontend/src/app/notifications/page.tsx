@@ -71,6 +71,27 @@ const TYPE_META: Record<
       <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 108 0 4 4 0 00-8 0M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
     ),
   },
+  hub_request_approved: {
+    verb: "approved your request to join a hub",
+    color: "#22C55E",
+    icon: (
+      <>
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+        <polyline points="22 4 12 14.01 9 11.01" />
+      </>
+    ),
+  },
+  hub_request_rejected: {
+    verb: "declined your request to join a hub",
+    color: "#FF4D6D",
+    icon: (
+      <>
+        <circle cx="12" cy="12" r="10" />
+        <line x1="15" y1="9" x2="9" y2="15" />
+        <line x1="9" y1="9" x2="15" y2="15" />
+      </>
+    ),
+  },
 };
 
 function timeAgo(iso: string): string {
@@ -91,7 +112,6 @@ function timeAgo(iso: string): string {
 export default function NotificationsPage() {
   const { checkAuth } = useAuthStore();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -285,30 +305,6 @@ export default function NotificationsPage() {
         </main>
 
         <RightPanel />
-
-        {/* Floating Grid Menu Button */}
-        <div className="fixed top-[72px] right-6 z-50">
-          <button
-            className="w-9 h-9 rounded-full bg-[#10141A] border-2 border-[#00EAFF] flex items-center justify-center hover:bg-[rgba(0,234,255,0.1)] transition-colors cursor-pointer"
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-          >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#00EAFF"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <rect x="3" y="3" width="7" height="7"></rect>
-              <rect x="14" y="3" width="7" height="7"></rect>
-              <rect x="14" y="14" width="7" height="7"></rect>
-              <rect x="3" y="14" width="7" height="7"></rect>
-            </svg>
-          </button>
-        </div>
       </div>
       <MobileBottomNav />
       <MobileDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />

@@ -35,6 +35,26 @@ export async function POST(
           postId,
         },
       });
+
+      // Best-effort notification; must never break the like action.
+      try {
+        const post = await prisma.post.findUnique({
+          where: { id: postId },
+          select: { authorId: true },
+        });
+        if (post && post.authorId !== userId) {
+          await prisma.notification.create({
+            data: {
+              type: "like",
+              userId: post.authorId,
+              fromUserId: userId,
+              postId,
+            },
+          });
+        }
+      } catch (notifyError) {
+        console.error("Like Notification Error:", notifyError);
+      }
     }
 
     const likesCount = await prisma.like.count({

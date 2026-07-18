@@ -67,6 +67,19 @@ export async function POST(
         },
       });
       following = true;
+
+      // Best-effort notification; must never break the follow action.
+      try {
+        await prisma.notification.create({
+          data: {
+            type: "follow",
+            userId: followingId,
+            fromUserId: followerId,
+          },
+        });
+      } catch (notifyError) {
+        console.error("Follow Notification Error:", notifyError);
+      }
     }
 
     const followerCount = await prisma.follow.count({

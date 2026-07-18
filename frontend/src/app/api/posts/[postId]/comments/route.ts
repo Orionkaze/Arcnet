@@ -77,6 +77,26 @@ export async function POST(
       where: { postId },
     });
 
+    // Best-effort notification; must never break the comment action.
+    try {
+      const post = await prisma.post.findUnique({
+        where: { id: postId },
+        select: { authorId: true },
+      });
+      if (post && post.authorId !== userId) {
+        await prisma.notification.create({
+          data: {
+            type: "comment",
+            userId: post.authorId,
+            fromUserId: userId,
+            postId,
+          },
+        });
+      }
+    } catch (notifyError) {
+      console.error("Comment Notification Error:", notifyError);
+    }
+
     return NextResponse.json({ comment, commentsCount }, { status: 201 });
   } catch (error) {
     console.error("Create Comment Error:", error);

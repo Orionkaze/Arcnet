@@ -35,6 +35,26 @@ export async function POST(
           postId,
         },
       });
+
+      // Best-effort notification; must never break the repost action.
+      try {
+        const post = await prisma.post.findUnique({
+          where: { id: postId },
+          select: { authorId: true },
+        });
+        if (post && post.authorId !== userId) {
+          await prisma.notification.create({
+            data: {
+              type: "repost",
+              userId: post.authorId,
+              fromUserId: userId,
+              postId,
+            },
+          });
+        }
+      } catch (notifyError) {
+        console.error("Repost Notification Error:", notifyError);
+      }
     }
 
     const repostsCount = await prisma.repost.count({

@@ -456,6 +456,7 @@ export default function HubPage() {
         if (res.ok) {
           const data = await res.json();
           setMessages(data.messages || []);
+          setPinnedMessage(data.pinnedMessage || null);
         }
       } catch (err) {
         console.warn(err);
@@ -810,6 +811,33 @@ export default function HubPage() {
     }
   };
 
+  // Pin or unpin a message (admins/owners only). Pass null to clear the pin.
+  const handleSetPinnedMessage = async (msg: Message | null) => {
+    if (!selectedChannel) return;
+    // Optimistic update
+    const previous = pinnedMessage;
+    setPinnedMessage(msg);
+    try {
+      const res = await fetch(`/api/channels/${selectedChannel.id}/pin`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messageId: msg ? msg.id : null }),
+      });
+      if (!res.ok) {
+        const errData = await res.json();
+        showToast(errData.error || "Failed to update pinned message");
+        setPinnedMessage(previous);
+      }
+    } catch (err) {
+      console.warn(err);
+      showToast("Failed to update pinned message");
+      setPinnedMessage(previous);
+    }
+  };
+
+  // Whether the current user can pin/unpin messages in this hub
+  const canManagePins = hub?.userRole === "admin" || hub?.userRole === "owner";
+
   // Handle Create Post in Community Feed
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1156,12 +1184,14 @@ export default function HubPage() {
                         <strong>@{pinnedMessage.author.username}</strong>: {pinnedMessage.content}
                       </span>
                     </div>
-                    <button
-                      onClick={() => setPinnedMessage(null)}
-                      className="text-[#C8C7C7] hover:text-[#FF4D4D] font-chakra text-[10px] tracking-wider uppercase font-bold pl-3"
-                    >
-                      Dismiss
-                    </button>
+                    {canManagePins && (
+                      <button
+                        onClick={() => handleSetPinnedMessage(null)}
+                        className="text-[#C8C7C7] hover:text-[#FF4D4D] font-chakra text-[10px] tracking-wider uppercase font-bold pl-3"
+                      >
+                        Dismiss
+                      </button>
+                    )}
                   </div>
                 )}
 
@@ -1362,16 +1392,18 @@ export default function HubPage() {
                                   )}
                                 </div>
 
-                                <button
-                                  onClick={() => setPinnedMessage(msg)}
-                                  className="p-1 text-[#C8C7C7] hover:text-[#00EAFF] rounded transition-all cursor-pointer"
-                                  title="Pin Message"
-                                >
-                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                                    <circle cx="12" cy="10" r="3" />
-                                  </svg>
-                                </button>
+                                {canManagePins && (
+                                  <button
+                                    onClick={() => handleSetPinnedMessage(msg)}
+                                    className="p-1 text-[#C8C7C7] hover:text-[#00EAFF] rounded transition-all cursor-pointer"
+                                    title="Pin Message"
+                                  >
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                      <circle cx="12" cy="10" r="3" />
+                                    </svg>
+                                  </button>
+                                )}
                               </div>
 
                             </div>

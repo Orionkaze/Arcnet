@@ -201,12 +201,13 @@ model HubJoinRequest {
 }
 
 model Channel {
-  id        String    @id @default(cuid())
-  hubId     String
-  name      String
-  hub       Hub       @relation(fields: [hubId], references: [id])
-  messages  Message[]
-  createdAt DateTime  @default(now())
+  id              String    @id @default(cuid())
+  hubId           String
+  name            String
+  pinnedMessageId String?
+  hub             Hub       @relation(fields: [hubId], references: [id])
+  messages        Message[]
+  createdAt       DateTime  @default(now())
 }
 
 model Message {
