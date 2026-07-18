@@ -21,6 +21,9 @@ const demoEnv = {
   JWT_SECRET: process.env.JWT_SECRET ?? "local-demo-secret-not-for-prod",
   // PGlite serves one connection at a time; keep node-postgres from opening more.
   DB_POOL_MAX: process.env.DB_POOL_MAX ?? "1",
+  // No login screen: every visitor is auto-authenticated as the seeded demo
+  // user (see AuthInit.tsx + /api/auth/demo-login). Never set in production.
+  NEXT_PUBLIC_DEMO_MODE: "true",
 };
 
 function run(cmd, args, opts = {}) {
@@ -75,6 +78,10 @@ if (!(await hasData())) {
   console.log("[demo] existing demo data found — skipping seed.");
 }
 
-console.log("\n[demo] Log in at /login with demo@caliber.dev / caliber1234 (see DEMO.md for more)\n");
+console.log("\n[demo] No login screen — every visitor auto-authenticates as demo@caliber.dev (see DEMO.md)\n");
 console.log("[demo] starting Next.js dev server...");
-await run("npx", ["next", "dev"]);
+// `npm run demo -- -p 3012` forwards a custom port through, same as the
+// project's other launch.json entries (e.g. "arcnet" -> `next dev -p 3011`).
+const pFlagIndex = process.argv.indexOf("-p");
+const nextPort = pFlagIndex !== -1 ? process.argv[pFlagIndex + 1] : (process.env.PORT || "3000");
+await run("npx", ["next", "dev", "-p", nextPort]);

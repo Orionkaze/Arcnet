@@ -1,13 +1,17 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter, usePathname } from "next/navigation";
+
+// Set only by `npm run demo` (see scripts/demo.mjs), never in production.
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
 
 export function AuthInit() {
   const { checkAuth, isAuthenticated, isLoading, user } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
+  const demoLoginAttempted = useRef(false);
 
   useEffect(() => {
     checkAuth();
@@ -25,8 +29,18 @@ export function AuthInit() {
     const isPublicViewablePath = pathname === "/latest";
 
     if (!isAuthenticated) {
+      // Demo mode: there's no login screen — silently authenticate as the
+      // seeded demo user the first time we see an unauthenticated session,
+      // instead of ever redirecting to /login.
+      if (DEMO_MODE && !demoLoginAttempted.current) {
+        demoLoginAttempted.current = true;
+        fetch("/api/auth/demo-login", { method: "POST" })
+          .then(() => checkAuth())
+          .catch(() => {});
+        return;
+      }
       // Unauthenticated users can access auth pages, profile pages, and public-viewable pages
-      if (!isExactPublicPath && !isProfilePath && !isPublicViewablePath) {
+      if (!DEMO_MODE && !isExactPublicPath && !isProfilePath && !isPublicViewablePath) {
         router.push("/login");
       }
     } else {
