@@ -49,6 +49,8 @@ model User {
   caliberSubmissions       CaliberSubmission[] @relation("CaliberSubmissions")
   caliberRatings           CaliberRating[]     @relation("CaliberRatings")
   caliberCompEntries CaliberCompetitionEntry[] @relation("CaliberCompEntries")
+  caliberOpenSubmissions CaliberOpenSubmission[] @relation("CaliberOpenSubmissions")
+  caliberReviews         CaliberReview[]         @relation("CaliberReviews")
 }
 
 model Conversation {
@@ -360,4 +362,44 @@ model CaliberCompetitionSubmission {
   createdAt     DateTime           @default(now())
   @@unique([competitionId, problemId, userId])
   @@index([competitionId, userId])
+}
+
+model CaliberOpenProblem {
+  id          String                  @id @default(cuid())
+  trackId     String
+  prompt      String
+  rubric      Json                    // [{ key, label, maxPoints }]
+  maxPoints   Int                     // sum of criteria maxPoints (denormalized)
+  status      String                  @default("published")
+  submissions CaliberOpenSubmission[]
+  createdAt   DateTime                @default(now())
+  @@index([trackId])
+}
+
+model CaliberOpenSubmission {
+  id         String              @id @default(cuid())
+  problemId  String
+  problem    CaliberOpenProblem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User                @relation("CaliberOpenSubmissions", fields: [userId], references: [id], onDelete: Cascade)
+  answer     String
+  status     String              @default("pending") // pending | scored
+  score      Int?
+  reviews    CaliberReview[]
+  createdAt  DateTime            @default(now())
+  @@index([problemId])
+  @@index([userId])
+}
+
+model CaliberReview {
+  id           String                @id @default(cuid())
+  submissionId String
+  submission   CaliberOpenSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  reviewerId   String
+  reviewer     User                  @relation("CaliberReviews", fields: [reviewerId], references: [id], onDelete: Cascade)
+  scores       Json                  // { [criterionKey]: number }
+  total        Int
+  createdAt    DateTime              @default(now())
+  @@unique([submissionId, reviewerId])
+  @@index([submissionId])
 }
