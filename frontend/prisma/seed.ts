@@ -12,10 +12,11 @@
  * Idempotent: it deletes the demo dataset it manages, then recreates it.
  * Run with:  npx prisma migrate dev && npx prisma db seed
  */
-import { PrismaClient } from "@prisma/client";
+// `prisma db seed` runs this file directly via tsx, which — unlike Next.js or
+// the Prisma CLI — does not auto-load `.env`. Load it explicitly first.
+import "dotenv/config";
 import bcrypt from "bcrypt";
-
-const prisma = new PrismaClient();
+import { prisma } from "../src/lib/prisma";
 
 const DEMO_PASSWORD = "caliber1234";
 
