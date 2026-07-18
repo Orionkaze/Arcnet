@@ -26,6 +26,10 @@ describe("toEngineProblem", () => {
   it("throws on unknown type", () => {
     expect(() => toEngineProblem({ ...numericRow, type: "bogus" as ProblemRow["type"] })).toThrow();
   });
+  it("guesstimate with missing bands maps to empty bands (fail-soft)", () => {
+    const p = toEngineProblem({ id: "g0", trackId: "t1", type: "guesstimate", prompt: "x", difficulty: 1500, maxPoints: 100, config: { answer: 100 } });
+    if (p.type === "guesstimate") expect(p.bands).toEqual([]);
+  });
 });
 
 describe("toPublicProblem", () => {

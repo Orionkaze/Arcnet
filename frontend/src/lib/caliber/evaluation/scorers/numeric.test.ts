@@ -26,4 +26,9 @@ describe("scoreNumeric", () => {
     const r = scoreNumeric(zero, { value: 42 });
     expect(r.outcome).toBe(0);
   });
+  it("wrong-answer feedback does not disclose the answer", () => {
+    const fb = scoreNumeric(p, { value: 999 }).feedback;
+    expect(fb).not.toContain(String(p.answer)); // p.answer is 42
+    expect(fb.toLowerCase()).not.toContain("expected");
+  });
 });

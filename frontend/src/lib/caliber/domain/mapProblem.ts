@@ -18,7 +18,7 @@ export function toEngineProblem(row: ProblemRow): Problem {
     case "numeric":
       return { ...base, type: "numeric", answer: Number(c.answer), tolerance: Number(c.tolerance) };
     case "guesstimate":
-      return { ...base, type: "guesstimate", answer: Number(c.answer), bands: c.bands as GuesstimateBand[] };
+      return { ...base, type: "guesstimate", answer: Number(c.answer), bands: (Array.isArray(c.bands) ? c.bands : []) as GuesstimateBand[] };
     case "mcq":
       return { ...base, type: "mcq", correctIndex: Number(c.correctIndex), optionCount: Number(c.optionCount) };
     default: {

@@ -9,6 +9,6 @@ export function scoreNumeric(problem: NumericProblem, submission: Submission): E
     outcome: problem.maxPoints === 0 ? 0 : score / problem.maxPoints,
     feedback: within
       ? "Correct — within the accepted tolerance."
-      : `Not within tolerance. Expected ${problem.answer} ± ${problem.tolerance}.`,
+      : "Not within the accepted tolerance — recheck your calculation.",
   };
 }

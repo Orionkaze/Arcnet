@@ -272,7 +272,7 @@ model CaliberProblem {
   status      String              @default("published")
   submissions CaliberSubmission[]
   createdAt   DateTime            @default(now())
-  @@index([trackId])
+  @@index([trackId, status, difficulty])
 }
 
 model CaliberSubmission {
