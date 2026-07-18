@@ -119,7 +119,7 @@ const JOBS: Job[] = [
 ];
 
 const typeAccent: Record<EmploymentType, string> = {
-  "Full-Time": "#3B82F6",
+  "Full-Time": "#10B981",
   Internship: "#FFB84D",
   Contract: "#B07CFF",
   Remote: "#4ADE80",
@@ -181,7 +181,7 @@ export default function JobsPage() {
               {job.company} · {job.location}
             </div>
             <div className={s.rowBetween} style={{ marginTop: ".5rem" }}>
-              <strong style={{ color: "#3B82F6", fontSize: ".9rem" }}>{job.ctc}</strong>
+              <strong style={{ color: "#10B981", fontSize: ".9rem" }}>{job.ctc}</strong>
               <span className={s.muted}>{job.postedAt}</span>
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: ".4rem", marginTop: ".6rem" }}>

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Chakra_Petch, Inter } from "next/font/google";
+import { Chakra_Petch, Inter, Manrope } from "next/font/google";
 import "./globals.css";
 import { AuthInit } from "@/components/auth/AuthInit";
 
@@ -11,6 +11,12 @@ const chakraPetch = Chakra_Petch({
 
 const inter = Inter({
   variable: "--font-inter",
+  subsets: ["latin"],
+});
+
+// Clean geometric sans — Caliber's primary typeface.
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin"],
 });
 
@@ -27,7 +33,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${chakraPetch.variable} ${inter.variable} h-full antialiased`}
+      className={`${chakraPetch.variable} ${inter.variable} ${manrope.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col font-sans text-arc-primary" suppressHydrationWarning>
