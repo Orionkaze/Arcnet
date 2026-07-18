@@ -105,12 +105,15 @@ The wedge is a rating recruiters *trust*, so integrity is not optional even thou
 
 This is a concern list for downstream specs, not a v1 build item.
 
-## 8. Open items (decide before shipping, not before spec)
+## 8. Open items
 
-1. **Repo ownership** — code currently lives in `Orionkaze/Arcnet` (a collaborator's gaming repo). A standalone Caliber venture likely wants its own repo; renaming a collaborator's project in place is a business decision. **Do not push the rename until this is settled.**
+**Resolved:**
+1. **Repo** — ✅ stay in `Orionkaze/Arcnet`, re-theme in place (owner's decision to build Caliber here). Pushes still explicit/on-request.
+4. **Flagship track** — ✅ **Guesstimate** is the launch anchor (assets exist; cleanest deterministic eval; viral league format). Full-app scope (all quant tracks + open-ended eval + competitions + mentors + jobs + community) is unchanged — the flagship is GTM focus, not a scope limit.
+
+**Still open (deferred to module specs, non-blocking):**
 2. **Depth of the Conyso link** — how (if at all) the deterministic engines are surfaced/credited.
-3. **Rating model specifics** — Elo vs Glicko-2 (deviation/confidence); composite formula across tracks.
-4. **First flagship league** — which track + format seeds launch (Guesstimate League assets already exist).
+3. **Rating model specifics** — Elo vs Glicko-2 (deviation/confidence); composite formula across tracks — decided in the rating-service spec.
 
 ## 9. Migration note
 
