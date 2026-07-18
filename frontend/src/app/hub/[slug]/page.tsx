@@ -311,6 +311,9 @@ export default function HubPage() {
   const [updatingSettings, setUpdatingSettings] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
+  // Styled confirmation modal for kicking a member (replaces native confirm()).
+  const [kickTarget, setKickTarget] = useState<null | { userId: string; name?: string }>(null);
+
   // Fetch join requests when manage modal opens
   useEffect(() => {
     if (!isManageRequestsOpen || !hub || hub.userRole !== "owner") return;
@@ -386,9 +389,6 @@ export default function HubPage() {
 
   const handleMemberAction = async (targetUserId: string, action: "promote" | "demote" | "kick") => {
     if (!hub) return;
-    if (action === "kick") {
-      if (!confirm("Are you sure you want to remove this user from the hub?")) return;
-    }
     setActionLoading(`${action}-${targetUserId}`);
     try {
       const res = await fetch(`/api/hubs/${hub.slug}/members/${targetUserId}`, {
@@ -416,6 +416,14 @@ export default function HubPage() {
     } finally {
       setActionLoading(null);
     }
+  };
+
+  // Run the kick once confirmed via the styled modal, then close it.
+  const confirmKick = async () => {
+    if (!kickTarget) return;
+    const { userId } = kickTarget;
+    setKickTarget(null);
+    await handleMemberAction(userId, "kick");
   };
 
   // 1. Fetch Hub metadata & channels on load
@@ -449,17 +457,22 @@ export default function HubPage() {
   useEffect(() => {
     if (!selectedChannel) return;
 
+    let cancelled = false;
+
     async function fetchChannelMessages() {
       setChatLoading(true);
       try {
         const res = await fetch(`/api/channels/${selectedChannel?.id}/messages`);
         if (res.ok) {
           const data = await res.json();
+          if (cancelled) return;
           setMessages(data.messages || []);
+          setPinnedMessage(data.pinnedMessage || null);
         }
       } catch (err) {
         console.warn(err);
       } finally {
+        if (cancelled) return;
         setChatLoading(false);
         // Scroll to bottom
         setTimeout(() => {
@@ -471,6 +484,10 @@ export default function HubPage() {
     }
 
     fetchChannelMessages();
+
+    return () => {
+      cancelled = true;
+    };
   }, [selectedChannel]);
 
   // 3. Socket.io Connection & Presence
@@ -510,7 +527,14 @@ export default function HubPage() {
     return () => {
       socket.disconnect();
     };
-  }, [user, hub]);
+  }, [user]);
+
+  // 3b. (Re)join the hub room whenever the hub id changes, without recreating the socket.
+  useEffect(() => {
+    if (hub?.id && socketRef.current?.connected) {
+      socketRef.current.emit("join_hub", hub.id);
+    }
+  }, [hub?.id]);
 
   // 4. Socket.io Channel Subscription & Real-time Messages
   useEffect(() => {
@@ -518,6 +542,9 @@ export default function HubPage() {
 
     const socket = socketRef.current;
     socket.emit("join_channel", selectedChannel.id);
+
+    // Clear any stale typing indicators from the previously selected channel.
+    setTypingUsers([]);
 
     const handleNewMessage = (newMsg: Message) => {
       setMessages((prev) => {
@@ -557,11 +584,21 @@ export default function HubPage() {
     socket.on("user_typing", handleTyping);
     socket.on("user_stop_typing", handleStopTyping);
 
+    // Live pinned-message updates: backend emits the full pinned message object,
+    // or null when unpinned. Keep every viewer's pinned banner in sync.
+    const handlePinUpdated = (payload: Message | null) => {
+      setPinnedMessage(payload || null);
+    };
+
+    socket.on("pin_updated", handlePinUpdated);
+
     return () => {
       socket.emit("leave_channel", selectedChannel.id);
       socket.off("new_message", handleNewMessage);
       socket.off("user_typing", handleTyping);
       socket.off("user_stop_typing", handleStopTyping);
+      socket.off("pin_updated", handlePinUpdated);
+      setTypingUsers([]);
     };
   }, [selectedChannel]);
 
@@ -809,6 +846,33 @@ export default function HubPage() {
       console.warn(err);
     }
   };
+
+  // Pin or unpin a message (admins/owners only). Pass null to clear the pin.
+  const handleSetPinnedMessage = async (msg: Message | null) => {
+    if (!selectedChannel) return;
+    // Optimistic update
+    const previous = pinnedMessage;
+    setPinnedMessage(msg);
+    try {
+      const res = await fetch(`/api/channels/${selectedChannel.id}/pin`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messageId: msg ? msg.id : null }),
+      });
+      if (!res.ok) {
+        const errData = await res.json();
+        showToast(errData.error || "Failed to update pinned message");
+        setPinnedMessage(previous);
+      }
+    } catch (err) {
+      console.warn(err);
+      showToast("Failed to update pinned message");
+      setPinnedMessage(previous);
+    }
+  };
+
+  // Whether the current user can pin/unpin messages in this hub
+  const canManagePins = hub?.userRole === "admin" || hub?.userRole === "owner";
 
   // Handle Create Post in Community Feed
   const handleCreatePost = async (e: React.FormEvent) => {
@@ -1156,12 +1220,14 @@ export default function HubPage() {
                         <strong>@{pinnedMessage.author.username}</strong>: {pinnedMessage.content}
                       </span>
                     </div>
-                    <button
-                      onClick={() => setPinnedMessage(null)}
-                      className="text-[#C8C7C7] hover:text-[#FF4D4D] font-chakra text-[10px] tracking-wider uppercase font-bold pl-3"
-                    >
-                      Dismiss
-                    </button>
+                    {canManagePins && (
+                      <button
+                        onClick={() => handleSetPinnedMessage(null)}
+                        className="text-[#C8C7C7] hover:text-[#FF4D4D] font-chakra text-[10px] tracking-wider uppercase font-bold pl-3"
+                      >
+                        Dismiss
+                      </button>
+                    )}
                   </div>
                 )}
 
@@ -1362,16 +1428,18 @@ export default function HubPage() {
                                   )}
                                 </div>
 
-                                <button
-                                  onClick={() => setPinnedMessage(msg)}
-                                  className="p-1 text-[#C8C7C7] hover:text-[#00EAFF] rounded transition-all cursor-pointer"
-                                  title="Pin Message"
-                                >
-                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                                    <circle cx="12" cy="10" r="3" />
-                                  </svg>
-                                </button>
+                                {canManagePins && (
+                                  <button
+                                    onClick={() => handleSetPinnedMessage(msg)}
+                                    className="p-1 text-[#C8C7C7] hover:text-[#00EAFF] rounded transition-all cursor-pointer"
+                                    title="Pin Message"
+                                  >
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                      <circle cx="12" cy="10" r="3" />
+                                    </svg>
+                                  </button>
+                                )}
                               </div>
 
                             </div>
@@ -2070,7 +2138,7 @@ export default function HubPage() {
                                   // Admins can kick members, Owners can kick admins/members
                                   ((member.role === "member") || (member.role === "admin" && hub.userRole === "owner")) && (
                                     <button
-                                      onClick={() => handleMemberAction(member.user.id, "kick")}
+                                      onClick={() => setKickTarget({ userId: member.user.id, name: member.user.username || member.user.firstName })}
                                       className="px-2 py-1 bg-[#2A313C] hover:bg-[#FF4D4D] text-white rounded text-[10px] font-chakra uppercase transition-colors"
                                     >
                                       Kick
@@ -2086,6 +2154,40 @@ export default function HubPage() {
                   </div>
                 </div>
               </section>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Kick confirmation modal */}
+      {kickTarget && (
+        <div
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center"
+          onClick={() => setKickTarget(null)}
+        >
+          <div
+            className="bg-[#10141A] border border-[#2A313C] rounded-lg w-[400px] max-w-[90vw] shadow-2xl p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-lg font-chakra font-bold text-white tracking-wider uppercase mb-2">
+              Remove Member
+            </h2>
+            <p className="text-sm text-[#C8C7C7] font-inter leading-relaxed mb-6">
+              Remove <span className="text-white font-bold">@{kickTarget.name || "this member"}</span> from this hub? They&apos;ll lose access to its channels and can only rejoin if re-invited.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setKickTarget(null)}
+                className="px-4 py-2 rounded bg-[#2A313C] hover:bg-[#3b4351] text-white font-chakra font-bold text-xs uppercase tracking-wider transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmKick}
+                className="px-4 py-2 rounded bg-[#FF4D4D] hover:bg-[#e03b3b] text-white font-chakra font-bold text-xs uppercase tracking-wider transition-colors"
+              >
+                Remove
+              </button>
             </div>
           </div>
         </div>

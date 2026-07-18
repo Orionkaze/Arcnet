@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 const PUBLIC_USER_FIELDS = {
   id: true,
@@ -107,6 +108,15 @@ export async function POST(
     const me = session.userId as string;
     const { conversationId } = await params;
 
+    // Generous per-user limit to curb DM flooding.
+    const rateLimit = await checkRateLimit(`dm_send:${me}`, 60, 60 * 1000);
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: "You're sending messages too fast. Please slow down." },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json().catch(() => ({}));
     const rawContent = typeof body.content === "string" ? body.content : "";
     const content = rawContent.trim();
@@ -141,7 +151,7 @@ export async function POST(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const message = await prisma.directMessage.create({
+    const created = await prisma.directMessage.create({
       data: {
         conversationId,
         senderId: me,
@@ -161,6 +171,24 @@ export async function POST(
       where: { id: conversationId },
       data: { updatedAt: new Date() },
     });
+
+    // Include conversationId so the recipient's client can route the message.
+    const message = { ...created, conversationId };
+
+    // Best-effort real-time delivery to the other participant. A broadcast
+    // failure must NEVER break the send, so it's fire-and-forget.
+    const recipientId =
+      conversation.user1Id === me ? conversation.user2Id : conversation.user1Id;
+    const backendUrl =
+      process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5001";
+    fetch(`${backendUrl}/api/broadcast-dm`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-internal-secret": process.env.INTERNAL_BROADCAST_SECRET || "",
+      },
+      body: JSON.stringify({ toUserId: recipientId, message }),
+    }).catch(() => {});
 
     return NextResponse.json({ message }, { status: 201 });
   } catch (error) {

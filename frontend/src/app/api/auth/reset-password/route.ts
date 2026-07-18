@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 import { hashPassword } from "@/lib/auth";
+import { checkRateLimit } from "@/lib/rateLimit";
 import { z } from "zod";
 
 const resetPasswordSchema = z.object({
@@ -21,6 +22,16 @@ const resetPasswordSchema = z.object({
 
 export async function POST(req: Request) {
   try {
+    // IP-based limiter (mirrors login) to slow token brute-forcing.
+    const ip = req.headers.get("x-forwarded-for") || "unknown";
+    const ipRateLimit = await checkRateLimit(`reset_pw_ip_${ip}`, 10, 15 * 60 * 1000);
+    if (!ipRateLimit.success) {
+      return NextResponse.json(
+        { error: `Too many attempts. Try again in 15 minutes.` },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
     const result = resetPasswordSchema.safeParse(body);
 
@@ -29,6 +40,21 @@ export async function POST(req: Request) {
     }
 
     const { email, token, newPassword } = result.data;
+
+    // Per-value limiters so a single token/account can't be hammered even
+    // from rotating IPs. Same 429 shape.
+    const tokenRateLimit = await checkRateLimit(`reset_pw_token_${token}`, 10, 15 * 60 * 1000);
+    const emailRateLimit = await checkRateLimit(
+      `reset_pw_email_${email.toLowerCase()}`,
+      10,
+      15 * 60 * 1000,
+    );
+    if (!tokenRateLimit.success || !emailRateLimit.success) {
+      return NextResponse.json(
+        { error: `Too many attempts. Try again in 15 minutes.` },
+        { status: 429 }
+      );
+    }
 
     const user = await prisma.user.findUnique({ where: { email } });
 

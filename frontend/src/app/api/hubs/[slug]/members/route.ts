@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { getSession } from "@/lib/auth";
 
 export async function GET(
   request: Request,
@@ -8,12 +9,14 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
+    const session = await getSession();
     const { searchParams } = new URL(request.url);
 
     const onlineFilter = searchParams.get("online") === "true";
     const searchQuery = searchParams.get("search") || "";
-    const page = parseInt(searchParams.get("page") || "1", 10);
-    const limit = parseInt(searchParams.get("limit") || "20", 10);
+    const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10) || 1);
+    // Clamp to a sane range so a client can't request an unbounded page size.
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "20", 10) || 20));
     const skip = (page - 1) * limit;
 
     const hub = await prisma.hub.findUnique({
@@ -22,6 +25,23 @@ export async function GET(
 
     if (!hub) {
       return NextResponse.json({ error: "Hub not found" }, { status: 404 });
+    }
+
+    if (hub.isPrivate) {
+      if (!session?.userId) {
+        return NextResponse.json({ error: "This is a private hub." }, { status: 403 });
+      }
+      const membership = await prisma.hubMember.findUnique({
+        where: {
+          hubId_userId: {
+            hubId: hub.id,
+            userId: session.userId as string,
+          },
+        },
+      });
+      if (!membership) {
+        return NextResponse.json({ error: "This is a private hub." }, { status: 403 });
+      }
     }
 
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);

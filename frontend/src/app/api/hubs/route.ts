@@ -27,6 +27,7 @@ export async function GET() {
         });
 
         let joined = false;
+        let userRole: string | null = null;
         if (userId) {
           const membership = await prisma.hubMember.findUnique({
             where: {
@@ -36,11 +37,26 @@ export async function GET() {
               },
             },
           });
-          joined = !!membership;
+          if (membership) {
+            joined = true;
+            userRole = membership.role;
+          }
+        }
+
+        // Never leak a private hub's join code to viewers who aren't entitled
+        // to it (matches the gating in /api/hubs/[slug]).
+        let canSeeJoinCode = false;
+        if (hub.isPrivate) {
+          if (userRole === "admin" || userRole === "owner") {
+            canSeeJoinCode = true;
+          } else if (userRole === "member" && hub.allowMembersToInvite) {
+            canSeeJoinCode = true;
+          }
         }
 
         return {
           ...hub,
+          joinCode: canSeeJoinCode ? hub.joinCode : null,
           onlineCount,
           joined,
         };

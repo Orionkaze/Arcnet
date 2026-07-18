@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { checkRateLimit } from "@/lib/rateLimit";
+
+const MAX_NAME_LENGTH = 100;
+const MAX_DESCRIPTION_LENGTH = 500;
 
 function generateJoinCode(length: number = 6) {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -18,11 +22,41 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { name, description } = await request.json();
+    // Generous per-user limit to curb automated hub-spam.
+    const rateLimit = await checkRateLimit(
+      `private_hub_create:${session.userId as string}`,
+      10,
+      60 * 1000
+    );
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: "You're creating hubs too fast. Please wait a moment." },
+        { status: 429 }
+      );
+    }
+
+    const body = await request.json().catch(() => ({}));
+    const name = typeof body.name === "string" ? body.name.trim() : "";
+    const description =
+      typeof body.description === "string" ? body.description.trim() : "";
 
     if (!name || !description) {
       return NextResponse.json(
         { error: "Name and description are required" },
+        { status: 400 }
+      );
+    }
+
+    if (name.length > MAX_NAME_LENGTH) {
+      return NextResponse.json(
+        { error: `Name must be ${MAX_NAME_LENGTH} characters or fewer` },
+        { status: 400 }
+      );
+    }
+
+    if (description.length > MAX_DESCRIPTION_LENGTH) {
+      return NextResponse.json(
+        { error: `Description must be ${MAX_DESCRIPTION_LENGTH} characters or fewer` },
         { status: 400 }
       );
     }

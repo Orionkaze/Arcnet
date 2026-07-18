@@ -44,6 +44,12 @@ export async function POST(
       joined = false;
     } else {
       // Join
+      if (hub.isPrivate) {
+        return NextResponse.json(
+          { error: "This hub is private. Request access with a join code." },
+          { status: 403 }
+        );
+      }
       await prisma.hubMember.create({
         data: {
           hubId: hub.id,

@@ -1,11 +1,22 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 const RESERVED_WORDS = ["admin", "arcnet", "support", "root", "system", "moderator"];
 
 export async function POST(req: Request) {
   try {
+    // IP-based limiter (mirrors login) to curb username enumeration + spam.
+    const ip = req.headers.get("x-forwarded-for") || "unknown";
+    const ipRateLimit = await checkRateLimit(`check_username_ip_${ip}`, 30, 60 * 1000);
+    if (!ipRateLimit.success) {
+      return NextResponse.json(
+        { error: `Too many attempts. Try again in a minute.` },
+        { status: 429 }
+      );
+    }
+
     const session = await getSession();
     if (!session || !session.userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

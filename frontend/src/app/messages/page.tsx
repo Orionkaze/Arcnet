@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { io, type Socket } from "socket.io-client";
 import "../home.css";
 import Navbar from "@/components/home/Navbar";
 import LeftSidebar from "@/components/home/LeftSidebar";
@@ -88,6 +89,12 @@ function MessagesInner() {
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const handledToRef = useRef(false);
+  // Always holds the currently-active conversation id so async fetches can
+  // discard responses for a conversation the user has since switched away from.
+  const activeIdRef = useRef<string | null>(null);
+  const socketRef = useRef<Socket | null>(null);
+  // Guards against setState after the component has unmounted.
+  const mountedRef = useRef(true);
 
   const showErrorToast = (msg: string) => {
     setErrorToast(msg);
@@ -119,6 +126,8 @@ function MessagesInner() {
         const res = await fetch(`/api/conversations/${id}`);
         if (!res.ok) throw new Error("Failed to load conversation");
         const data = await res.json();
+        // Discard if the user has switched to a different conversation.
+        if (id !== activeIdRef.current) return;
         setMessages(data.messages || []);
         if (data.conversation?.otherUser) {
           setActiveOther(data.conversation.otherUser);
@@ -139,6 +148,7 @@ function MessagesInner() {
 
   const selectConversation = useCallback(
     (c: ConversationSummary) => {
+      activeIdRef.current = c.id;
       setActiveId(c.id);
       setActiveOther(c.otherUser);
       setMessages([]);
@@ -171,6 +181,7 @@ function MessagesInner() {
         const data = await res.json();
         const conv = data.conversation;
         if (conv) {
+          activeIdRef.current = conv.id;
           setActiveId(conv.id);
           setActiveOther(conv.otherUser);
           setMessages([]);
@@ -195,6 +206,52 @@ function MessagesInner() {
       pollRef.current = null;
     };
   }, [activeId, fetchThread]);
+
+  // Track mounted state so socket callbacks never setState after unmount.
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  // Real-time DM delivery via Socket.io (the 4s poll above stays as a fallback).
+  useEffect(() => {
+    if (!user) return;
+
+    const backendUrl =
+      process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5001";
+    const socket = io(backendUrl);
+    socketRef.current = socket;
+
+    socket.on("connect", () => {
+      socket.emit("identify", { userId: user.id });
+    });
+
+    const handleNewDm = (incoming: DirectMessage & { conversationId?: string }) => {
+      if (!mountedRef.current) return;
+
+      // If the DM belongs to the open thread, append it (deduped by id).
+      if (incoming.conversationId && incoming.conversationId === activeIdRef.current) {
+        setMessages((prev) => {
+          if (prev.some((m) => m.id === incoming.id)) return prev;
+          const { conversationId: _omit, ...msg } = incoming;
+          return [...prev, msg];
+        });
+      }
+
+      // Always refresh the list so previews/unread badges stay current.
+      fetchConversations();
+    };
+
+    socket.on("new_dm", handleNewDm);
+
+    return () => {
+      socket.off("new_dm", handleNewDm);
+      socket.disconnect();
+      socketRef.current = null;
+    };
+  }, [user, fetchConversations]);
 
   // Auto-scroll to newest message.
   useEffect(() => {
@@ -391,6 +448,7 @@ function MessagesInner() {
                         className="dm-back-btn md:hidden"
                         aria-label="Back to conversations"
                         onClick={() => {
+                          activeIdRef.current = null;
                           setActiveId(null);
                           setActiveOther(null);
                         }}

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 export async function POST(
   request: Request,
@@ -14,6 +15,15 @@ export async function POST(
 
     const { username } = await params;
     const followerId = session.userId as string;
+
+    // Rate limit: 60 follow toggles per minute per user.
+    const rateLimit = await checkRateLimit(`follow_toggle_${followerId}`, 60, 60 * 1000);
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: "Too many requests. Please slow down." },
+        { status: 429 }
+      );
+    }
 
     const cleanUsername = decodeURIComponent(username).replace(/^@/, "");
 
@@ -67,6 +77,19 @@ export async function POST(
         },
       });
       following = true;
+
+      // Best-effort notification; must never break the follow action.
+      try {
+        await prisma.notification.create({
+          data: {
+            type: "follow",
+            userId: followingId,
+            fromUserId: followerId,
+          },
+        });
+      } catch (notifyError) {
+        console.error("Follow Notification Error:", notifyError);
+      }
     }
 
     const followerCount = await prisma.follow.count({

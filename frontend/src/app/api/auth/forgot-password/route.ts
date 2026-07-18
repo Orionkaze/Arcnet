@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     const { email } = result.data;
 
     // Rate limit forgot password requests (3 per hour per email)
-    const rateLimit = checkRateLimit(`forgot_pw_${email}`, 3, 60 * 60 * 1000);
+    const rateLimit = await checkRateLimit(`forgot_pw_${email}`, 3, 60 * 60 * 1000);
     if (!rateLimit.success) {
       return NextResponse.json({ error: "Too many requests. Try again later." }, { status: 429 });
     }

@@ -12,7 +12,8 @@ export async function GET(
     const { channelId } = await params;
     const { searchParams } = new URL(request.url);
 
-    const limit = parseInt(searchParams.get("limit") || "50", 10);
+    // Clamp to a sane range so a client can't request an unbounded page size.
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "50", 10) || 50));
     const beforeId = searchParams.get("before");
 
     const channel = await prisma.channel.findUnique({
@@ -82,8 +83,54 @@ export async function GET(
     // Reverse to get oldest to newest chronologically
     const chronologicalMessages = [...messages].reverse();
 
+    // Load the channel's pinned message (if any) so clients can render the banner
+    let pinnedMessage = null;
+    if (channel.pinnedMessageId) {
+      pinnedMessage = await prisma.message.findUnique({
+        where: { id: channel.pinnedMessageId },
+        include: {
+          author: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              username: true,
+              avatar: true,
+              isVerified: true,
+            },
+          },
+          replyTo: {
+            include: {
+              author: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  username: true,
+                  avatar: true,
+                },
+              },
+            },
+          },
+          reactions: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  username: true,
+                },
+              },
+            },
+          },
+        },
+      });
+    }
+
     return NextResponse.json({
       messages: chronologicalMessages,
+      pinnedMessage,
       hasMore: messages.length === limit,
     });
   } catch (error) {
@@ -133,7 +180,7 @@ export async function POST(
     // WARNING: This in-memory rate limiter does not work correctly across
     // multiple server instances. Replace with a Redis-backed counter in production.
     const limitKey = `message_creation:${userId}`;
-    const rateLimitRes = checkRateLimit(limitKey, 10, 60000);
+    const rateLimitRes = await checkRateLimit(limitKey, 10, 60000);
     if (!rateLimitRes.success) {
       return NextResponse.json(
         { error: "You're sending messages too fast. Rate limit: 10 messages per minute." },
@@ -235,6 +282,7 @@ export async function POST(
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "x-internal-secret": process.env.INTERNAL_BROADCAST_SECRET || "",
           },
           body: JSON.stringify({
             channelId,

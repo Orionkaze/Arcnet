@@ -24,10 +24,31 @@ export async function POST(
 
     const message = await prisma.message.findUnique({
       where: { id: messageId },
+      include: { channel: { select: { hubId: true } } },
     });
 
     if (!message) {
       return NextResponse.json({ error: "Message not found" }, { status: 404 });
+    }
+
+    // The reacting user must be a member of the hub that owns the channel that
+    // owns this message. Without this, any authenticated user could react to
+    // messages in hubs they don't belong to purely by message id.
+    const membership = await prisma.hubMember.findUnique({
+      where: {
+        hubId_userId: {
+          hubId: message.channel.hubId,
+          userId,
+        },
+      },
+      select: { id: true },
+    });
+
+    if (!membership) {
+      return NextResponse.json(
+        { error: "You must be a member of this hub to react to messages." },
+        { status: 403 }
+      );
     }
 
     // Toggle reaction

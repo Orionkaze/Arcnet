@@ -19,10 +19,14 @@ export function AuthInit() {
     const isExactPublicPath = ["/login", "/signup", "/forgot-password", "/reset-password", "/verify-email"].includes(pathname);
     const isProfilePath = pathname.startsWith("/profile/");
     const isOnboardingPath = ["/setup-username", "/setup-avatar"].includes(pathname);
+    // Pages that are public to view but must NOT bounce logged-in users to home
+    // (kept separate from isExactPublicPath, which does that bounce). Mirrors the
+    // middleware's public-page allowlist so /latest is reachable while logged out.
+    const isPublicViewablePath = pathname === "/latest";
 
     if (!isAuthenticated) {
-      // Unauthenticated users can only access auth pages and profile pages
-      if (!isExactPublicPath && !isProfilePath) {
+      // Unauthenticated users can access auth pages, profile pages, and public-viewable pages
+      if (!isExactPublicPath && !isProfilePath && !isPublicViewablePath) {
         router.push("/login");
       }
     } else {

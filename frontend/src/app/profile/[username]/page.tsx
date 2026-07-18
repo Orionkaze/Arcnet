@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useAuthStore } from "@/store/useAuthStore";
+import { safeExternalUrl } from "@/lib/url";
 import Navbar from "@/components/home/Navbar";
 import LeftSidebar from "@/components/home/LeftSidebar";
 import MobileBottomNav from "@/components/home/MobileBottomNav";
@@ -651,7 +652,7 @@ const ProfileSocialBadge = ({ link }: { link: { platform: string; url: string } 
 
   return (
     <a
-      href={link.url}
+      href={safeExternalUrl(link.url)}
       target="_blank"
       rel="noopener noreferrer"
       className="profile-social-badge"
@@ -1140,6 +1141,22 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
       if (!res.ok) throw new Error("Failed to follow/unfollow user");
       const data = await res.json();
       setIsFollowed(data.isFollowing);
+      // Keep the displayed follower count in sync with the follow state.
+      const delta = data.isFollowing ? 1 : -1;
+      setProfileUser((prev) =>
+        prev
+          ? {
+              ...prev,
+              _count: {
+                ...prev._count,
+                posts: prev._count?.posts || 0,
+                followers: Math.max(0, (prev._count?.followers || 0) + delta),
+                following: prev._count?.following || 0,
+                hubMembers: prev._count?.hubMembers || 0,
+              },
+            }
+          : null
+      );
     } catch (error) {
       console.error(error);
     }

@@ -184,6 +184,41 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: "First name, last name, and username are required" }, { status: 400 });
     }
 
+    // Type-validate required + optional string fields (never coerce).
+    if (typeof firstName !== "string" || typeof lastName !== "string" || typeof username !== "string") {
+      return NextResponse.json({ error: "First name, last name, and username must be strings" }, { status: 400 });
+    }
+    const optionalStringFields: [string, unknown][] = [
+      ["avatar", avatar],
+      ["cover", cover],
+      ["bio", bio],
+      ["role", role],
+      ["location", location],
+      ["skills", skills],
+    ];
+    for (const [name, value] of optionalStringFields) {
+      if (value !== undefined && value !== null && typeof value !== "string") {
+        return NextResponse.json({ error: `Invalid ${name}` }, { status: 400 });
+      }
+    }
+
+    // Length caps to prevent oversized payloads.
+    if (firstName.trim().length > 50 || lastName.trim().length > 50) {
+      return NextResponse.json({ error: "Name is too long (max 50 characters)" }, { status: 400 });
+    }
+    if (typeof bio === "string" && bio.length > 500) {
+      return NextResponse.json({ error: "Bio cannot exceed 500 characters" }, { status: 400 });
+    }
+    if (typeof role === "string" && role.length > 100) {
+      return NextResponse.json({ error: "Role cannot exceed 100 characters" }, { status: 400 });
+    }
+    if (typeof location === "string" && location.length > 100) {
+      return NextResponse.json({ error: "Location cannot exceed 100 characters" }, { status: 400 });
+    }
+    if (typeof skills === "string" && skills.length > 500) {
+      return NextResponse.json({ error: "Skills cannot exceed 500 characters" }, { status: 400 });
+    }
+
     // Clean username format rules (matches setup-username rules)
     const cleanUsername = username.trim().replace(/^@/, "");
     if (cleanUsername.length < 3 || cleanUsername.length > 20) {

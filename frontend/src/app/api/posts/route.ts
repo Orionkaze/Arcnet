@@ -14,7 +14,7 @@ export async function POST(request: Request) {
 
     // Rate Limit: 10 posts per hour
     const limitKey = `post_creation:${userId}`;
-    const rateLimitRes = checkRateLimit(limitKey, 10, 60 * 60 * 1000);
+    const rateLimitRes = await checkRateLimit(limitKey, 10, 60 * 60 * 1000);
     if (!rateLimitRes.success) {
       return NextResponse.json(
         { error: "You're posting too fast. Please wait before posting again." },
@@ -31,6 +31,37 @@ export async function POST(request: Request) {
 
     if (content.length > 500) {
       return NextResponse.json({ error: "Content cannot exceed 500 characters" }, { status: 400 });
+    }
+
+    // Type-validate optional fields instead of silently coercing them.
+    if (imageUrl !== undefined && imageUrl !== null && typeof imageUrl !== "string") {
+      return NextResponse.json({ error: "Invalid imageUrl" }, { status: 400 });
+    }
+    if (typeof imageUrl === "string" && imageUrl.length > 2000) {
+      return NextResponse.json({ error: "imageUrl is too long" }, { status: 400 });
+    }
+    if (hubId !== undefined && hubId !== null && typeof hubId !== "string") {
+      return NextResponse.json({ error: "Invalid hubId" }, { status: 400 });
+    }
+
+    // If a hub is being tagged, the author must be a member of it. Otherwise any
+    // user could attach a post to an arbitrary (even private) hub by its id.
+    if (hubId) {
+      const hubMembership = await prisma.hubMember.findUnique({
+        where: {
+          hubId_userId: {
+            hubId,
+            userId,
+          },
+        },
+        select: { id: true },
+      });
+      if (!hubMembership) {
+        return NextResponse.json(
+          { error: "You must be a member of this hub to post to it." },
+          { status: 403 }
+        );
+      }
     }
 
     const post = await prisma.post.create({

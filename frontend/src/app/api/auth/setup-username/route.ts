@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { checkRateLimit } from "@/lib/rateLimit";
 import { z } from "zod";
 
 const RESERVED_WORDS = ["admin", "arcnet", "support", "root", "system", "moderator"];
@@ -14,6 +15,16 @@ const usernameSchema = z.object({
 
 export async function POST(req: Request) {
   try {
+    // Light IP limiter on this authenticated onboarding endpoint.
+    const ip = req.headers.get("x-forwarded-for") || "unknown";
+    const ipRateLimit = await checkRateLimit(`setup_username_ip_${ip}`, 15, 15 * 60 * 1000);
+    if (!ipRateLimit.success) {
+      return NextResponse.json(
+        { error: `Too many attempts. Try again in 15 minutes.` },
+        { status: 429 }
+      );
+    }
+
     const session = await getSession();
     if (!session || !session.userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

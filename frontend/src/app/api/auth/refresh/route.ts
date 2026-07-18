@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { prisma } from "@/lib/prisma";
 import { verifyToken, signToken } from "@/lib/auth";
 
 export async function POST() {
@@ -24,7 +25,25 @@ export async function POST() {
         return response;
       }
 
-      const newAccessToken = await signToken({ userId: payload.userId }, "15m");
+      // Revocation gate: the user's current tokenVersion must match the one
+      // embedded in the refresh token. Logout increments tokenVersion, which
+      // makes every previously-issued refresh token stale.
+      const user = await prisma.user.findUnique({
+        where: { id: payload.userId as string },
+        select: { id: true, tokenVersion: true },
+      });
+
+      if (!user || (payload.tokenVersion ?? 0) !== user.tokenVersion) {
+        const response = NextResponse.json({ error: "Invalid or expired refresh token" }, { status: 401 });
+        response.cookies.set("access_token", "", { maxAge: 0, path: "/" });
+        response.cookies.set("refresh_token", "", { maxAge: 0, path: "/" });
+        return response;
+      }
+
+      const newAccessToken = await signToken(
+        { userId: payload.userId, tokenVersion: user.tokenVersion },
+        "15m",
+      );
 
       const response = NextResponse.json({ success: true }, { status: 200 });
       response.cookies.set("access_token", newAccessToken, {

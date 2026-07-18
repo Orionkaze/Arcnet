@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 export async function POST(
   request: Request,
@@ -14,6 +15,15 @@ export async function POST(
 
     const { postId } = await params;
     const userId = session.userId as string;
+
+    // Rate limit: 60 bookmark toggles per minute per user.
+    const rateLimit = await checkRateLimit(`bookmark_toggle_${userId}`, 60, 60 * 1000);
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: "Too many requests. Please slow down." },
+        { status: 429 }
+      );
+    }
 
     const existingBookmark = await prisma.bookmark.findUnique({
       where: {

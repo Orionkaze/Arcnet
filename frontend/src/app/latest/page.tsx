@@ -58,10 +58,11 @@ export default function LatestPage() {
   const [newsError, setNewsError] = useState(false);
   const [justRefreshed, setJustRefreshed] = useState(false);
 
-  // Drag states for News Carousel
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [dragOffset, setDragOffset] = useState(0);
+  // Drag / auto-scroll refs for News Carousel
+  const newsScrollRef = useRef<HTMLDivElement | null>(null);
+  const dragRef = useRef({ startX: 0, scrollLeft: 0, dragging: false });
+  const autoScrollPausedRef = useRef(false);
+  const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Trending Posts States
   const [posts, setPosts] = useState<PostType[]>([]);
@@ -72,43 +73,55 @@ export default function LatestPage() {
 
   const observerRef = useRef<HTMLDivElement | null>(null);
 
+  // Desktop drag-to-scroll: adjust the container's scrollLeft so the
+  // position persists after release (no transform that snaps back).
   const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    setStartX(e.pageX - dragOffset);
+    const el = newsScrollRef.current;
+    if (!el) return;
+    dragRef.current = { startX: e.pageX, scrollLeft: el.scrollLeft, dragging: true };
+    autoScrollPausedRef.current = true;
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return;
+    if (!dragRef.current.dragging) return;
+    const el = newsScrollRef.current;
+    if (!el) return;
     e.preventDefault();
-    const x = e.pageX;
-    const walk = x - startX;
-    setDragOffset(walk);
+    const walk = e.pageX - dragRef.current.startX;
+    el.scrollLeft = dragRef.current.scrollLeft - walk;
   };
 
-  const handleMouseUpOrLeave = () => {
-    setIsDragging(false);
+  const handleMouseUp = () => {
+    dragRef.current.dragging = false;
   };
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setIsDragging(true);
-    setStartX(e.touches[0].pageX - dragOffset);
+  const handleMouseEnter = () => {
+    autoScrollPausedRef.current = true;
   };
 
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging) return;
-    const x = e.touches[0].pageX;
-    const walk = x - startX;
-    setDragOffset(walk);
+  const handleMouseLeave = () => {
+    dragRef.current.dragging = false;
+    autoScrollPausedRef.current = false;
+  };
+
+  // Touch: rely on native horizontal scrolling of the overflow container;
+  // just pause the auto-scroll while the user is interacting.
+  const handleTouchStart = () => {
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    autoScrollPausedRef.current = true;
   };
 
   const handleTouchEnd = () => {
-    setIsDragging(false);
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    resumeTimerRef.current = setTimeout(() => {
+      autoScrollPausedRef.current = false;
+    }, 2500);
   };
 
   const fetchNews = async () => {
     setNewsLoading(true);
     setNewsError(false);
-    setDragOffset(0);
+    if (newsScrollRef.current) newsScrollRef.current.scrollLeft = 0;
     try {
       const res = await fetch("/api/news");
       if (!res.ok) throw new Error("Failed to fetch news");
@@ -199,6 +212,32 @@ export default function LatestPage() {
     return () => clearTimeout(timer);
   }, [checkAuth]);
 
+  // Auto-scroll marquee for the News carousel, driven via scrollLeft so it
+  // composes with the native scroll / drag position (no CSS transform fight).
+  useEffect(() => {
+    const el = newsScrollRef.current;
+    if (!el || newsLoading || newsError || news.length === 0) return;
+
+    let raf = 0;
+    const speed = 0.5; // px per frame
+    const step = () => {
+      if (!autoScrollPausedRef.current) {
+        const half = el.scrollWidth / 2; // content is duplicated for a seamless loop
+        if (half > 0) {
+          el.scrollLeft += speed;
+          if (el.scrollLeft >= half) el.scrollLeft -= half;
+        }
+      }
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    };
+  }, [newsLoading, newsError, news]);
+
   // Infinite Scroll Observer for Trending Feed
   useEffect(() => {
     if (postsLoading || !hasMore) return;
@@ -263,20 +302,18 @@ export default function LatestPage() {
               </div>
             ) : (
               <div
+                ref={newsScrollRef}
                 className="news-carousel-container"
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUpOrLeave}
-                onMouseLeave={handleMouseUpOrLeave}
+                onMouseUp={handleMouseUp}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
                 onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
               >
                 <div
-                  className={`news-carousel-track ${isDragging ? "dragging" : ""}`}
-                  style={{
-                    transform: isDragging ? `translateX(${dragOffset}px)` : undefined,
-                  }}
+                  className="news-carousel-track"
                   key={news.length}
                 >
                   <div className="news-carousel-list">
@@ -380,11 +417,17 @@ export default function LatestPage() {
           filter: brightness(1.2);
         }
         .news-carousel-container {
-          overflow: hidden;
+          overflow-x: auto;
+          overflow-y: hidden;
           width: 100%;
           position: relative;
           cursor: grab;
           user-select: none;
+          scrollbar-width: none; /* Firefox */
+          -ms-overflow-style: none; /* IE / old Edge */
+        }
+        .news-carousel-container::-webkit-scrollbar {
+          display: none; /* Chrome / Safari */
         }
         .news-carousel-container:active {
           cursor: grabbing;
@@ -392,27 +435,12 @@ export default function LatestPage() {
         .news-carousel-track {
           display: flex;
           width: max-content;
-          animation: marquee 30s linear infinite;
-        }
-        .news-carousel-track.dragging {
-          animation: none;
-        }
-        .news-carousel-container:hover .news-carousel-track {
-          animation-play-state: paused;
         }
         .news-carousel-list {
           display: flex;
           gap: 16px;
           padding-right: 16px;
           flex-shrink: 0;
-        }
-        @keyframes marquee {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
         }
         .news-skeleton {
           width: 280px;

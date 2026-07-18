@@ -35,8 +35,18 @@ export async function POST(request: Request) {
     });
 
     const username = user?.username || session.userId;
-    // Extract file extension
-    const ext = file.name.split(".").pop() || "jpg";
+    // Derive extension from the already-validated MIME type, never the
+    // client-controlled filename (prevents path injection).
+    const extByType: Record<string, string> = {
+      "image/jpeg": "jpg",
+      "image/jpg": "jpg",
+      "image/png": "png",
+      "image/webp": "webp",
+    };
+    const ext = extByType[file.type];
+    if (!ext) {
+      return NextResponse.json({ error: "Invalid file type. Please use JPG, PNG or WEBP" }, { status: 400 });
+    }
     const filename = `${username}_cover.${ext}`;
 
     const uploadDir = path.join(process.cwd(), "public", "uploads", "covers");

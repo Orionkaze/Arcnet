@@ -15,21 +15,73 @@ const io = new Server(server, {
   },
 });
 
-app.use(express.json());
+app.disable("x-powered-by");
+app.use(express.json({ limit: "100kb" }));
+
+// Minimal security headers for the API/socket server (dependency-free).
+app.use((_req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("Referrer-Policy", "no-referrer");
+  next();
+});
 
 const apiRouter = express.Router();
+
+// The /api/broadcast* endpoints are internal — only the Next.js API layer may
+// call them (to fan out messages/DMs/pins over Socket.io). Without this guard
+// anyone who can reach the backend could inject arbitrary messages into any
+// room. Callers must send `x-internal-secret: INTERNAL_BROADCAST_SECRET`.
+const BROADCAST_SECRET = process.env.INTERNAL_BROADCAST_SECRET;
+function requireBroadcastSecret(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) {
+  if (!BROADCAST_SECRET) {
+    // Fail closed in production; allow (with a warning) in dev for convenience.
+    if (process.env.NODE_ENV === "production") {
+      return res.status(503).json({ error: "Broadcast secret not configured" });
+    }
+    return next();
+  }
+  if (req.get("x-internal-secret") !== BROADCAST_SECRET) {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+  next();
+}
 
 apiRouter.get("/health", (req, res) => {
   res.status(200).json({ status: "Backend is running!" });
 });
 
-apiRouter.post("/api/broadcast", (req, res) => {
+apiRouter.post("/api/broadcast", requireBroadcastSecret, (req, res) => {
   const { channelId, message } = req.body;
   if (channelId && message) {
     io.to(channelId).emit("new_message", message);
     res.status(200).json({ status: "Broadcasted successfully" });
   } else {
     res.status(400).json({ error: "Missing channelId or message" });
+  }
+});
+
+apiRouter.post("/api/broadcast-dm", requireBroadcastSecret, (req, res) => {
+  const { toUserId, message } = req.body;
+  if (toUserId && message) {
+    io.to(`user_${toUserId}`).emit("new_dm", message);
+    res.status(200).json({ status: "Broadcasted successfully" });
+  } else {
+    res.status(400).json({ error: "Missing toUserId or message" });
+  }
+});
+
+apiRouter.post("/api/broadcast-pin", requireBroadcastSecret, (req, res) => {
+  const { channelId, pinnedMessage } = req.body;
+  if (channelId) {
+    io.to(channelId).emit("pin_updated", pinnedMessage ?? null);
+    res.status(200).json({ status: "Broadcasted successfully" });
+  } else {
+    res.status(400).json({ error: "Missing channelId" });
   }
 });
 
@@ -87,6 +139,8 @@ io.on("connection", (socket) => {
   // When a user identifies themselves
   socket.on("identify", ({ userId }) => {
     userSockets.set(socket.id, userId);
+    // Join a personal room so this user can receive direct messages.
+    socket.join(`user_${userId}`);
   });
   
   // Join a specific chat channel to receive messages
