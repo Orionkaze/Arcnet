@@ -1,0 +1,20 @@
+.wrap { max-width: 860px; margin: 0 auto; padding: 2rem 1.25rem; color: #E8EAED; }
+.h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 .25rem; }
+.sub { color: #9AA0A6; margin: 0 0 1.5rem; font-size: .95rem; }
+.card { display: block; background: #12151A; border: 1px solid #262B33; border-radius: 12px; padding: 1rem 1.15rem; margin-bottom: .75rem; text-decoration: none; color: inherit; transition: border-color .15s; }
+.card:hover { border-color: #3B82F6; }
+.rowBetween { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.pill { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #3B82F6; background: rgba(59,130,246,.12); padding: .15rem .5rem; border-radius: 999px; }
+.muted { color: #9AA0A6; font-size: .85rem; }
+.input { width: 100%; background: #0C0E12; border: 1px solid #262B33; border-radius: 10px; color: #fff; padding: .7rem .9rem; font-size: 1rem; }
+.input:focus { outline: none; border-color: #3B82F6; }
+.btn { background: #3B82F6; color: #fff; border: none; border-radius: 10px; padding: .7rem 1.2rem; font-weight: 600; cursor: pointer; }
+.btn:disabled { opacity: .5; cursor: default; }
+.choice { display: block; width: 100%; text-align: left; background: #0C0E12; border: 1px solid #262B33; border-radius: 10px; color: #E8EAED; padding: .7rem .9rem; margin-bottom: .5rem; cursor: pointer; }
+.choice:hover { border-color: #3B82F6; }
+.choiceSel { border-color: #3B82F6; background: rgba(59,130,246,.1); }
+.result { margin-top: 1rem; border-radius: 12px; padding: 1rem; border: 1px solid #262B33; background: #12151A; }
+.delta { font-weight: 700; }
+.deltaUp { color: #22C55E; }
+.deltaDown { color: #F87171; }
+.state { text-align: center; color: #9AA0A6; padding: 3rem 1rem; }
