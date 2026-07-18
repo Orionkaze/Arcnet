@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 export async function GET(
   request: Request,
@@ -45,7 +46,16 @@ export async function POST(
 
     const { postId } = await params;
     const userId = session.userId as string;
-    
+
+    // Rate limit: 60 comments per minute per user.
+    const rateLimit = checkRateLimit(`comment_create_${userId}`, 60, 60 * 1000);
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: "You're commenting too fast. Please slow down." },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const { content } = body;
 

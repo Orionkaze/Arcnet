@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 export async function POST(
   request: Request,
@@ -14,10 +15,20 @@ export async function POST(
     }
 
     const fromUserId = session.userId as string;
+
+    // Rate limit: 30 shares per minute per user (spam-prone: writes notifications).
+    const rateLimit = checkRateLimit(`post_share_${fromUserId}`, 30, 60 * 1000);
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: "Too many requests. Please slow down." },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json().catch(() => ({}));
     const { recipientId } = body;
 
-    if (!recipientId) {
+    if (!recipientId || typeof recipientId !== "string") {
       return NextResponse.json({ error: "Recipient ID is required" }, { status: 400 });
     }
 

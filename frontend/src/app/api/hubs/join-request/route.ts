@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 export async function POST(request: Request) {
   try {
@@ -9,14 +10,28 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { joinCode } = await request.json();
+    // Generous per-user limit; also slows join-code guessing.
+    const rateLimit = checkRateLimit(
+      `join_request:${session.userId as string}`,
+      20,
+      60 * 1000
+    );
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: "Too many attempts. Please wait a moment." },
+        { status: 429 }
+      );
+    }
+
+    const body = await request.json().catch(() => ({}));
+    const joinCode = typeof body.joinCode === "string" ? body.joinCode.trim() : "";
 
     if (!joinCode) {
       return NextResponse.json({ error: "Join code is required" }, { status: 400 });
     }
 
     const hub = await prisma.hub.findUnique({
-      where: { joinCode: joinCode.trim().toUpperCase() },
+      where: { joinCode: joinCode.toUpperCase() },
       include: {
         members: {
           where: { role: "owner" },

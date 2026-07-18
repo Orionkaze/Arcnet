@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 const PUBLIC_USER_FIELDS = {
   id: true,
@@ -106,6 +107,15 @@ export async function POST(
 
     const me = session.userId as string;
     const { conversationId } = await params;
+
+    // Generous per-user limit to curb DM flooding.
+    const rateLimit = checkRateLimit(`dm_send:${me}`, 60, 60 * 1000);
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: "You're sending messages too fast. Please slow down." },
+        { status: 429 }
+      );
+    }
 
     const body = await request.json().catch(() => ({}));
     const rawContent = typeof body.content === "string" ? body.content : "";

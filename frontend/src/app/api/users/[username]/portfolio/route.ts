@@ -85,6 +85,18 @@ export async function POST(
     if (!description || typeof description !== "string" || !description.trim()) {
       return NextResponse.json({ error: "Description is required" }, { status: 400 });
     }
+    if (title.length > 150) {
+      return NextResponse.json({ error: "Title cannot exceed 150 characters" }, { status: 400 });
+    }
+    if (description.length > 2000) {
+      return NextResponse.json({ error: "Description cannot exceed 2000 characters" }, { status: 400 });
+    }
+    if (link !== undefined && link !== null && typeof link !== "string") {
+      return NextResponse.json({ error: "Invalid link" }, { status: 400 });
+    }
+    if (typeof link === "string" && link.length > 500) {
+      return NextResponse.json({ error: "Link is too long" }, { status: 400 });
+    }
 
     // Normalize tags to a string array (accepts array or comma-separated string).
     let normalizedTags: string[] = [];

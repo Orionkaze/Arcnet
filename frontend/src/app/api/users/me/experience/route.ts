@@ -17,6 +17,26 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Role, company, and start date are required" }, { status: 400 });
     }
 
+    // Type-validate (never coerce) and cap lengths.
+    if (typeof role !== "string" || typeof company !== "string" || typeof startDate !== "string") {
+      return NextResponse.json({ error: "Role, company, and start date must be strings" }, { status: 400 });
+    }
+    if (endDate !== undefined && endDate !== null && typeof endDate !== "string") {
+      return NextResponse.json({ error: "Invalid end date" }, { status: 400 });
+    }
+    if (description !== undefined && description !== null && typeof description !== "string") {
+      return NextResponse.json({ error: "Invalid description" }, { status: 400 });
+    }
+    if (role.length > 100 || company.length > 100) {
+      return NextResponse.json({ error: "Role and company must be under 100 characters" }, { status: 400 });
+    }
+    if (startDate.length > 50 || (typeof endDate === "string" && endDate.length > 50)) {
+      return NextResponse.json({ error: "Invalid date value" }, { status: 400 });
+    }
+    if (typeof description === "string" && description.length > 1000) {
+      return NextResponse.json({ error: "Description cannot exceed 1000 characters" }, { status: 400 });
+    }
+
     const experience = await prisma.experience.create({
       data: {
         role,
