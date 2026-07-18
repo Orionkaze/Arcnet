@@ -53,6 +53,10 @@ export async function POST(
       return NextResponse.json({ error: "Content cannot be empty" }, { status: 400 });
     }
 
+    if (content.trim().length > 1000) {
+      return NextResponse.json({ error: "Comment cannot exceed 1000 characters" }, { status: 400 });
+    }
+
     const comment = await prisma.comment.create({
       data: {
         content: content.trim(),

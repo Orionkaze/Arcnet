@@ -21,6 +21,16 @@ export async function POST(
       return NextResponse.json({ error: "Recipient ID is required" }, { status: 400 });
     }
 
+    // Verify recipient is a real user (avoids FK 500 and prevents spamming arbitrary ids)
+    const recipient = await prisma.user.findUnique({
+      where: { id: recipientId },
+      select: { id: true },
+    });
+
+    if (!recipient) {
+      return NextResponse.json({ error: "Recipient not found" }, { status: 404 });
+    }
+
     // Verify post exists
     const postExists = await prisma.post.findUnique({
       where: { id: postId },

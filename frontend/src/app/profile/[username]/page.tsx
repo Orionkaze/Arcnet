@@ -1140,6 +1140,22 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
       if (!res.ok) throw new Error("Failed to follow/unfollow user");
       const data = await res.json();
       setIsFollowed(data.isFollowing);
+      // Keep the displayed follower count in sync with the follow state.
+      const delta = data.isFollowing ? 1 : -1;
+      setProfileUser((prev) =>
+        prev
+          ? {
+              ...prev,
+              _count: {
+                ...prev._count,
+                posts: prev._count?.posts || 0,
+                followers: Math.max(0, (prev._count?.followers || 0) + delta),
+                following: prev._count?.following || 0,
+                hubMembers: prev._count?.hubMembers || 0,
+              },
+            }
+          : null
+      );
     } catch (error) {
       console.error(error);
     }

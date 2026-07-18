@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { Prisma } from "@prisma/client";
 
 const PUBLIC_USER_FIELDS = {
   id: true,
@@ -122,9 +123,31 @@ export async function POST(request: Request) {
     });
 
     if (!conversation) {
-      conversation = await prisma.conversation.create({
-        data: { user1Id, user2Id },
-      });
+      try {
+        conversation = await prisma.conversation.create({
+          data: { user1Id, user2Id },
+        });
+      } catch (err) {
+        // Race: a concurrent request created the same pair first. The
+        // @@unique([user1Id, user2Id]) throws P2002; re-read and reuse it.
+        if (
+          err instanceof Prisma.PrismaClientKnownRequestError &&
+          err.code === "P2002"
+        ) {
+          conversation = await prisma.conversation.findFirst({
+            where: { user1Id, user2Id },
+          });
+        } else {
+          throw err;
+        }
+      }
+    }
+
+    if (!conversation) {
+      return NextResponse.json(
+        { error: "Internal Server Error" },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json(

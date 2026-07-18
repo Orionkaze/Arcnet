@@ -4,8 +4,12 @@ import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
+const rawSecret = process.env.JWT_SECRET;
+if (!rawSecret && process.env.NODE_ENV === "production") {
+  throw new Error("JWT_SECRET environment variable must be set in production");
+}
 const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "super-secret-key-for-arcnet-dev",
+  rawSecret || "dev-only-insecure-secret-do-not-use-in-prod",
 );
 
 export async function hashPassword(password: string): Promise<string> {
@@ -44,8 +48,14 @@ export async function verifyToken(token: string) {
  * Use this ONLY in Server Actions and Middleware — NOT in Route Handlers.
  */
 export async function setAuthCookies(userId: string) {
-  const accessToken = await signToken({ userId }, "15m");
-  const refreshToken = await signToken({ userId }, "7d");
+  const dbUser = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { tokenVersion: true },
+  });
+  const tokenVersion = dbUser?.tokenVersion ?? 0;
+
+  const accessToken = await signToken({ userId, tokenVersion }, "15m");
+  const refreshToken = await signToken({ userId, tokenVersion }, "7d");
 
   const cookieStore = await cookies();
 
@@ -74,8 +84,14 @@ export async function setAuthCookiesOnResponse(
   response: NextResponse,
   userId: string,
 ) {
-  const accessToken = await signToken({ userId }, "15m");
-  const refreshToken = await signToken({ userId }, "7d");
+  const dbUser = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { tokenVersion: true },
+  });
+  const tokenVersion = dbUser?.tokenVersion ?? 0;
+
+  const accessToken = await signToken({ userId, tokenVersion }, "15m");
+  const refreshToken = await signToken({ userId, tokenVersion }, "7d");
 
   response.cookies.set("access_token", accessToken, {
     httpOnly: true,
@@ -179,8 +195,12 @@ export async function getSession() {
         return null;
       }
 
-      // Refresh token is valid — issue a new access token
-      const newAccessToken = await signToken({ userId: payload.userId }, "15m");
+      // Refresh token is valid — issue a new access token.
+      // Carry the token version forward (default 0 for older tokens).
+      const newAccessToken = await signToken(
+        { userId: payload.userId, tokenVersion: payload.tokenVersion ?? 0 },
+        "15m",
+      );
 
       // Issue #3 fix: cookies().set() can throw in Route Handlers.
       // Wrap in try-catch so the session is still returned even if

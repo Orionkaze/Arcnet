@@ -30,19 +30,38 @@ export async function POST(req: Request) {
 
     const { email, password } = result.data;
 
-    const user = await prisma.user.findUnique({ where: { email } });
-
-    if (!user || !user.password) {
-      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    // Per-email rate limit (in addition to the IP limiter above) to slow
+    // credential-stuffing against a single account. Returns the same 429.
+    const emailRateLimit = checkRateLimit(
+      `login_email_${email.toLowerCase()}`,
+      10,
+      15 * 60 * 1000,
+    );
+    if (!emailRateLimit.success) {
+      return NextResponse.json(
+        { error: `Too many attempts. Try again in 15 minutes.` },
+        { status: 429 }
+      );
     }
 
-    if (!user.isVerified) {
-      return NextResponse.json({ error: "Account not verified. Check your email." }, { status: 403 });
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    // Compare the password BEFORE any account-state check so we never leak
+    // whether an account exists or needs verification to someone who does not
+    // know the password. "User not found" and "wrong password" return an
+    // identical 401 so the two cases are indistinguishable.
+    if (!user || !user.password) {
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
     const isPasswordValid = await comparePassword(password, user.password);
     if (!isPasswordValid) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    }
+
+    // Only after a correct password do we reveal verification state.
+    if (!user.isVerified) {
+      return NextResponse.json({ error: "Account not verified. Check your email." }, { status: 403 });
     }
 
     // Success - set cookies on the response object (required for Route Handlers)

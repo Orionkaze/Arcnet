@@ -449,18 +449,22 @@ export default function HubPage() {
   useEffect(() => {
     if (!selectedChannel) return;
 
+    let cancelled = false;
+
     async function fetchChannelMessages() {
       setChatLoading(true);
       try {
         const res = await fetch(`/api/channels/${selectedChannel?.id}/messages`);
         if (res.ok) {
           const data = await res.json();
+          if (cancelled) return;
           setMessages(data.messages || []);
           setPinnedMessage(data.pinnedMessage || null);
         }
       } catch (err) {
         console.warn(err);
       } finally {
+        if (cancelled) return;
         setChatLoading(false);
         // Scroll to bottom
         setTimeout(() => {
@@ -472,6 +476,10 @@ export default function HubPage() {
     }
 
     fetchChannelMessages();
+
+    return () => {
+      cancelled = true;
+    };
   }, [selectedChannel]);
 
   // 3. Socket.io Connection & Presence
@@ -511,7 +519,14 @@ export default function HubPage() {
     return () => {
       socket.disconnect();
     };
-  }, [user, hub]);
+  }, [user]);
+
+  // 3b. (Re)join the hub room whenever the hub id changes, without recreating the socket.
+  useEffect(() => {
+    if (hub?.id && socketRef.current?.connected) {
+      socketRef.current.emit("join_hub", hub.id);
+    }
+  }, [hub?.id]);
 
   // 4. Socket.io Channel Subscription & Real-time Messages
   useEffect(() => {
@@ -519,6 +534,9 @@ export default function HubPage() {
 
     const socket = socketRef.current;
     socket.emit("join_channel", selectedChannel.id);
+
+    // Clear any stale typing indicators from the previously selected channel.
+    setTypingUsers([]);
 
     const handleNewMessage = (newMsg: Message) => {
       setMessages((prev) => {
@@ -563,6 +581,7 @@ export default function HubPage() {
       socket.off("new_message", handleNewMessage);
       socket.off("user_typing", handleTyping);
       socket.off("user_stop_typing", handleStopTyping);
+      setTypingUsers([]);
     };
   }, [selectedChannel]);
 

@@ -88,6 +88,9 @@ function MessagesInner() {
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const handledToRef = useRef(false);
+  // Always holds the currently-active conversation id so async fetches can
+  // discard responses for a conversation the user has since switched away from.
+  const activeIdRef = useRef<string | null>(null);
 
   const showErrorToast = (msg: string) => {
     setErrorToast(msg);
@@ -119,6 +122,8 @@ function MessagesInner() {
         const res = await fetch(`/api/conversations/${id}`);
         if (!res.ok) throw new Error("Failed to load conversation");
         const data = await res.json();
+        // Discard if the user has switched to a different conversation.
+        if (id !== activeIdRef.current) return;
         setMessages(data.messages || []);
         if (data.conversation?.otherUser) {
           setActiveOther(data.conversation.otherUser);
@@ -139,6 +144,7 @@ function MessagesInner() {
 
   const selectConversation = useCallback(
     (c: ConversationSummary) => {
+      activeIdRef.current = c.id;
       setActiveId(c.id);
       setActiveOther(c.otherUser);
       setMessages([]);
@@ -171,6 +177,7 @@ function MessagesInner() {
         const data = await res.json();
         const conv = data.conversation;
         if (conv) {
+          activeIdRef.current = conv.id;
           setActiveId(conv.id);
           setActiveOther(conv.otherUser);
           setMessages([]);
@@ -391,6 +398,7 @@ function MessagesInner() {
                         className="dm-back-btn md:hidden"
                         aria-label="Back to conversations"
                         onClick={() => {
+                          activeIdRef.current = null;
                           setActiveId(null);
                           setActiveOther(null);
                         }}

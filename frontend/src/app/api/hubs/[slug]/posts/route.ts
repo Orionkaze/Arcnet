@@ -27,6 +27,23 @@ export async function GET(
       return NextResponse.json({ error: "Hub not found" }, { status: 404 });
     }
 
+    if (hub.isPrivate) {
+      if (!session?.userId) {
+        return NextResponse.json({ error: "This is a private hub." }, { status: 403 });
+      }
+      const membership = await prisma.hubMember.findUnique({
+        where: {
+          hubId_userId: {
+            hubId: hub.id,
+            userId: session.userId as string,
+          },
+        },
+      });
+      if (!membership) {
+        return NextResponse.json({ error: "This is a private hub." }, { status: 403 });
+      }
+    }
+
     // Fetch posts tagged with this hub
     const rawPosts = await prisma.post.findMany({
       where: { hubId: hub.id },

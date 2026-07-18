@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { getSession } from "@/lib/auth";
 
 export async function GET(
   request: Request,
@@ -8,6 +9,7 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
+    const session = await getSession();
     const { searchParams } = new URL(request.url);
 
     const onlineFilter = searchParams.get("online") === "true";
@@ -22,6 +24,23 @@ export async function GET(
 
     if (!hub) {
       return NextResponse.json({ error: "Hub not found" }, { status: 404 });
+    }
+
+    if (hub.isPrivate) {
+      if (!session?.userId) {
+        return NextResponse.json({ error: "This is a private hub." }, { status: 403 });
+      }
+      const membership = await prisma.hubMember.findUnique({
+        where: {
+          hubId_userId: {
+            hubId: hub.id,
+            userId: session.userId as string,
+          },
+        },
+      });
+      if (!membership) {
+        return NextResponse.json({ error: "This is a private hub." }, { status: 403 });
+      }
     }
 
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
