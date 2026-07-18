@@ -34,7 +34,7 @@ pick a track → solve an auto-evaluated problem → instant structured feedback
 ```
 
 - **Auto-scored quant first:** guesstimates (structured rubric + numeric-range tolerance), finance/valuation (numeric answers), aptitude / data-interpretation, data problems.
-- **Rating = per-track Elo** plus a headline composite. Problems carry difficulty ratings; solving harder problems moves the rating more (Codeforces/LeetCode-style). Rating history is retained.
+- **Rating = per-track, difficulty-weighted** (specific algorithm — Elo vs Glicko-2 — resolved in the rating-service spec; see Open Items), plus a headline composite. Problems carry difficulty ratings; solving harder problems moves the rating more (Codeforces/LeetCode-style). Rating history is retained.
 - **Open-ended tracks later:** case cracking, product teardown, pitches — evaluated via structured rubric + peer review and/or AI feedback once there is a user base to peer-review.
 
 ## 4. Architecture — reuse vs. new
@@ -60,7 +60,7 @@ A large share of the (already hardened) plumbing carries over. The net-new work 
 
 ### Module boundaries (each independently testable)
 1. **Evaluation engine** — pure functions: `(problem, submission) → { score, feedback }`. No IO, deterministic, unit-testable in isolation. This is the crown jewel; it must be a clean library, not tangled into routes.
-2. **Rating service** — pure Elo update: `(rating, difficulty, outcome) → newRating`. Isolated + testable.
+2. **Rating service** — pure rating update (Elo or Glicko-2, decided in its spec): `(rating, difficulty, outcome) → newRating`. Isolated + testable.
 3. **Problem bank / authoring** — CRUD + validation of answer keys.
 4. **Practice surface** — UI + API orchestrating engine + rating + persistence.
 5. **Competitions** — scheduling, timed sets, leaderboard aggregation.
@@ -93,6 +93,17 @@ Each module gets its own detailed spec + implementation plan at build time; this
 - Company-hosted branded competitions (Unstop's model) — we run our own first.
 - Mobile apps (responsive web only).
 - LLM-based scoring for quant tracks (deterministic is the point); AI feedback is reserved for open-ended tracks, later.
+
+## 7a. Credential integrity (load-bearing — resolve in module specs)
+
+The wedge is a rating recruiters *trust*, so integrity is not optional even though live proctoring is out of scope. Named here so the problem-bank and competitions specs address it explicitly rather than by omission:
+
+- **Answer keys / rubrics are server-only** — never sent to the client; evaluation happens server-side.
+- **Per-user / randomized problem selection** — draw from a large bank so a leaked problem doesn't compromise a rating; competitions issue per-user or shuffled sets.
+- **Submission abuse** — reuse existing per-user rate limiting; cap rating gain velocity; retire over-exposed problems.
+- **Multi-account / farming detection** — deferred (named, not built): rating only becomes a *recruiter-facing* credential once basic abuse signals exist. Until then, rating is a self-improvement signal.
+
+This is a concern list for downstream specs, not a v1 build item.
 
 ## 8. Open items (decide before shipping, not before spec)
 
