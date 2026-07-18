@@ -111,7 +111,7 @@ function statusStyles(status: JamStatus): { bg: string; color: string; label: st
     case "Live":
       return { bg: "rgba(34,197,94,0.15)", color: "#22C55E", label: "Live" };
     case "Upcoming":
-      return { bg: "rgba(0,234,255,0.12)", color: "#00EAFF", label: "Upcoming" };
+      return { bg: "rgba(16, 185, 129,0.12)", color: "#10B981", label: "Upcoming" };
     case "Voting":
       return { bg: "rgba(245,158,11,0.15)", color: "#F59E0B", label: "Voting" };
     case "Ended":
@@ -167,7 +167,7 @@ export default function GameJamsPage() {
         <main className="center-feed">
           {/* Toast */}
           {toast && (
-            <div className="fixed top-[80px] left-1/2 -translate-x-1/2 bg-[#00EAFF] text-[#0A0E14] font-bold font-chakra text-xs py-2 px-4 rounded shadow-lg z-50">
+            <div className="fixed top-[80px] left-1/2 -translate-x-1/2 bg-[#10B981] text-[#0A0E14] font-bold font-chakra text-xs py-2 px-4 rounded shadow-lg z-50">
               {toast}
             </div>
           )}
@@ -199,7 +199,7 @@ export default function GameJamsPage() {
             <h2 className="font-chakra text-3xl text-white font-bold uppercase tracking-wider leading-tight">
               {FEATURED.title}
             </h2>
-            <p className="font-chakra text-sm text-[#00EAFF] uppercase tracking-wide mt-1 font-bold">
+            <p className="font-chakra text-sm text-[#10B981] uppercase tracking-wide mt-1 font-bold">
               {FEATURED.theme}
             </p>
             <p className="font-inter text-xs text-[#C8C7C7] mt-1">
@@ -245,9 +245,9 @@ export default function GameJamsPage() {
                   onClick={() => setFilter(f)}
                   className="filter-pill"
                   style={{
-                    borderColor: filter === f ? "#00EAFF" : "#2A313C",
-                    color: filter === f ? "#00EAFF" : "#C8C7C7",
-                    background: filter === f ? "rgba(0,234,255,0.08)" : "transparent",
+                    borderColor: filter === f ? "#10B981" : "#2A313C",
+                    color: filter === f ? "#10B981" : "#C8C7C7",
+                    background: filter === f ? "rgba(16, 185, 129,0.08)" : "transparent",
                   }}
                 >
                   {f}
@@ -279,7 +279,7 @@ export default function GameJamsPage() {
                     </span>
                   </div>
 
-                  <p className="font-chakra text-xs text-[#00EAFF] uppercase tracking-wide mt-3 font-bold truncate">
+                  <p className="font-chakra text-xs text-[#10B981] uppercase tracking-wide mt-3 font-bold truncate">
                     {jam.theme}
                   </p>
 
@@ -304,8 +304,8 @@ export default function GameJamsPage() {
                       onClick={() => showToast(`${actionLabel(jam.status)} — ${jam.title}`)}
                       className="jam-action-btn"
                       style={{
-                        borderColor: jam.status === "Ended" ? "#2A313C" : "#00EAFF",
-                        color: jam.status === "Ended" ? "#C8C7C7" : "#00EAFF",
+                        borderColor: jam.status === "Ended" ? "#2A313C" : "#10B981",
+                        color: jam.status === "Ended" ? "#C8C7C7" : "#10B981",
                       }}
                     >
                       {actionLabel(jam.status)}
@@ -337,16 +337,16 @@ export default function GameJamsPage() {
           font-size: 11px;
           font-weight: 700;
           letter-spacing: 2px;
-          color: rgba(0, 234, 255, 0.6);
+          color: rgba(16, 185, 129, 0.6);
         }
         .featured-jam {
           background: linear-gradient(135deg, #10141a 0%, #0d1620 100%);
-          border: 1px solid rgba(0, 234, 255, 0.3);
+          border: 1px solid rgba(16, 185, 129, 0.3);
           border-radius: 14px;
           padding: 1.75rem;
           position: relative;
           overflow: hidden;
-          box-shadow: 0 0 40px rgba(0, 234, 255, 0.06);
+          box-shadow: 0 0 40px rgba(16, 185, 129, 0.06);
           /* .center-feed is a fixed-height flex column; without this the card
              is shrunk by the flex layout and overflow:hidden clips its body. */
           flex-shrink: 0;
@@ -358,7 +358,7 @@ export default function GameJamsPage() {
           right: -60px;
           width: 200px;
           height: 200px;
-          background: radial-gradient(circle, rgba(0, 234, 255, 0.12) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, transparent 70%);
           pointer-events: none;
         }
         .jam-card {
@@ -369,7 +369,7 @@ export default function GameJamsPage() {
           transition: border-color 0.2s;
         }
         .jam-card:hover {
-          border-color: rgba(0, 234, 255, 0.3);
+          border-color: rgba(16, 185, 129, 0.3);
         }
         .stat-label {
           font-family: var(--font-chakra-petch), sans-serif;
@@ -399,7 +399,7 @@ export default function GameJamsPage() {
           font-weight: 700;
           letter-spacing: 1px;
           text-transform: uppercase;
-          background: #00eaff;
+          background: #10B981;
           color: #0a0e14;
           border: none;
           border-radius: 8px;
@@ -408,7 +408,7 @@ export default function GameJamsPage() {
           transition: box-shadow 0.2s, transform 0.1s;
         }
         .join-btn:hover {
-          box-shadow: 0 0 20px rgba(0, 234, 255, 0.4);
+          box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
         }
         .join-btn:active {
           transform: translateY(1px);
@@ -432,14 +432,14 @@ export default function GameJamsPage() {
           letter-spacing: 0.5px;
           text-transform: uppercase;
           background: transparent;
-          border: 1px solid #00eaff;
+          border: 1px solid #10B981;
           border-radius: 6px;
           padding: 0.4rem 0.9rem;
           cursor: pointer;
           transition: background 0.2s;
         }
         .jam-action-btn:hover {
-          background: rgba(0, 234, 255, 0.08);
+          background: rgba(16, 185, 129, 0.08);
         }
         .pulse-dot {
           width: 6px;

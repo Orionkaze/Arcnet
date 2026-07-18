@@ -78,7 +78,7 @@ export function PasswordInput({ id, className = "", ...props }: AuthInputProps) 
 export function AuthButton({ children, className = "", ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
-      className={`w-full bg-arc-accent text-white font-chakra font-bold uppercase tracking-[2.5px] text-[13px] h-[48px] rounded-[8px] shadow-[0_0_24px_rgba(0,180,230,0.4)] hover:bg-[#1ac8ff] hover:shadow-[0_0_32px_rgba(0,180,230,0.6)] transition-all duration-200 mt-2 ${className}`}
+      className={`w-full bg-arc-accent text-white font-chakra font-bold uppercase tracking-[2.5px] text-[13px] h-[48px] rounded-[8px] shadow-[0_0_24px_rgba(16, 185, 129,0.4)] hover:bg-[#1ac8ff] hover:shadow-[0_0_32px_rgba(16, 185, 129,0.6)] transition-all duration-200 mt-2 ${className}`}
       {...props}
     >
       {children}

@@ -111,7 +111,7 @@ export default function SetupUsernamePage() {
     <ResponsiveAuthLayout
       label="ALMOST THERE"
       heading="Pick your username."
-      subheading="This is how others will find you on ARCNET."
+      subheading="This is how others will find you on Caliber."
       oppositeHref="/"
       oppositeText="Skip to home &rarr;"
     >
@@ -124,7 +124,7 @@ export default function SetupUsernamePage() {
                 key={s}
                 type="button"
                 onClick={() => setUsername(s)}
-                className="font-chakra text-[13px] border border-[rgba(0,180,230,0.3)] bg-[rgba(0,180,230,0.07)] text-arc-accent rounded-[20px] px-4 py-[6px] hover:bg-[rgba(0,180,230,0.15)] transition-colors"
+                className="font-chakra text-[13px] border border-[rgba(16, 185, 129,0.3)] bg-[rgba(16, 185, 129,0.07)] text-arc-accent rounded-[20px] px-4 py-[6px] hover:bg-[rgba(16, 185, 129,0.15)] transition-colors"
               >
                 {s}
               </button>
@@ -141,13 +141,13 @@ export default function SetupUsernamePage() {
             value={username}
             onChange={(e) => setUsername(e.target.value.toLowerCase())}
             placeholder="username"
-            className="w-full h-[48px] bg-arc-input border border-arc-border-input focus:border-[#00b4e6] outline-none text-white font-sans text-[14px] pl-10 pr-[120px] rounded-[8px] transition-colors"
+            className="w-full h-[48px] bg-arc-input border border-arc-border-input focus:border-[#10B981] outline-none text-white font-sans text-[14px] pl-10 pr-[120px] rounded-[8px] transition-colors"
           />
           
           <div className="absolute right-4 top-0 h-[48px] flex items-center">
             {isChecking && (
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 border-2 border-[rgba(255,255,255,0.2)] border-t-[#00b4e6] rounded-full animate-spin" />
+                <div className="w-3 h-3 border-2 border-[rgba(255,255,255,0.2)] border-t-[#10B981] rounded-full animate-spin" />
                 <span className="font-sans text-[12px] text-[rgba(255,255,255,0.35)]">Checking...</span>
               </div>
             )}

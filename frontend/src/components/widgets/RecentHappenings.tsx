@@ -12,7 +12,7 @@ export default function RecentHappenings() {
       <h3 className="text-gray-100 font-bold text-lg mb-6">Recent Happenings</h3>
       <div className="flex flex-col gap-6">
         {newsItems.map((item, index) => (
-          <p key={index} className="text-gray-300 text-sm leading-relaxed cursor-pointer hover:text-[#00D2FF] transition-colors">
+          <p key={index} className="text-gray-300 text-sm leading-relaxed cursor-pointer hover:text-[#10B981] transition-colors">
             {item}
           </p>
         ))}

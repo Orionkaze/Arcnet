@@ -128,7 +128,7 @@ export default function FindTeamPage() {
               placeholder="Search by name, username, or skills (e.g. Unity, Rigging, 3D Artist)..."
               value={search}
               onChange={handleSearchChange}
-              className="w-full bg-[#10141A] border border-[#2A313C] text-white text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:border-[#00EAFF] transition-colors font-inter"
+              className="w-full bg-[#10141A] border border-[#2A313C] text-white text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:border-[#10B981] transition-colors font-inter"
               style={{ height: "44px" }}
             />
           </div>
@@ -148,7 +148,7 @@ export default function FindTeamPage() {
                   <div className="flex gap-4 items-start">
                     {/* Avatar */}
                     <Link href={`/profile/${creator.username}`} className="flex-shrink-0 cursor-pointer block">
-                      <div className="w-12 h-12 rounded-full bg-[#2A313C] overflow-hidden flex items-center justify-center font-bold text-lg border border-[#2A313C] hover:border-[#00EAFF] transition-colors">
+                      <div className="w-12 h-12 rounded-full bg-[#2A313C] overflow-hidden flex items-center justify-center font-bold text-lg border border-[#2A313C] hover:border-[#10B981] transition-colors">
                         {creator.avatar ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={creator.avatar} alt={creator.firstName} className="w-full h-full object-cover" />
@@ -176,8 +176,8 @@ export default function FindTeamPage() {
                               creator.isFollowing ? "following" : ""
                             }`}
                             style={{
-                              borderColor: creator.isFollowing ? "#2A313C" : "#00EAFF",
-                              color: creator.isFollowing ? "#C8C7C7" : "#00EAFF",
+                              borderColor: creator.isFollowing ? "#2A313C" : "#10B981",
+                              color: creator.isFollowing ? "#C8C7C7" : "#10B981",
                             }}
                           >
                             {creator.isFollowing ? "Following" : "+ Follow"}
@@ -186,8 +186,8 @@ export default function FindTeamPage() {
                       </div>
 
                       {/* Role & Skills */}
-                      <p className="font-chakra text-xs text-[#00EAFF] uppercase tracking-wide mt-1.5 font-bold truncate">
-                        {creator.role || "AVGC Creator"}
+                      <p className="font-chakra text-xs text-[#10B981] uppercase tracking-wide mt-1.5 font-bold truncate">
+                        {creator.role || "Caliber Member"}
                       </p>
 
                       {creator.skills && (
@@ -237,7 +237,7 @@ export default function FindTeamPage() {
           font-size: 11px;
           font-weight: 700;
           letter-spacing: 2px;
-          color: rgba(0, 234, 255, 0.6);
+          color: rgba(16, 185, 129, 0.6);
         }
         .creator-card {
           background: #10141A;
@@ -247,7 +247,7 @@ export default function FindTeamPage() {
           transition: border-color 0.2s;
         }
         .creator-card:hover {
-          border-color: rgba(0, 234, 255, 0.3);
+          border-color: rgba(16, 185, 129, 0.3);
         }
       `}</style>
     </div>

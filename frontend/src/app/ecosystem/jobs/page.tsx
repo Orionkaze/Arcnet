@@ -131,7 +131,7 @@ const JOBS: Job[] = [
 ];
 
 const typeAccent: Record<EmploymentType, string> = {
-  "Full-Time": "#00EAFF",
+  "Full-Time": "#10B981",
   Internship: "#FFB84D",
   Contract: "#B07CFF",
   Remote: "#4ADE80",
@@ -196,7 +196,7 @@ export default function JobsPage() {
               placeholder="Search by title, studio, or skill (e.g. Unity, Rigging, Mumbai)..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-[#10141A] border border-[#2A313C] text-white text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:border-[#00EAFF] transition-colors font-inter"
+              className="w-full bg-[#10141A] border border-[#2A313C] text-white text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:border-[#10B981] transition-colors font-inter"
               style={{ height: "44px" }}
             />
           </div>
@@ -249,7 +249,7 @@ export default function JobsPage() {
 
                   {/* CTC + posted */}
                   <div className="flex items-center justify-between mt-3">
-                    <span className="font-chakra text-sm font-bold text-[#00EAFF]">
+                    <span className="font-chakra text-sm font-bold text-[#10B981]">
                       {job.ctc}
                     </span>
                     <span className="font-inter text-xs text-[#6B7280]">
@@ -312,7 +312,7 @@ export default function JobsPage() {
           font-size: 11px;
           font-weight: 700;
           letter-spacing: 2px;
-          color: rgba(0, 234, 255, 0.6);
+          color: rgba(16, 185, 129, 0.6);
         }
         .job-card {
           background: #10141a;
@@ -322,7 +322,7 @@ export default function JobsPage() {
           transition: border-color 0.2s;
         }
         .job-card:hover {
-          border-color: rgba(0, 234, 255, 0.3);
+          border-color: rgba(16, 185, 129, 0.3);
         }
         .filter-pill {
           font-family: var(--font-chakra-petch), sans-serif;
@@ -339,13 +339,13 @@ export default function JobsPage() {
           transition: all 0.2s;
         }
         .filter-pill:hover {
-          border-color: rgba(0, 234, 255, 0.3);
+          border-color: rgba(16, 185, 129, 0.3);
           color: #fff;
         }
         .filter-pill.active {
-          color: #00eaff;
-          border-color: #00eaff;
-          background: rgba(0, 234, 255, 0.1);
+          color: #10B981;
+          border-color: #10B981;
+          background: rgba(16, 185, 129, 0.1);
         }
         .type-pill {
           font-family: var(--font-chakra-petch), sans-serif;
@@ -372,7 +372,7 @@ export default function JobsPage() {
           transition: all 0.2s;
         }
         .job-btn-secondary:hover {
-          border-color: rgba(0, 234, 255, 0.3);
+          border-color: rgba(16, 185, 129, 0.3);
           color: #fff;
         }
         .job-btn-primary {
@@ -382,15 +382,15 @@ export default function JobsPage() {
           letter-spacing: 0.5px;
           text-transform: uppercase;
           color: #0b0e13;
-          background: #00eaff;
-          border: 1px solid #00eaff;
+          background: #10B981;
+          border: 1px solid #10B981;
           border-radius: 8px;
           padding: 0.5rem 1.25rem;
           cursor: pointer;
           transition: all 0.2s;
         }
         .job-btn-primary:hover {
-          background: rgba(0, 234, 255, 0.85);
+          background: rgba(16, 185, 129, 0.85);
         }
       `}</style>
     </div>

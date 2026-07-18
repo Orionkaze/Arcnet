@@ -418,7 +418,7 @@ export default function PostCard({
                 width="14"
                 height="14"
                 viewBox="0 0 24 24"
-                fill="#00EAFF"
+                fill="#10B981"
                 className="inline-block"
               >
                 <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
@@ -432,7 +432,7 @@ export default function PostCard({
             {hub && (
               <Link
                 href={`/hub/${hub.slug}`}
-                className="inline-flex items-center bg-[#1c2331] text-[#00EAFF] hover:text-[#00EAFF] font-chakra text-[10px] px-2 py-0.5 rounded border border-[#2A313C] hover:border-[#00EAFF] transition-all"
+                className="inline-flex items-center bg-[#1c2331] text-[#10B981] hover:text-[#10B981] font-chakra text-[10px] px-2 py-0.5 rounded border border-[#2A313C] hover:border-[#10B981] transition-all"
               >
                 # {hub.name}
               </Link>
@@ -445,8 +445,8 @@ export default function PostCard({
             onClick={handleFollow}
             className={`follow-btn ${following ? "following" : ""}`}
             style={{
-              borderColor: following ? "#2A313C" : "#00EAFF",
-              color: following ? "#C8C7C7" : "#00EAFF",
+              borderColor: following ? "#2A313C" : "#10B981",
+              color: following ? "#C8C7C7" : "#10B981",
             }}
           >
             {following ? "Following" : "+ Follow"}
@@ -457,7 +457,7 @@ export default function PostCard({
           <div className="relative ml-auto">
             <button
               onClick={() => setShowMenu(!showMenu)}
-              className="text-[#8E95A3] hover:text-[#00EAFF] transition-colors p-1"
+              className="text-[#8E95A3] hover:text-[#10B981] transition-colors p-1"
               aria-label="Post Options"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -501,7 +501,7 @@ export default function PostCard({
           onClick={handleLike}
           className="post-action flex items-center gap-1.5 relative"
           style={{
-            color: liked ? "#00EAFF" : "#C8C7C7",
+            color: liked ? "#10B981" : "#C8C7C7",
             transition: "color 0.3s ease",
           }}
           aria-label="Like"
@@ -527,7 +527,7 @@ export default function PostCard({
             width="18"
             height="18"
             viewBox="0 0 24 24"
-            fill={liked ? "#00EAFF" : "none"}
+            fill={liked ? "#10B981" : "none"}
             stroke="currentColor"
             strokeWidth="2"
             strokeLinecap="round"
@@ -558,7 +558,7 @@ export default function PostCard({
         <button
           onClick={toggleComments}
           className="post-action flex items-center gap-1.5"
-          style={{ color: commentsOpen ? "#00EAFF" : "#C8C7C7" }}
+          style={{ color: commentsOpen ? "#10B981" : "#C8C7C7" }}
           aria-label="Comment"
         >
           <svg
@@ -581,7 +581,7 @@ export default function PostCard({
           onClick={handleRepost}
           className="post-action flex items-center gap-1.5"
           style={{
-            color: reposted ? "#00EAFF" : "#C8C7C7",
+            color: reposted ? "#10B981" : "#C8C7C7",
             transition: "color 0.4s ease",
           }}
           aria-label="Repost"
@@ -608,14 +608,14 @@ export default function PostCard({
         <button
           onClick={handleBookmark}
           className="post-action flex items-center gap-1.5"
-          style={{ color: bookmarked ? "#00EAFF" : "#C8C7C7" }}
+          style={{ color: bookmarked ? "#10B981" : "#C8C7C7" }}
           aria-label="Bookmark"
         >
           <svg
             width="18"
             height="18"
             viewBox="0 0 24 24"
-            fill={bookmarked ? "#00EAFF" : "none"}
+            fill={bookmarked ? "#10B981" : "none"}
             stroke="currentColor"
             strokeWidth="2"
             strokeLinecap="round"
@@ -631,7 +631,7 @@ export default function PostCard({
           onClick={handleShare}
           className="post-action flex items-center gap-1.5"
           aria-label="Share"
-          style={{ color: shareModalOpen ? "#00EAFF" : "#C8C7C7" }}
+          style={{ color: shareModalOpen ? "#10B981" : "#C8C7C7" }}
         >
           <svg
             width="18"
@@ -662,7 +662,7 @@ export default function PostCard({
           transition: "max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease, margin 0.3s ease, border-color 0.3s ease",
         }}
       >
-        <h4 className="font-chakra text-xs text-[#00EAFF] uppercase tracking-wider mb-3">
+        <h4 className="font-chakra text-xs text-[#10B981] uppercase tracking-wider mb-3">
           Comments
         </h4>
 
@@ -725,13 +725,13 @@ export default function PostCard({
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
               maxLength={300}
-              className="flex-grow bg-[#10141A] border border-[#2A313C] text-white text-xs px-3.5 py-2.5 rounded-lg focus:outline-none focus:border-[#00EAFF] transition-colors font-inter"
+              className="flex-grow bg-[#10141A] border border-[#2A313C] text-white text-xs px-3.5 py-2.5 rounded-lg focus:outline-none focus:border-[#10B981] transition-colors font-inter"
               style={{ height: "44px" }}
             />
             <button
               type="submit"
               disabled={!commentText.trim()}
-              className="px-4 bg-[#00EAFF] hover:bg-[#00d0e0] text-[#10141A] font-bold font-chakra text-xs tracking-wider uppercase rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              className="px-4 bg-[#10B981] hover:bg-[#00d0e0] text-[#10141A] font-bold font-chakra text-xs tracking-wider uppercase rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               style={{ height: "44px" }}
             >
               Post
@@ -789,7 +789,7 @@ export default function PostCard({
           position: absolute;
           left: 50%;
           top: 50%;
-          color: #00EAFF;
+          color: #10B981;
           font-size: 10px;
           pointer-events: none;
           animation: floatHeart 0.8s ease-out forwards;
@@ -893,7 +893,7 @@ export default function PostCard({
           onClick={() => setShowLightbox(false)}
         >
           <button 
-            className="absolute top-6 right-6 text-white hover:text-[#00EAFF] transition-colors p-2 bg-black/50 rounded-full"
+            className="absolute top-6 right-6 text-white hover:text-[#10B981] transition-colors p-2 bg-black/50 rounded-full"
             onClick={(e) => {
               e.stopPropagation();
               setShowLightbox(false);

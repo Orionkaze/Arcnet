@@ -91,7 +91,7 @@ export default function NewsCard({
           flex-direction: column;
         }
         .news-card:hover {
-          border-color: rgba(0, 234, 255, 0.3);
+          border-color: rgba(16, 185, 129, 0.3);
           transform: translateY(-2px);
         }
         .news-image-container {
@@ -128,7 +128,7 @@ export default function NewsCard({
           font-size: 10px;
           font-weight: 700;
           text-transform: uppercase;
-          color: #00EAFF;
+          color: #10B981;
           letter-spacing: 1px;
           margin-bottom: 6px;
         }

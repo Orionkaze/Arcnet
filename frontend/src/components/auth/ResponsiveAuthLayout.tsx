@@ -27,43 +27,43 @@ export function ResponsiveAuthLayout({
         {/* =========================================
             LEFT PANEL (DESKTOP ONLY - hidden <1024px)
             ========================================= */}
-        <div className="hidden lg:flex w-[55%] h-screen relative border-r border-[rgba(0,180,230,0.15)] flex-col justify-between p-12">
+        <div className="hidden lg:flex w-[55%] h-screen relative border-r border-[rgba(16, 185, 129,0.15)] flex-col justify-between p-12">
           {/* Logo */}
           <div className="flex">
             <h1 className="font-chakra font-bold text-[22px] tracking-[4px]">
-              <span className="text-arc-accent">ARC</span>
-              <span className="text-white">NET</span>
+              <span className="text-arc-accent">Cali</span>
+              <span className="text-white">ber</span>
             </h1>
           </div>
 
           {/* Centered Content */}
           <div className="flex-1 flex flex-col justify-center">
             <h2 className="font-chakra font-bold text-[52px] leading-tight text-white mb-4">
-              The hub for <span className="text-arc-accent">game creators.</span>
+              Prove your <span className="text-arc-accent">caliber.</span>
             </h2>
             <p className="font-sans text-[15px] text-[rgba(255,255,255,0.4)] max-w-[420px] mb-8">
-              Connect with developers, artists, animators and storytellers — all in one place.
+              Practice real problems, get instant feedback, and build a rating that proves your ability.
             </p>
             <div className="flex gap-3">
-              <span className="font-chakra text-[11px] border border-[rgba(0,180,230,0.25)] bg-[rgba(0,180,230,0.06)] text-arc-accent px-[12px] py-[4px] rounded-[2px] uppercase">
-                Game Jams
+              <span className="font-chakra text-[11px] border border-[rgba(16, 185, 129,0.25)] bg-[rgba(16, 185, 129,0.06)] text-arc-accent px-[12px] py-[4px] rounded-[2px] uppercase">
+                Practice
               </span>
-              <span className="font-chakra text-[11px] border border-[rgba(0,180,230,0.25)] bg-[rgba(0,180,230,0.06)] text-arc-accent px-[12px] py-[4px] rounded-[2px] uppercase">
-                Find Team
+              <span className="font-chakra text-[11px] border border-[rgba(16, 185, 129,0.25)] bg-[rgba(16, 185, 129,0.06)] text-arc-accent px-[12px] py-[4px] rounded-[2px] uppercase">
+                Compete
               </span>
-              <span className="font-chakra text-[11px] border border-[rgba(0,180,230,0.25)] bg-[rgba(0,180,230,0.06)] text-arc-accent px-[12px] py-[4px] rounded-[2px] uppercase">
-                AI Match
+              <span className="font-chakra text-[11px] border border-[rgba(16, 185, 129,0.25)] bg-[rgba(16, 185, 129,0.06)] text-arc-accent px-[12px] py-[4px] rounded-[2px] uppercase">
+                Get Rated
               </span>
             </div>
           </div>
 
           {/* Bottom */}
           <div>
-            <p className="font-sans text-[12px] text-[rgba(255,255,255,0.2)]">Trusted by creators worldwide</p>
+            <p className="font-sans text-[12px] text-[rgba(255,255,255,0.2)]">Trusted by ambitious students</p>
           </div>
           
           {/* Decorative Bracket */}
-          <div className="absolute bottom-12 right-12 w-32 h-32 border-b border-r border-[rgba(0,180,230,0.15)] pointer-events-none" />
+          <div className="absolute bottom-12 right-12 w-32 h-32 border-b border-r border-[rgba(16, 185, 129,0.15)] pointer-events-none" />
         </div>
 
         {/* =========================================
@@ -83,15 +83,15 @@ export function ResponsiveAuthLayout({
           {/* Mobile Header (hidden on desktop) */}
           <div className="lg:hidden flex flex-col items-center pt-10 pb-6">
             <h1 className="font-chakra font-bold text-[22px] tracking-[4px]">
-              <span className="text-arc-accent">ARC</span>
-              <span className="text-white">NET</span>
+              <span className="text-arc-accent">Cali</span>
+              <span className="text-white">ber</span>
             </h1>
           </div>
 
           {/* Center container */}
           <div className="flex-1 flex items-center justify-center p-4 lg:p-12 pb-12">
             {/* Form Wrapper (acts as card on mobile, transparent on desktop) */}
-            <div className="relative w-full max-w-md mx-auto lg:max-w-[380px] lg:mx-auto p-8 lg:p-0 rounded-[3px] bg-[#0d1320] lg:bg-transparent border border-[rgba(0,180,230,0.22)] lg:border-none">
+            <div className="relative w-full max-w-md mx-auto lg:max-w-[380px] lg:mx-auto p-8 lg:p-0 rounded-[3px] bg-[#0d1320] lg:bg-transparent border border-[rgba(16, 185, 129,0.22)] lg:border-none">
               
               {/* Mobile Card Ornaments (hidden on desktop) */}
               <div className="lg:hidden absolute top-0 left-0 right-0 h-[1px] bg-arc-accent w-full" />
@@ -111,7 +111,7 @@ export function ResponsiveAuthLayout({
 
               {/* Form Content Area */}
               <div className="flex flex-col items-center lg:items-start mb-8 text-center lg:text-left w-full">
-                <span className="font-chakra text-[11px] uppercase tracking-[2.5px] text-[rgba(0,180,230,0.5)] mb-3">
+                <span className="font-chakra text-[11px] uppercase tracking-[2.5px] text-[rgba(16, 185, 129,0.5)] mb-3">
                   {label}
                 </span>
                 <h2 className="font-chakra font-bold text-[45px] leading-[1.1] m-0 text-white mb-2 tracking-[0px]">

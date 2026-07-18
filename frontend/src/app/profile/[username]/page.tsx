@@ -715,19 +715,19 @@ const PRESETS = [
   { id: "deep-ocean", name: "Deep Ocean", category: "Dark Gradients", value: "linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)" },
   { id: "midnight", name: "Midnight", category: "Dark Gradients", value: "linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)" },
   { id: "eclipse", name: "Eclipse", category: "Dark Gradients", value: "linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #2d2d2d 100%)" },
-  // Cyan/ARCNET themed
-  { id: "neon-grid", name: "Neon Grid", category: "Cyan/ARCNET themed", value: "linear-gradient(to right, rgba(0, 234, 255, 0.08) 1px, transparent 1px) 0 0 / 20px 20px, linear-gradient(to bottom, rgba(0, 234, 255, 0.08) 1px, transparent 1px) 0 0 / 20px 20px, #10141A" },
-  { id: "cyber", name: "Cyber", category: "Cyan/ARCNET themed", value: "linear-gradient(135deg, #0d1b2a 0%, #1b2838 50%, rgba(0, 234, 255, 0.07) 100%)" },
-  { id: "arc-light", name: "Arc Light", category: "Cyan/ARCNET themed", value: "linear-gradient(135deg, #001a1f 0%, #003d4a 50%, rgba(0, 234, 255, 0.13) 100%)" },
-  { id: "electric", name: "Electric", category: "Cyan/ARCNET themed", value: "linear-gradient(to bottom, transparent 55%, rgba(0, 234, 255, 0.3) 59%, #00EAFF 60%, rgba(0, 234, 255, 0.3) 61%, transparent 65%), linear-gradient(135deg, #0a0e1a 0%, #001b33 100%)" },
+  // Emerald/Caliber themed
+  { id: "neon-grid", name: "Neon Grid", category: "Emerald/Caliber themed", value: "linear-gradient(to right, rgba(16, 185, 129, 0.08) 1px, transparent 1px) 0 0 / 20px 20px, linear-gradient(to bottom, rgba(16, 185, 129, 0.08) 1px, transparent 1px) 0 0 / 20px 20px, #10141A" },
+  { id: "cyber", name: "Cyber", category: "Emerald/Caliber themed", value: "linear-gradient(135deg, #0d1b2a 0%, #1b2838 50%, rgba(16, 185, 129, 0.07) 100%)" },
+  { id: "arc-light", name: "Arc Light", category: "Emerald/Caliber themed", value: "linear-gradient(135deg, #001a1f 0%, #003d4a 50%, rgba(16, 185, 129, 0.13) 100%)" },
+  { id: "electric", name: "Electric", category: "Emerald/Caliber themed", value: "linear-gradient(to bottom, transparent 55%, rgba(16, 185, 129, 0.3) 59%, #10B981 60%, rgba(16, 185, 129, 0.3) 61%, transparent 65%), linear-gradient(135deg, #0a0e1a 0%, #001b33 100%)" },
   // Dark Colorful
   { id: "crimson", name: "Crimson", category: "Dark Colorful", value: "linear-gradient(135deg, #1a0000 0%, #3d0000 50%, #6b0000 100%)" },
   { id: "forest", name: "Forest", category: "Dark Colorful", value: "linear-gradient(135deg, #0a1a0a 0%, #1a3a1a 50%, #0d2d0d 100%)" },
   { id: "royal", name: "Royal", category: "Dark Colorful", value: "linear-gradient(135deg, #0a0a2e 0%, #1a0a4a 50%, #2a0a6a 100%)" },
   { id: "ember", name: "Ember", category: "Dark Colorful", value: "linear-gradient(135deg, #1a0800 0%, #3d1500 50%, #6b2800 100%)" },
   // Game Dev themed
-  { id: "pixel-dark", name: "Pixel Dark", category: "Game Dev themed", value: "radial-gradient(rgba(0, 234, 255, 0.1) 1.5px, transparent 1.5px) 0 0 / 16px 16px, #10141A" },
-  { id: "circuit", name: "Circuit", category: "Game Dev themed", value: "linear-gradient(90deg, rgba(0, 234, 255, 0.03) 1px, transparent 1px) 0 0 / 40px 40px, linear-gradient(0deg, rgba(0, 234, 255, 0.03) 1px, transparent 1px) 0 0 / 40px 40px, linear-gradient(45deg, rgba(0, 234, 255, 0.03) 1px, transparent 1px) 0 0 / 40px 40px, #10141A" },
+  { id: "pixel-dark", name: "Pixel Dark", category: "Game Dev themed", value: "radial-gradient(rgba(16, 185, 129, 0.1) 1.5px, transparent 1.5px) 0 0 / 16px 16px, #10141A" },
+  { id: "circuit", name: "Circuit", category: "Game Dev themed", value: "linear-gradient(90deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px) 0 0 / 40px 40px, linear-gradient(0deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px) 0 0 / 40px 40px, linear-gradient(45deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px) 0 0 / 40px 40px, #10141A" },
   { id: "scanline", name: "Scanline", category: "Game Dev themed", value: "repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15) 2px, transparent 2px, transparent 4px), #151a22" },
   { id: "noise", name: "Noise", category: "Game Dev themed", value: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E\"), #10141A" }
 ];
@@ -1057,7 +1057,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
         <div className="profile-content">
           <LeftSidebar />
           <main className="profile-main flex items-center justify-center">
-            <span className="font-chakra text-lg text-[#00EAFF] animate-pulse">LOADING SYSTEM PROFILE...</span>
+            <span className="font-chakra text-lg text-[#10B981] animate-pulse">LOADING SYSTEM PROFILE...</span>
           </main>
         </div>
       </div>
@@ -1072,7 +1072,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
           <LeftSidebar />
           <main className="profile-main flex flex-col items-center justify-center gap-4">
             <span className="font-chakra text-2xl text-red-500">404 // PROFILE NOT FOUND</span>
-            <span className="font-inter text-[#C8C7C7]">The user @{cleanUsername} does not exist on ARCNET.</span>
+            <span className="font-inter text-[#C8C7C7]">The user @{cleanUsername} does not exist on Caliber.</span>
             <Link href="/" className="btn-edit-profile mt-4">Return Home</Link>
           </main>
         </div>
@@ -1415,7 +1415,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
             {/* TAB CONTENTS */}
             <section className="tab-content-area">
               {isTabLoading && (
-                <div className="py-8 text-center text-[#00EAFF] animate-pulse font-chakra">
+                <div className="py-8 text-center text-[#10B981] animate-pulse font-chakra">
                   LOADING DATA...
                 </div>
               )}
@@ -1512,7 +1512,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                 <div className="flex flex-col gap-8 w-full">
                   {/* Hubs Section */}
                   <div>
-                    <h3 className="font-chakra text-xs font-semibold text-[#00EAFF] tracking-wider mb-4">JOINED HUBS</h3>
+                    <h3 className="font-chakra text-xs font-semibold text-[#10B981] tracking-wider mb-4">JOINED HUBS</h3>
                     {userHubs.length === 0 ? (
                       <div className="py-8 text-center text-sm text-[#C8C7C7]">
                         Not a member of any hubs yet.
@@ -1571,7 +1571,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                       <div className="flex flex-col gap-4">
                         {profileUser.experience.map((exp: { id: string; role: string; company: string; startDate: string; endDate?: string | null; current: boolean; description?: string | null }) => (
                           <div key={exp.id} className="p-4 border border-[#2A313C] rounded bg-[#10141A]/50">
-                            <h4 className="text-[#E0E0E0] font-medium text-lg">{exp.role} <span className="text-[#00EAFF]">@ {exp.company}</span></h4>
+                            <h4 className="text-[#E0E0E0] font-medium text-lg">{exp.role} <span className="text-[#10B981]">@ {exp.company}</span></h4>
                             <p className="text-sm text-[#8E95A3] mt-1 font-chakra tracking-wide">
                               {exp.startDate} — {exp.current ? "Present" : exp.endDate}
                             </p>
@@ -1719,7 +1719,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                 <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                   <label
                     className="font-chakra"
-                    style={{ fontSize: "12px", fontWeight: 600, color: "#00EAFF", letterSpacing: "0.05em" }}
+                    style={{ fontSize: "12px", fontWeight: 600, color: "#10B981", letterSpacing: "0.05em" }}
                   >
                     TITLE
                   </label>
@@ -1743,7 +1743,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                 <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                   <label
                     className="font-chakra"
-                    style={{ fontSize: "12px", fontWeight: 600, color: "#00EAFF", letterSpacing: "0.05em" }}
+                    style={{ fontSize: "12px", fontWeight: 600, color: "#10B981", letterSpacing: "0.05em" }}
                   >
                     DESCRIPTION
                   </label>
@@ -1768,7 +1768,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                 <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                   <label
                     className="font-chakra"
-                    style={{ fontSize: "12px", fontWeight: 600, color: "#00EAFF", letterSpacing: "0.05em" }}
+                    style={{ fontSize: "12px", fontWeight: 600, color: "#10B981", letterSpacing: "0.05em" }}
                   >
                     TAGS
                   </label>
@@ -1792,7 +1792,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                 <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                   <label
                     className="font-chakra"
-                    style={{ fontSize: "12px", fontWeight: 600, color: "#00EAFF", letterSpacing: "0.05em" }}
+                    style={{ fontSize: "12px", fontWeight: 600, color: "#10B981", letterSpacing: "0.05em" }}
                   >
                     LINK (OPTIONAL)
                   </label>
@@ -1845,7 +1845,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                     disabled={isSavingProject}
                     className="font-chakra"
                     style={{
-                      background: "#00EAFF",
+                      background: "#10B981",
                       border: "none",
                       borderRadius: "8px",
                       padding: "10px 18px",
@@ -1900,7 +1900,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
           {/* Preset Tab Content */}
           {activeCoverTab === "presets" && (
             <div className="cover-modal-presets-scroll">
-              {["Dark Gradients", "Cyan/ARCNET themed", "Dark Colorful", "Game Dev themed"].map((cat) => (
+              {["Dark Gradients", "Emerald/Caliber themed", "Dark Colorful", "Game Dev themed"].map((cat) => (
                 <div key={cat} className="mb-4">
                   <div className="cover-preset-category-title">{cat}</div>
                   <div className="cover-preset-grid">
@@ -1969,7 +1969,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                 <button 
                   type="button" 
                   onClick={handleRemoveCustom} 
-                  className="text-xs text-[#C8C7C7] hover:text-[#00EAFF] transition-colors"
+                  className="text-xs text-[#C8C7C7] hover:text-[#10B981] transition-colors"
                 >
                   Remove Image
                 </button>

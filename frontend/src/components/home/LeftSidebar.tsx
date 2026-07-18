@@ -305,7 +305,7 @@ export default function LeftSidebar() {
             
             {createdHubCode ? (
               <div className="text-center py-6">
-                <div className="mb-4 text-[#00EAFF] flex justify-center">
+                <div className="mb-4 text-[#10B981] flex justify-center">
                   <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 3l1.9 5.7L20 10l-6.1 1.3L12 17l-1.9-5.7L4 10l6.1-1.3z" />
                     <path d="M19 15l.7 2.1L22 18l-2.3.9L19 21l-.7-2.1L16 18l2.3-.9z" opacity="0.7" />
@@ -313,7 +313,7 @@ export default function LeftSidebar() {
                 </div>
                 <h3 className="text-white font-chakra font-bold text-lg mb-2">Hub Created!</h3>
                 <p className="text-[#C8C7C7] text-sm mb-6">Share this code with your friends so they can request to join:</p>
-                <div className="bg-[#161c24] border border-[#2A313C] rounded px-4 py-3 text-2xl font-mono text-[#00EAFF] tracking-widest font-bold">
+                <div className="bg-[#161c24] border border-[#2A313C] rounded px-4 py-3 text-2xl font-mono text-[#10B981] tracking-widest font-bold">
                   {createdHubCode}
                 </div>
               </div>
@@ -329,7 +329,7 @@ export default function LeftSidebar() {
                     value={hubName}
                     onChange={(e) => setHubName(e.target.value)}
                     required
-                    className="w-full bg-[#161c24] border border-[#2A313C] rounded p-2 text-white font-inter text-sm focus:outline-none focus:border-[#00EAFF] transition-colors"
+                    className="w-full bg-[#161c24] border border-[#2A313C] rounded p-2 text-white font-inter text-sm focus:outline-none focus:border-[#10B981] transition-colors"
                     placeholder="E.g. Secret Lair"
                   />
                 </div>
@@ -342,14 +342,14 @@ export default function LeftSidebar() {
                     onChange={(e) => setHubDesc(e.target.value)}
                     required
                     rows={3}
-                    className="w-full bg-[#161c24] border border-[#2A313C] rounded p-2 text-white font-inter text-sm focus:outline-none focus:border-[#00EAFF] transition-colors resize-none"
+                    className="w-full bg-[#161c24] border border-[#2A313C] rounded p-2 text-white font-inter text-sm focus:outline-none focus:border-[#10B981] transition-colors resize-none"
                     placeholder="What is this hub about?"
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={isCreating}
-                  className="w-full py-2.5 rounded bg-[#00EAFF] text-[#10141A] font-chakra font-bold text-sm uppercase tracking-wider hover:bg-[#00d0e0] transition-colors mt-2 disabled:opacity-50"
+                  className="w-full py-2.5 rounded bg-[#10B981] text-[#10141A] font-chakra font-bold text-sm uppercase tracking-wider hover:bg-[#00d0e0] transition-colors mt-2 disabled:opacity-50"
                 >
                   {isCreating ? "Creating..." : "Create Hub"}
                 </button>

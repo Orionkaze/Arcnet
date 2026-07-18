@@ -251,7 +251,7 @@ export default function Home() {
             <div className="flex justify-center sticky top-0 z-10 my-2">
               <button
                 onClick={loadNewPosts}
-                className="bg-[#00EAFF] text-[#10141A] font-chakra font-bold text-xs tracking-wide uppercase px-4 py-1.5 rounded-full border border-[#00EAFF] shadow-[0_0_10px_rgba(0,234,255,0.4)] cursor-pointer hover:bg-[#00d0e0] transition-all"
+                className="bg-[#10B981] text-[#10141A] font-chakra font-bold text-xs tracking-wide uppercase px-4 py-1.5 rounded-full border border-[#10B981] shadow-[0_0_10px_rgba(16, 185, 129,0.4)] cursor-pointer hover:bg-[#00d0e0] transition-all"
               >
                 New posts available
               </button>
@@ -281,13 +281,13 @@ export default function Home() {
           {!loading && posts.length === 0 && !error && (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               {/* Cyan Icon */}
-              <div className="w-16 h-16 rounded-full bg-[#10141A] border border-[#00EAFF] flex items-center justify-center shadow-[0_0_15px_rgba(0,234,255,0.2)] mb-4">
+              <div className="w-16 h-16 rounded-full bg-[#10141A] border border-[#10B981] flex items-center justify-center shadow-[0_0_15px_rgba(16, 185, 129,0.2)] mb-4">
                 <svg
                   width="28"
                   height="28"
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="#00EAFF"
+                  stroke="#10B981"
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -305,7 +305,7 @@ export default function Home() {
                 Follow some creators to see their posts here
               </p>
               <Link href="/ecosystem/find-team">
-                <button className="px-6 py-2.5 border border-[#00EAFF] bg-transparent text-[#00EAFF] font-chakra font-bold text-xs uppercase tracking-wider rounded cursor-pointer hover:bg-[rgba(0,234,255,0.1)] transition-colors">
+                <button className="px-6 py-2.5 border border-[#10B981] bg-transparent text-[#10B981] font-chakra font-bold text-xs uppercase tracking-wider rounded cursor-pointer hover:bg-[rgba(16, 185, 129,0.1)] transition-colors">
                   Discover Creators
                 </button>
               </Link>
@@ -323,7 +323,7 @@ export default function Home() {
               </p>
               <button
                 onClick={() => fetchFeed(1, false)}
-                className="px-6 py-2 bg-[#00EAFF] hover:bg-[#00d0e0] text-[#10141A] font-chakra font-bold text-xs uppercase tracking-wider rounded cursor-pointer transition-colors"
+                className="px-6 py-2 bg-[#10B981] hover:bg-[#00d0e0] text-[#10141A] font-chakra font-bold text-xs uppercase tracking-wider rounded cursor-pointer transition-colors"
               >
                 Retry
               </button>
@@ -340,7 +340,7 @@ export default function Home() {
         <div className="fixed top-[72px] right-6 z-50">
           <div className="relative">
             <button
-              className="w-9 h-9 rounded-full bg-[#10141A] border-2 border-[#00EAFF] flex items-center justify-center hover:bg-[rgba(0,234,255,0.1)] transition-colors cursor-pointer"
+              className="w-9 h-9 rounded-full bg-[#10141A] border-2 border-[#10B981] flex items-center justify-center hover:bg-[rgba(16, 185, 129,0.1)] transition-colors cursor-pointer"
               onClick={() => setDropdownOpen(!dropdownOpen)}
             >
               <svg
@@ -348,7 +348,7 @@ export default function Home() {
                 height="14"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#00EAFF"
+                stroke="#10B981"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -418,7 +418,7 @@ export default function Home() {
             <h2 className="text-xl font-chakra font-bold text-white mb-4">Join a Private Hub</h2>
             <form onSubmit={handleJoinHub} className="space-y-4">
               {joinError && <div className="text-[#FF4D4D] text-sm font-chakra">{joinError}</div>}
-              {joinSuccess && <div className="text-[#00EAFF] text-sm font-chakra">{joinSuccess}</div>}
+              {joinSuccess && <div className="text-[#10B981] text-sm font-chakra">{joinSuccess}</div>}
               <div>
                 <label className="block text-xs font-chakra text-[#C8C7C7] mb-1 uppercase tracking-wider">
                   Enter Hub Code
@@ -429,14 +429,14 @@ export default function Home() {
                   onChange={(e) => setJoinCode(e.target.value)}
                   required
                   maxLength={6}
-                  className="w-full bg-[#161c24] border border-[#2A313C] rounded p-2 text-white font-mono text-center text-2xl tracking-[0.5em] focus:outline-none focus:border-[#00EAFF] transition-colors uppercase"
+                  className="w-full bg-[#161c24] border border-[#2A313C] rounded p-2 text-white font-mono text-center text-2xl tracking-[0.5em] focus:outline-none focus:border-[#10B981] transition-colors uppercase"
                   placeholder="------"
                 />
               </div>
               <button
                 type="submit"
                 disabled={isJoining || !!joinSuccess}
-                className="w-full py-2.5 rounded bg-[#00EAFF] text-[#10141A] font-chakra font-bold text-sm uppercase tracking-wider hover:bg-[#00d0e0] transition-colors mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-2.5 rounded bg-[#10B981] text-[#10141A] font-chakra font-bold text-sm uppercase tracking-wider hover:bg-[#00d0e0] transition-colors mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isJoining ? "Sending..." : "Request"}
               </button>

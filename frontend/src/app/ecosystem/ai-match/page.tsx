@@ -20,7 +20,7 @@ const PREVIEW_FEATURES: PreviewFeature[] = [
     title: "Skill-Graph Matching",
     description: "Maps your stack and strengths to complementary creators.",
     icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00EAFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="6" cy="6" r="2.5"></circle>
         <circle cx="18" cy="6" r="2.5"></circle>
         <circle cx="12" cy="18" r="2.5"></circle>
@@ -34,7 +34,7 @@ const PREVIEW_FEATURES: PreviewFeature[] = [
     title: "Smart Jam Squads",
     description: "Auto-builds balanced teams for your next game jam.",
     icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00EAFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
         <circle cx="9" cy="7" r="4"></circle>
         <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
@@ -46,7 +46,7 @@ const PREVIEW_FEATURES: PreviewFeature[] = [
     title: "Mentor Recommendations",
     description: "Surfaces experienced devs aligned to your goals.",
     icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00EAFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M12 2l2 7h7l-5.5 4 2 7L12 16l-5.5 4 2-7L3 9h7l2-7z"></path>
       </svg>
     ),
@@ -105,7 +105,7 @@ export default function AiMatchPage() {
                 height="64"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#00EAFF"
+                stroke="#10B981"
                 strokeWidth="1.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -146,7 +146,7 @@ export default function AiMatchPage() {
             {/* Notify me */}
             <div className="notify-wrap relative">
               {successToast && (
-                <div className="absolute top-[-44px] left-1/2 -translate-x-1/2 bg-[#00EAFF] text-[#0A0E14] font-bold font-chakra text-xs py-1.5 px-3 rounded shadow-lg z-30 whitespace-nowrap">
+                <div className="absolute top-[-44px] left-1/2 -translate-x-1/2 bg-[#10B981] text-[#0A0E14] font-bold font-chakra text-xs py-1.5 px-3 rounded shadow-lg z-30 whitespace-nowrap">
                   {successToast}
                 </div>
               )}
@@ -163,7 +163,7 @@ export default function AiMatchPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="flex-grow bg-[#161c24] border border-[#2A313C] text-white text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:border-[#00EAFF] transition-colors font-inter"
+                  className="flex-grow bg-[#161c24] border border-[#2A313C] text-white text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:border-[#10B981] transition-colors font-inter"
                   style={{ height: "44px" }}
                 />
                 <button type="submit" className="notify-btn">
@@ -185,7 +185,7 @@ export default function AiMatchPage() {
           font-size: 11px;
           font-weight: 700;
           letter-spacing: 2px;
-          color: rgba(0, 234, 255, 0.6);
+          color: rgba(16, 185, 129, 0.6);
         }
         .coming-soon-panel {
           background: #10141A;
@@ -209,8 +209,8 @@ export default function AiMatchPage() {
           height: 420px;
           background: radial-gradient(
             circle,
-            rgba(0, 234, 255, 0.08) 0%,
-            rgba(0, 234, 255, 0) 70%
+            rgba(16, 185, 129, 0.08) 0%,
+            rgba(16, 185, 129, 0) 70%
           );
           pointer-events: none;
         }
@@ -221,22 +221,22 @@ export default function AiMatchPage() {
           width: 104px;
           height: 104px;
           border-radius: 50%;
-          background: rgba(0, 234, 255, 0.06);
-          border: 1px solid rgba(0, 234, 255, 0.2);
+          background: rgba(16, 185, 129, 0.06);
+          border: 1px solid rgba(16, 185, 129, 0.2);
           position: relative;
           z-index: 1;
         }
         .spark-icon {
-          filter: drop-shadow(0 0 10px rgba(0, 234, 255, 0.55));
+          filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.55));
           animation: sparkPulse 2.8s ease-in-out infinite;
         }
         @keyframes sparkPulse {
           0%,
           100% {
-            filter: drop-shadow(0 0 8px rgba(0, 234, 255, 0.45));
+            filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.45));
           }
           50% {
-            filter: drop-shadow(0 0 16px rgba(0, 234, 255, 0.8));
+            filter: drop-shadow(0 0 16px rgba(16, 185, 129, 0.8));
           }
         }
         .coming-soon-pill {
@@ -247,9 +247,9 @@ export default function AiMatchPage() {
           font-weight: 700;
           letter-spacing: 3px;
           text-transform: uppercase;
-          color: #00EAFF;
-          background: rgba(0, 234, 255, 0.1);
-          border: 1px solid rgba(0, 234, 255, 0.35);
+          color: #10B981;
+          background: rgba(16, 185, 129, 0.1);
+          border: 1px solid rgba(16, 185, 129, 0.35);
           padding: 0.4rem 1rem;
           border-radius: 999px;
           position: relative;
@@ -263,7 +263,7 @@ export default function AiMatchPage() {
           transition: border-color 0.2s;
         }
         .preview-card:hover {
-          border-color: rgba(0, 234, 255, 0.3);
+          border-color: rgba(16, 185, 129, 0.3);
         }
         .preview-icon {
           display: inline-flex;
@@ -272,8 +272,8 @@ export default function AiMatchPage() {
           width: 44px;
           height: 44px;
           border-radius: 10px;
-          background: rgba(0, 234, 255, 0.08);
-          border: 1px solid rgba(0, 234, 255, 0.18);
+          background: rgba(16, 185, 129, 0.08);
+          border: 1px solid rgba(16, 185, 129, 0.18);
         }
         .notify-wrap {
           margin-top: 2.5rem;
@@ -287,8 +287,8 @@ export default function AiMatchPage() {
           letter-spacing: 1px;
           text-transform: uppercase;
           color: #0A0E14;
-          background: #00EAFF;
-          border: 1px solid #00EAFF;
+          background: #10B981;
+          border: 1px solid #10B981;
           border-radius: 8px;
           padding: 0 1.5rem;
           height: 44px;
@@ -298,7 +298,7 @@ export default function AiMatchPage() {
         }
         .notify-btn:hover {
           opacity: 0.9;
-          box-shadow: 0 0 14px rgba(0, 234, 255, 0.4);
+          box-shadow: 0 0 14px rgba(16, 185, 129, 0.4);
         }
       `}</style>
     </div>

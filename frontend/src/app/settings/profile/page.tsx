@@ -1185,7 +1185,7 @@ export default function SettingsProfilePage() {
         <div className="settings-content">
           <LeftSidebar />
           <main className="settings-main flex items-center justify-center">
-            <span className="font-chakra text-lg text-[#00EAFF] animate-pulse">LOADING CONFIGURATION PANELS...</span>
+            <span className="font-chakra text-lg text-[#10B981] animate-pulse">LOADING CONFIGURATION PANELS...</span>
           </main>
         </div>
       </div>
@@ -1308,7 +1308,7 @@ export default function SettingsProfilePage() {
                     <video ref={videoRef} autoPlay playsInline className="video-editor-preview" />
                     <canvas ref={canvasRef} style={{ display: "none" }} />
                     <div className="flex gap-2">
-                      <button type="button" onClick={capturePhoto} className="btn-editor-secondary border-[#00EAFF] text-[#00EAFF]">
+                      <button type="button" onClick={capturePhoto} className="btn-editor-secondary border-[#10B981] text-[#10B981]">
                         SNAP PHOTO
                       </button>
                       <button type="button" onClick={cancelCamera} className="btn-editor-secondary">
@@ -1365,7 +1365,7 @@ export default function SettingsProfilePage() {
                       placeholder="username"
                     />
                   </div>
-                  {usernameChecking && <span className="form-desc text-[#00EAFF] animate-pulse">Checking system registry availability...</span>}
+                  {usernameChecking && <span className="form-desc text-[#10B981] animate-pulse">Checking system registry availability...</span>}
                   {usernameError && <span className="form-desc text-red-400">Error: {usernameError}</span>}
                   {!usernameError && !usernameChecking && username.trim().toLowerCase() !== (user.username || "").toLowerCase() && (
                     <span className="form-desc text-green-400">Username is available!</span>
@@ -1440,7 +1440,7 @@ export default function SettingsProfilePage() {
 
               <div className="experience-list flex flex-col gap-4 mb-8">
                 {isExperienceLoading ? (
-                  <div className="text-[#00EAFF] animate-pulse">Loading experience...</div>
+                  <div className="text-[#10B981] animate-pulse">Loading experience...</div>
                 ) : (
                   <>
                     {experienceList.map((exp) => (
@@ -1476,8 +1476,8 @@ export default function SettingsProfilePage() {
                     )}
 
                     {showAddExperience && (
-                      <div className="p-4 border border-[#00EAFF]/30 rounded bg-[#10141A] flex flex-col gap-4 mt-2">
-                        <h4 className="text-[#00EAFF] text-sm tracking-wider font-chakra mb-2">ADD NEW EXPERIENCE</h4>
+                      <div className="p-4 border border-[#10B981]/30 rounded bg-[#10141A] flex flex-col gap-4 mt-2">
+                        <h4 className="text-[#10B981] text-sm tracking-wider font-chakra mb-2">ADD NEW EXPERIENCE</h4>
                         {expError && <div className="text-red-400 text-sm mb-2">{expError}</div>}
                         
                         <div className="form-grid">
@@ -1528,7 +1528,7 @@ export default function SettingsProfilePage() {
                                   setExpCurrent(e.target.checked);
                                   if (e.target.checked) setExpEndDate("");
                                 }}
-                                className="w-4 h-4 rounded border-[#2A313C] bg-transparent text-[#00EAFF] focus:ring-[#00EAFF] focus:ring-offset-0"
+                                className="w-4 h-4 rounded border-[#2A313C] bg-transparent text-[#10B981] focus:ring-[#10B981] focus:ring-offset-0"
                               />
                               <label htmlFor="current" className="text-sm text-[#8E95A3]">I currently work here</label>
                             </div>
@@ -1645,7 +1645,7 @@ export default function SettingsProfilePage() {
       {/* Success Toast */}
       {showToast && (
         <div className={`toast-container ${toastFadeOut ? "toast-fade-out" : ""}`}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00EAFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
             <polyline points="22 4 12 14.01 9 11.01" />
           </svg>

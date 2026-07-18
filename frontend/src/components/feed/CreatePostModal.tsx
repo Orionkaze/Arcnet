@@ -156,7 +156,7 @@ export default function CreatePostModal({
               <div className="relative">
                 <button
                   onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                  className="text-[#C8C7C7] hover:text-[#00EAFF] p-1.5 rounded-full hover:bg-[rgba(0,234,255,0.1)] transition-colors"
+                  className="text-[#C8C7C7] hover:text-[#10B981] p-1.5 rounded-full hover:bg-[rgba(16, 185, 129,0.1)] transition-colors"
                   title="Add Emoji"
                 >
                   <Smile size={22} />
@@ -191,7 +191,7 @@ export default function CreatePostModal({
             />
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="text-[#C8C7C7] hover:text-[#00EAFF] p-2 rounded-full hover:bg-[rgba(0,234,255,0.1)] transition-colors flex items-center justify-center"
+              className="text-[#C8C7C7] hover:text-[#10B981] p-2 rounded-full hover:bg-[rgba(16, 185, 129,0.1)] transition-colors flex items-center justify-center"
               title="Upload from Device"
             >
               <ImageIcon size={24} />
@@ -201,7 +201,7 @@ export default function CreatePostModal({
           <button
             onClick={handleSubmit}
             disabled={isPosting || (!content.trim() && !imageUrl)}
-            className="px-8 py-2 bg-transparent border border-[#00EAFF] text-[#00EAFF] hover:bg-[#00EAFF] hover:text-[#10141A] font-chakra font-bold text-sm tracking-wider rounded-lg transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-8 py-2 bg-transparent border border-[#10B981] text-[#10B981] hover:bg-[#10B981] hover:text-[#10141A] font-chakra font-bold text-sm tracking-wider rounded-lg transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isPosting ? "Posting..." : "Post"}
           </button>

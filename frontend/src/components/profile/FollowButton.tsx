@@ -33,7 +33,7 @@ export default function FollowButton({ userId, initialIsFollowing = false }: Fol
       className={`text-sm font-medium transition-colors ${
         isFollowing 
           ? "text-gray-500 hover:text-gray-400" 
-          : "text-[#00D2FF] hover:text-[#33DFFF]"
+          : "text-[#10B981] hover:text-[#33DFFF]"
       }`}
     >
       {isFollowing ? "Following" : "+ Follow"}

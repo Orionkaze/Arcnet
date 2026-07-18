@@ -116,7 +116,7 @@ export default function RightPanel() {
           font-family: var(--font-chakra-petch), sans-serif;
           font-size: 10px;
           text-transform: uppercase;
-          color: #00EAFF;
+          color: #10B981;
           font-weight: 700;
           letter-spacing: 0.5px;
           margin-bottom: 2px;
@@ -134,7 +134,7 @@ export default function RightPanel() {
           transition: color 0.2s;
         }
         .happening-link:hover .happening-title {
-          color: #00EAFF;
+          color: #10B981;
         }
         .happening-time {
           font-family: var(--font-inter), sans-serif;
@@ -147,7 +147,7 @@ export default function RightPanel() {
           text-align: right;
           font-family: var(--font-inter), sans-serif;
           font-size: 13px;
-          color: #00EAFF;
+          color: #10B981;
           text-decoration: none;
           margin-top: 1rem;
           transition: all 0.2s;

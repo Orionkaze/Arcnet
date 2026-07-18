@@ -279,7 +279,7 @@ export default function LatestPage() {
                 disabled={newsLoading}
                 className="refresh-btn cursor-pointer"
                 style={{
-                  color: justRefreshed ? "#00EAFF" : undefined,
+                  color: justRefreshed ? "#10B981" : undefined,
                   transition: "color 0.2s ease"
                 }}
               >
@@ -296,7 +296,7 @@ export default function LatestPage() {
             ) : newsError ? (
               <div className="news-error font-chakra text-xs text-[#C8C7C7] p-4 text-center border border-[#2A313C] rounded-lg">
                 Could not load news.{" "}
-                <span className="text-[#00EAFF] cursor-pointer" onClick={fetchNews}>
+                <span className="text-[#10B981] cursor-pointer" onClick={fetchNews}>
                   Try again
                 </span>
               </div>
@@ -335,10 +335,10 @@ export default function LatestPage() {
             )}
           </section>
 
-          {/* SECTION 2: TRENDING ON ARCNET */}
+          {/* SECTION 2: TRENDING ON CALIBER */}
           <section className="trending-section mt-8">
             <div className="mb-4">
-              <span className="section-label">TRENDING ON ARCNET</span>
+              <span className="section-label">TRENDING ON CALIBER</span>
             </div>
 
             <div className="space-y-4">
@@ -375,7 +375,7 @@ export default function LatestPage() {
                 </h3>
                 <button
                   onClick={() => fetchTrending(1, false)}
-                  className="px-4 py-1.5 bg-[#00EAFF] hover:bg-[#00d0e0] text-[#10141A] font-chakra font-bold text-xs uppercase tracking-wider rounded cursor-pointer transition-colors"
+                  className="px-4 py-1.5 bg-[#10B981] hover:bg-[#00d0e0] text-[#10141A] font-chakra font-bold text-xs uppercase tracking-wider rounded cursor-pointer transition-colors"
                 >
                   Retry
                 </button>
@@ -401,13 +401,13 @@ export default function LatestPage() {
           font-size: 11px;
           font-weight: 700;
           letter-spacing: 2px;
-          color: rgba(0, 234, 255, 0.6);
+          color: rgba(16, 185, 129, 0.6);
         }
         .refresh-btn {
           font-family: var(--font-chakra-petch), sans-serif;
           font-size: 11px;
           font-weight: 700;
-          color: #00EAFF;
+          color: #10B981;
           background: none;
           border: none;
           padding: 0;

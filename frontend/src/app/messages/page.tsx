@@ -323,7 +323,7 @@ function MessagesInner() {
                 You&apos;re logged out
               </div>
               <div className="text-[#C8C7C7] font-inter text-sm">
-                <Link href="/login" className="text-[#00EAFF] hover:underline">
+                <Link href="/login" className="text-[#10B981] hover:underline">
                   Log in
                 </Link>{" "}
                 to view and send direct messages.
@@ -425,7 +425,7 @@ function MessagesInner() {
                         height="24"
                         viewBox="0 0 24 24"
                         fill="none"
-                        stroke="#00EAFF"
+                        stroke="#10B981"
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -591,7 +591,7 @@ function MessagesInner() {
           font-size: 11px;
           font-weight: 700;
           letter-spacing: 2px;
-          color: rgba(0, 234, 255, 0.6);
+          color: rgba(16, 185, 129, 0.6);
         }
         .dm-shell {
           display: flex;
@@ -627,10 +627,10 @@ function MessagesInner() {
           width: 100%;
         }
         .dm-row:hover {
-          background: rgba(0, 234, 255, 0.04);
+          background: rgba(16, 185, 129, 0.04);
         }
         .dm-row-active {
-          background: rgba(0, 234, 255, 0.08);
+          background: rgba(16, 185, 129, 0.08);
         }
         .dm-avatar {
           width: 40px;
@@ -651,14 +651,14 @@ function MessagesInner() {
           height: 18px;
           padding: 0 5px;
           border-radius: 9999px;
-          background: #00eaff;
+          background: #10B981;
           color: #0b0e13;
           font-size: 11px;
           font-weight: 700;
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 0 6px rgba(0, 234, 255, 0.7);
+          box-shadow: 0 0 6px rgba(16, 185, 129, 0.7);
         }
         .dm-thread-header {
           display: flex;
@@ -679,7 +679,7 @@ function MessagesInner() {
           align-items: center;
         }
         .dm-back-btn:hover {
-          color: #00eaff;
+          color: #10B981;
         }
         .dm-messages {
           flex: 1;
@@ -707,8 +707,8 @@ function MessagesInner() {
           gap: 2px;
         }
         .dm-bubble-mine {
-          background: rgba(0, 234, 255, 0.14);
-          border: 1px solid rgba(0, 234, 255, 0.4);
+          background: rgba(16, 185, 129, 0.14);
+          border: 1px solid rgba(16, 185, 129, 0.4);
           border-bottom-right-radius: 3px;
         }
         .dm-bubble-theirs {
@@ -752,10 +752,10 @@ function MessagesInner() {
           transition: border-color 0.2s;
         }
         .dm-input:focus {
-          border-color: #00eaff;
+          border-color: #10B981;
         }
         .dm-send-btn {
-          background: #00eaff;
+          background: #10B981;
           color: #0b0e13;
           font-family: var(--font-chakra-petch), sans-serif;
           font-weight: 700;

@@ -378,7 +378,7 @@ export default function ShareModal({ isOpen, onClose, postId, postContent }: Sha
           transition: color 0.2s;
         }
         .share-modal-close:hover {
-          color: #00EAFF;
+          color: #10B981;
         }
         .share-modal-search-wrapper {
           margin-bottom: 1rem;
@@ -396,7 +396,7 @@ export default function ShareModal({ isOpen, onClose, postId, postContent }: Sha
           transition: border-color 0.2s;
         }
         .share-modal-search:focus {
-          border-color: #00EAFF;
+          border-color: #10B981;
           outline: none;
         }
         .share-people-list-container {
@@ -425,7 +425,7 @@ export default function ShareModal({ isOpen, onClose, postId, postContent }: Sha
           transition: background-color 0.2s;
         }
         .share-person-row:hover, .share-suggestion-row:hover {
-          background-color: rgba(0, 234, 255, 0.04);
+          background-color: rgba(16, 185, 129, 0.04);
         }
         .share-person-left {
           display: flex;
@@ -480,13 +480,13 @@ export default function ShareModal({ isOpen, onClose, postId, postContent }: Sha
           transition: all 0.2s;
         }
         .share-send-btn:hover {
-          border-color: #00EAFF;
-          color: #00EAFF;
+          border-color: #10B981;
+          color: #10B981;
         }
         .share-send-btn.sent {
-          background: rgba(0, 234, 255, 0.1);
-          border: 1px solid #00EAFF;
-          color: #00EAFF;
+          background: rgba(16, 185, 129, 0.1);
+          border: 1px solid #10B981;
+          color: #10B981;
           cursor: default;
         }
         .share-follow-btn {
@@ -502,12 +502,12 @@ export default function ShareModal({ isOpen, onClose, postId, postContent }: Sha
           transition: all 0.2s;
         }
         .share-follow-btn:hover {
-          border-color: #00EAFF;
-          color: #00EAFF;
+          border-color: #10B981;
+          color: #10B981;
         }
         .share-follow-btn.following {
-          color: #00EAFF;
-          border-color: rgba(0, 234, 255, 0.3);
+          color: #10B981;
+          border-color: rgba(16, 185, 129, 0.3);
         }
         .share-empty-state-wrapper {
           padding: 1rem 0.5rem;
@@ -528,7 +528,7 @@ export default function ShareModal({ isOpen, onClose, postId, postContent }: Sha
           font-family: var(--font-chakra-petch), sans-serif;
           font-size: 10px;
           font-weight: 700;
-          color: rgba(0, 234, 255, 0.6);
+          color: rgba(16, 185, 129, 0.6);
           letter-spacing: 1px;
           margin-bottom: 8px;
         }
@@ -572,22 +572,22 @@ export default function ShareModal({ isOpen, onClose, postId, postContent }: Sha
           transition: all 0.2s;
         }
         .share-external-circle:hover {
-          border-color: #00EAFF;
-          color: #00EAFF;
+          border-color: #10B981;
+          color: #10B981;
         }
         .share-toast-notification {
           position: absolute;
           bottom: 1.5rem;
           left: 50%;
           transform: translateX(-50%);
-          background: #00EAFF;
+          background: #10B981;
           color: #10141A;
           font-family: var(--font-chakra-petch), sans-serif;
           font-weight: 700;
           font-size: 12px;
           padding: 8px 16px;
           border-radius: 6px;
-          box-shadow: 0 4px 10px rgba(0, 234, 255, 0.2);
+          box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
           z-index: 1000;
         }
       `}</style>

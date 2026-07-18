@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Chakra_Petch, Inter } from "next/font/google";
+import { Chakra_Petch, Inter, Manrope } from "next/font/google";
 import "./globals.css";
 import { AuthInit } from "@/components/auth/AuthInit";
 
@@ -14,9 +14,14 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+const manrope = Manrope({
+  variable: "--font-manrope",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
-  title: "ARCNET",
-  description: "The India-First AVGC Ecosystem",
+  title: "Caliber",
+  description: "Practice real problems. Get instant feedback. Build a rating that proves your ability.",
 };
 
 export default function RootLayout({
@@ -27,7 +32,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${chakraPetch.variable} ${inter.variable} h-full antialiased`}
+      className={`${chakraPetch.variable} ${inter.variable} ${manrope.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col font-sans text-arc-primary" suppressHydrationWarning>

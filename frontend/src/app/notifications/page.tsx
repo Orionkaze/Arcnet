@@ -35,7 +35,7 @@ const TYPE_META: Record<
 > = {
   follow: {
     verb: "started following you",
-    color: "#00EAFF",
+    color: "#10B981",
     icon: (
       <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 7a4 4 0 108 0 4 4 0 00-8 0M19 8v6M22 11h-6" />
     ),
@@ -49,7 +49,7 @@ const TYPE_META: Record<
   },
   comment: {
     verb: "commented on your post",
-    color: "#00EAFF",
+    color: "#10B981",
     icon: <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" />,
   },
   repost: {
@@ -59,7 +59,7 @@ const TYPE_META: Record<
   },
   share: {
     verb: "shared a post with you",
-    color: "#00EAFF",
+    color: "#10B981",
     icon: (
       <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13" />
     ),
@@ -190,7 +190,7 @@ export default function NotificationsPage() {
                   height="24"
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="#00EAFF"
+                  stroke="#10B981"
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -276,7 +276,7 @@ export default function NotificationsPage() {
                           {from?.username ? (
                             <Link
                               href={`/profile/${from.username}`}
-                              className="font-bold hover:text-[#00EAFF] transition-colors"
+                              className="font-bold hover:text-[#10B981] transition-colors"
                             >
                               {name}
                             </Link>
@@ -315,7 +315,7 @@ export default function NotificationsPage() {
           font-size: 11px;
           font-weight: 700;
           letter-spacing: 2px;
-          color: rgba(0, 234, 255, 0.6);
+          color: rgba(16, 185, 129, 0.6);
         }
         .notif-card {
           background: #10141a;
@@ -325,11 +325,11 @@ export default function NotificationsPage() {
           transition: border-color 0.2s, background 0.2s;
         }
         .notif-card:hover {
-          border-color: rgba(0, 234, 255, 0.3);
+          border-color: rgba(16, 185, 129, 0.3);
         }
         .notif-card.unread {
-          background: rgba(0, 234, 255, 0.04);
-          border-color: rgba(0, 234, 255, 0.25);
+          background: rgba(16, 185, 129, 0.04);
+          border-color: rgba(16, 185, 129, 0.25);
         }
         .notif-avatar {
           width: 40px;
@@ -347,7 +347,7 @@ export default function NotificationsPage() {
           transition: border-color 0.2s;
         }
         .notif-avatar:hover {
-          border-color: #00eaff;
+          border-color: #10B981;
         }
         .notif-type-icon {
           width: 24px;
@@ -366,8 +366,8 @@ export default function NotificationsPage() {
           width: 8px;
           height: 8px;
           border-radius: 9999px;
-          background: #00eaff;
-          box-shadow: 0 0 6px rgba(0, 234, 255, 0.8);
+          background: #10B981;
+          box-shadow: 0 0 6px rgba(16, 185, 129, 0.8);
           margin-top: 6px;
         }
       `}</style>

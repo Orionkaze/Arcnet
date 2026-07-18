@@ -208,7 +208,7 @@ export default function MentorsPage() {
               placeholder="Search by name or expertise (e.g. Rigging, Unreal, Level Design)..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-[#161c24] border border-[#2A313C] text-white text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:border-[#00EAFF] transition-colors font-inter"
+              className="w-full bg-[#161c24] border border-[#2A313C] text-white text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:border-[#10B981] transition-colors font-inter"
               style={{ height: "44px" }}
             />
           </div>
@@ -250,14 +250,14 @@ export default function MentorsPage() {
                         <span
                           title="Verified professional"
                           className="flex-shrink-0 inline-flex items-center justify-center w-4 h-4 rounded-full"
-                          style={{ background: "rgba(0,234,255,0.12)" }}
+                          style={{ background: "rgba(16, 185, 129,0.12)" }}
                         >
                           <svg
                             width="10"
                             height="10"
                             viewBox="0 0 24 24"
                             fill="none"
-                            stroke="#00EAFF"
+                            stroke="#10B981"
                             strokeWidth="3"
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -268,7 +268,7 @@ export default function MentorsPage() {
                       )}
                     </div>
 
-                    <p className="font-chakra text-xs text-[#00EAFF] uppercase tracking-wide mt-1 font-bold truncate">
+                    <p className="font-chakra text-xs text-[#10B981] uppercase tracking-wide mt-1 font-bold truncate">
                       {mentor.role} @ {mentor.studio}
                     </p>
                     <span className="font-inter text-[11px] text-[#C8C7C7]">
@@ -298,7 +298,7 @@ export default function MentorsPage() {
                 <div className="flex items-center justify-between mt-4 pt-3 border-t border-[#2A313C]">
                   <div className="flex flex-col">
                     <span className="font-inter text-xs text-white">
-                      <span className="text-[#00EAFF]">&#9733;</span> {mentor.rating.toFixed(1)}{" "}
+                      <span className="text-[#10B981]">&#9733;</span> {mentor.rating.toFixed(1)}{" "}
                       <span className="text-[#C8C7C7]">({mentor.sessions} sessions)</span>
                     </span>
                     <span className="font-chakra text-xs text-white font-bold mt-0.5">
@@ -332,7 +332,7 @@ export default function MentorsPage() {
           font-size: 11px;
           font-weight: 700;
           letter-spacing: 2px;
-          color: rgba(0, 234, 255, 0.6);
+          color: rgba(16, 185, 129, 0.6);
         }
         .mentor-card {
           background: #10141a;
@@ -342,7 +342,7 @@ export default function MentorsPage() {
           transition: border-color 0.2s;
         }
         .mentor-card:hover {
-          border-color: rgba(0, 234, 255, 0.3);
+          border-color: rgba(16, 185, 129, 0.3);
         }
         .specialty-pill {
           font-family: var(--font-chakra-petch), sans-serif;
@@ -359,13 +359,13 @@ export default function MentorsPage() {
           transition: all 0.2s;
         }
         .specialty-pill:hover {
-          border-color: rgba(0, 234, 255, 0.3);
+          border-color: rgba(16, 185, 129, 0.3);
           color: #ffffff;
         }
         .specialty-pill.active {
-          color: #00eaff;
-          border-color: #00eaff;
-          background: rgba(0, 234, 255, 0.08);
+          color: #10B981;
+          border-color: #10B981;
+          background: rgba(16, 185, 129, 0.08);
         }
         .book-btn {
           font-family: var(--font-chakra-petch), sans-serif;
@@ -374,7 +374,7 @@ export default function MentorsPage() {
           letter-spacing: 0.5px;
           text-transform: uppercase;
           color: #0a0e14;
-          background: #00eaff;
+          background: #10B981;
           border: none;
           border-radius: 8px;
           padding: 8px 14px;
@@ -384,7 +384,7 @@ export default function MentorsPage() {
         }
         .book-btn:hover {
           filter: brightness(1.1);
-          box-shadow: 0 0 12px rgba(0, 234, 255, 0.4);
+          box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
         }
       `}</style>
     </div>

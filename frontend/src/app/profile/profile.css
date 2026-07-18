@@ -73,7 +73,7 @@
 }
 
 .edit-cover-btn:hover {
-  border-color: #00EAFF;
+  border-color: #10B981;
   color: #FFFFFF;
 }
 
@@ -89,7 +89,7 @@
   margin-top: -48px;
   margin-bottom: 1rem;
   border-radius: 50%;
-  border: 3px solid #00EAFF;
+  border: 3px solid #10B981;
   background: #2A313C;
   overflow: hidden;
   display: flex;
@@ -107,7 +107,7 @@
   font-family: var(--font-chakra-petch), sans-serif;
   font-size: 28px;
   font-weight: 700;
-  color: #00EAFF;
+  color: #10B981;
   text-transform: uppercase;
 }
 
@@ -140,7 +140,7 @@
 }
 
 .profile-verified-badge {
-  color: #00EAFF;
+  color: #10B981;
   display: inline-flex;
   align-items: center;
 }
@@ -162,9 +162,9 @@
   align-self: flex-start;
   font-family: var(--font-chakra-petch), sans-serif;
   font-size: 11px;
-  color: #00EAFF;
-  background: rgba(0, 234, 255, 0.08);
-  border: 1px solid rgba(0, 234, 255, 0.25);
+  color: #10B981;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
   padding: 4px 12px;
   border-radius: 20px;
   margin-top: 4px;
@@ -225,11 +225,11 @@
 }
 
 .btn-edit-profile:hover {
-  border-color: #00EAFF;
+  border-color: #10B981;
 }
 
 .btn-follow {
-  background: #00EAFF;
+  background: #10B981;
   border: none;
   color: #10141A;
   font-family: var(--font-chakra-petch), sans-serif;
@@ -239,7 +239,7 @@
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 0 16px rgba(0, 234, 255, 0.3);
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.3);
   white-space: nowrap;
 }
 
@@ -255,7 +255,7 @@
 }
 
 .btn-follow.following:hover {
-  border-color: #00EAFF;
+  border-color: #10B981;
   color: #FFFFFF;
 }
 
@@ -273,7 +273,7 @@
 }
 
 .btn-message:hover {
-  border-color: #00EAFF;
+  border-color: #10B981;
 }
 
 /* ====== SECTION 2 — STATS BAR ====== */
@@ -312,7 +312,7 @@
 }
 
 .profile-stat-value.clickable:hover {
-  color: #00EAFF;
+  color: #10B981;
 }
 
 .profile-stat-label {
@@ -328,7 +328,7 @@
 }
 
 .profile-stat-label.clickable:hover {
-  color: #00EAFF;
+  color: #10B981;
 }
 
 /* ====== SECTION 3 — TABS ====== */
@@ -353,7 +353,7 @@
   font-size: 13px;
   font-weight: 700;
   color: #FFFFFF;
-  border-bottom-color: #00EAFF;
+  border-bottom-color: #10B981;
 }
 
 .profile-tab.inactive {
@@ -397,7 +397,7 @@
 }
 
 .portfolio-card:hover {
-  border-color: rgba(0, 234, 255, 0.3);
+  border-color: rgba(16, 185, 129, 0.3);
 }
 
 .portfolio-thumbnail {
@@ -484,8 +484,8 @@
 }
 
 .add-project-card:hover {
-  border-color: #00EAFF;
-  background: rgba(0, 234, 255, 0.02);
+  border-color: #10B981;
+  background: rgba(16, 185, 129, 0.02);
 }
 
 .add-project-icon {
@@ -501,8 +501,8 @@
 }
 
 .add-project-card:hover .add-project-icon {
-  border-color: #00EAFF;
-  color: #00EAFF;
+  border-color: #10B981;
+  color: #10B981;
 }
 
 .add-project-text {
@@ -530,7 +530,7 @@
 }
 
 .hub-card:hover {
-  border-color: rgba(0, 234, 255, 0.3);
+  border-color: rgba(16, 185, 129, 0.3);
 }
 
 .hub-card-header {
@@ -543,12 +543,12 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: rgba(0, 234, 255, 0.08);
-  border: 1px solid rgba(0, 234, 255, 0.2);
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #00EAFF;
+  color: #10B981;
 }
 
 .hub-icon-circle svg {
@@ -580,9 +580,9 @@
   font-family: var(--font-chakra-petch), sans-serif;
   font-size: 10px;
   font-weight: 500;
-  color: #00EAFF;
-  border: 1px solid rgba(0, 234, 255, 0.2);
-  background: rgba(0, 234, 255, 0.04);
+  color: #10B981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  background: rgba(16, 185, 129, 0.04);
   padding: 2px 8px;
   border-radius: 12px;
   text-transform: uppercase;
@@ -600,7 +600,7 @@
   font-family: var(--font-chakra-petch), sans-serif;
   font-size: 11px;
   font-weight: 700;
-  color: #00EAFF;
+  color: #10B981;
   text-transform: uppercase;
   letter-spacing: 2px;
   border-bottom: 1px solid #2A313C;
@@ -617,9 +617,9 @@
 .profile-skill-pill {
   font-family: var(--font-chakra-petch), sans-serif;
   font-size: 11px;
-  color: #00EAFF;
-  background: rgba(0, 234, 255, 0.06);
-  border: 1px solid rgba(0, 234, 255, 0.25);
+  color: #10B981;
+  background: rgba(16, 185, 129, 0.06);
+  border: 1px solid rgba(16, 185, 129, 0.25);
   padding: 4px 12px;
   border-radius: 20px;
   text-transform: uppercase;
@@ -660,7 +660,7 @@
 }
 
 .profile-social-link:hover {
-  color: #00EAFF;
+  color: #10B981;
 }
 
 .profile-social-link svg {
@@ -765,7 +765,7 @@
   font-family: var(--font-chakra-petch), sans-serif;
   font-size: 13px;
   font-weight: 700;
-  color: #00EAFF;
+  color: #10B981;
   position: relative;
 }
 
@@ -797,7 +797,7 @@
   font-family: var(--font-chakra-petch), sans-serif;
   font-size: 11px;
   font-weight: 700;
-  background: #00EAFF;
+  background: #10B981;
   color: #10141A;
   border: none;
   padding: 6px 14px;
@@ -817,7 +817,7 @@
 }
 
 .modal-user-follow-btn.following:hover {
-  border-color: #00EAFF;
+  border-color: #10B981;
   color: #FFFFFF;
 }
 
@@ -952,9 +952,9 @@
 }
 
 .profile-social-badge:hover {
-  border-color: #00EAFF;
+  border-color: #10B981;
   filter: brightness(1.3);
-  box-shadow: 0 0 10px rgba(0, 234, 255, 0.3);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
 }
 
 .profile-social-badge svg {
@@ -1034,7 +1034,7 @@
 }
 
 .cover-modal-close:hover {
-  color: #00EAFF;
+  color: #10B981;
 }
 
 /* Tabs */
@@ -1059,7 +1059,7 @@
 }
 
 .cover-modal-tab.active {
-  color: #00EAFF;
+  color: #10B981;
 }
 
 .cover-modal-tab.active::after {
@@ -1069,8 +1069,8 @@
   left: 0;
   right: 0;
   height: 2px;
-  background-color: #00EAFF;
-  box-shadow: 0 0 8px rgba(0, 234, 255, 0.5);
+  background-color: #10B981;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
 }
 
 /* Preset tab content */
@@ -1127,12 +1127,12 @@
 }
 
 .cover-preset-card:hover {
-  border-color: rgba(0, 234, 255, 0.4);
+  border-color: rgba(16, 185, 129, 0.4);
 }
 
 .cover-preset-card.selected {
-  border-color: #00EAFF;
-  box-shadow: 0 0 12px rgba(0, 234, 255, 0.4);
+  border-color: #10B981;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
 }
 
 .cover-preset-card-name {
@@ -1177,12 +1177,12 @@
 }
 
 .cover-upload-area:hover, .cover-upload-area.drag-active {
-  border-color: #00EAFF;
-  background-color: rgba(0, 234, 255, 0.03);
+  border-color: #10B981;
+  background-color: rgba(16, 185, 129, 0.03);
 }
 
 .cover-upload-icon {
-  color: #00EAFF;
+  color: #10B981;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1202,12 +1202,12 @@
 }
 
 .cover-browse-btn {
-  border: 1px solid #00EAFF;
+  border: 1px solid #10B981;
   background: transparent;
   font-family: "Chakra Petch", sans-serif;
   font-weight: 500;
   font-size: 12px;
-  color: #00EAFF;
+  color: #10B981;
   padding: 8px 20px;
   border-radius: 6px;
   cursor: pointer;
@@ -1215,8 +1215,8 @@
 }
 
 .cover-browse-btn:hover {
-  background-color: rgba(0, 234, 255, 0.1);
-  box-shadow: 0 0 8px rgba(0, 234, 255, 0.2);
+  background-color: rgba(16, 185, 129, 0.1);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.2);
 }
 
 .cover-preview-img {
@@ -1275,18 +1275,18 @@
   font-weight: 700;
   font-size: 14px;
   color: #10141A;
-  background-color: #00EAFF;
+  background-color: #10B981;
   border: none;
   border-radius: 6px;
   padding: 8px 20px;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 0 16px rgba(0, 234, 255, 0.3);
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.3);
 }
 
 .cover-btn-apply:hover:not(:disabled) {
   background-color: #00D5E6;
-  box-shadow: 0 0 20px rgba(0, 234, 255, 0.5);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
 }
 
 .cover-btn-apply:disabled {

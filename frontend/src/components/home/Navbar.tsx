@@ -59,8 +59,8 @@ export default function Navbar({ onMenuToggle }: NavbarProps) {
       {/* Left — Logo */}
       <div className="navbar-left">
         <Link href="/" className="navbar-logo">
-          <span className="logo-arc">ARC</span>
-          <span className="logo-net">NET</span>
+          <span className="logo-arc">Cali</span>
+          <span className="logo-net">ber</span>
         </Link>
       </div>
 

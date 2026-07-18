@@ -4,15 +4,15 @@
 @theme {
   --color-arc-page: #080c14;
   --color-arc-card: #0d1320;
-  --color-arc-accent: #00b4e6;
+  --color-arc-accent: #10B981;
   --color-arc-input: #080c14;
   --color-arc-google-bg: #0a0f1c;
   --color-arc-primary: #e4f0ff;
-  --color-arc-border-card: rgba(0, 180, 230, 0.22);
-  --color-arc-border-input: rgba(0, 180, 230, 0.18);
+  --color-arc-border-card: rgba(16, 185, 129, 0.22);
+  --color-arc-border-input: rgba(16, 185, 129, 0.18);
   --color-arc-border-google: rgba(255, 255, 255, 0.1);
-  --font-sans: var(--font-inter), sans-serif;
-  --font-chakra: var(--font-chakra-petch), sans-serif;
+  --font-sans: var(--font-manrope), var(--font-inter), sans-serif;
+  --font-chakra: var(--font-manrope), var(--font-chakra-petch), sans-serif;
 }
 
 body {
@@ -26,8 +26,8 @@ body {
 .auth-page-bg {
   background-color: var(--color-arc-page);
   background-image: 
-    linear-gradient(rgba(0, 180, 230, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 180, 230, 0.045) 1px, transparent 1px);
+    linear-gradient(rgba(16, 185, 129, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16, 185, 129, 0.045) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 
