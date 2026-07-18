@@ -48,6 +48,7 @@ model User {
   sentDirectMessages       DirectMessage[]   @relation("SentDirectMessages")
   caliberSubmissions       CaliberSubmission[] @relation("CaliberSubmissions")
   caliberRatings           CaliberRating[]     @relation("CaliberRatings")
+  caliberCompEntries CaliberCompetitionEntry[] @relation("CaliberCompEntries")
 }
 
 model Conversation {
@@ -271,6 +272,7 @@ model CaliberProblem {
   config      Json                // server-only answer key / bands / options
   status      String              @default("published")
   submissions CaliberSubmission[]
+  competitionLinks CaliberCompetitionProblem[]
   createdAt   DateTime            @default(now())
   @@index([trackId, status, difficulty])
 }
@@ -308,4 +310,54 @@ model CaliberRatingHistory {
   problemId String
   createdAt DateTime @default(now())
   @@index([userId, trackId])
+}
+
+model CaliberCompetition {
+  id          String                       @id @default(cuid())
+  slug        String                       @unique
+  name        String
+  description String
+  startsAt    DateTime
+  endsAt      DateTime
+  problems    CaliberCompetitionProblem[]
+  entries     CaliberCompetitionEntry[]
+  submissions CaliberCompetitionSubmission[]
+  createdAt   DateTime                     @default(now())
+}
+
+model CaliberCompetitionProblem {
+  id            String             @id @default(cuid())
+  competitionId String
+  competition   CaliberCompetition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  problemId     String
+  problem       CaliberProblem     @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  order         Int                @default(0)
+  @@unique([competitionId, problemId])
+  @@index([competitionId])
+}
+
+model CaliberCompetitionEntry {
+  id            String             @id @default(cuid())
+  competitionId String
+  competition   CaliberCompetition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User               @relation("CaliberCompEntries", fields: [userId], references: [id], onDelete: Cascade)
+  totalScore    Int                @default(0)
+  lastScoredAt  DateTime?
+  joinedAt      DateTime           @default(now())
+  @@unique([competitionId, userId])
+  @@index([competitionId])
+}
+
+model CaliberCompetitionSubmission {
+  id            String             @id @default(cuid())
+  competitionId String
+  competition   CaliberCompetition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  problemId     String
+  userId        String
+  value         Float
+  score         Int
+  createdAt     DateTime           @default(now())
+  @@unique([competitionId, problemId, userId])
+  @@index([competitionId, userId])
 }
