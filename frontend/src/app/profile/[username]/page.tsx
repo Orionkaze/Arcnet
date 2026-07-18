@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useAuthStore } from "@/store/useAuthStore";
+import { safeExternalUrl } from "@/lib/url";
 import Navbar from "@/components/home/Navbar";
 import LeftSidebar from "@/components/home/LeftSidebar";
 import MobileBottomNav from "@/components/home/MobileBottomNav";
@@ -651,7 +652,7 @@ const ProfileSocialBadge = ({ link }: { link: { platform: string; url: string } 
 
   return (
     <a
-      href={link.url}
+      href={safeExternalUrl(link.url)}
       target="_blank"
       rel="noopener noreferrer"
       className="profile-social-badge"

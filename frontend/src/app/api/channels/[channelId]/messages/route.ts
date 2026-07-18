@@ -12,7 +12,8 @@ export async function GET(
     const { channelId } = await params;
     const { searchParams } = new URL(request.url);
 
-    const limit = parseInt(searchParams.get("limit") || "50", 10);
+    // Clamp to a sane range so a client can't request an unbounded page size.
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "50", 10) || 50));
     const beforeId = searchParams.get("before");
 
     const channel = await prisma.channel.findUnique({
@@ -281,6 +282,7 @@ export async function POST(
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "x-internal-secret": process.env.INTERNAL_BROADCAST_SECRET || "",
           },
           body: JSON.stringify({
             channelId,

@@ -118,6 +118,7 @@ export async function POST(
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "x-internal-secret": process.env.INTERNAL_BROADCAST_SECRET || "",
         },
         body: JSON.stringify({
           channelId,

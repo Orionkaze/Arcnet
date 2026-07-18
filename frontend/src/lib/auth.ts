@@ -36,7 +36,8 @@ export async function signToken(
 
 export async function verifyToken(token: string) {
   try {
-    const { payload } = await jwtVerify(token, JWT_SECRET);
+    // Pin the algorithm to prevent alg-confusion attacks (e.g. "none" / alg swap).
+    const { payload } = await jwtVerify(token, JWT_SECRET, { algorithms: ["HS256"] });
     return payload;
   } catch {
     return null;

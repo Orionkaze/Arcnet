@@ -19,11 +19,34 @@ app.use(express.json());
 
 const apiRouter = express.Router();
 
+// The /api/broadcast* endpoints are internal — only the Next.js API layer may
+// call them (to fan out messages/DMs/pins over Socket.io). Without this guard
+// anyone who can reach the backend could inject arbitrary messages into any
+// room. Callers must send `x-internal-secret: INTERNAL_BROADCAST_SECRET`.
+const BROADCAST_SECRET = process.env.INTERNAL_BROADCAST_SECRET;
+function requireBroadcastSecret(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) {
+  if (!BROADCAST_SECRET) {
+    // Fail closed in production; allow (with a warning) in dev for convenience.
+    if (process.env.NODE_ENV === "production") {
+      return res.status(503).json({ error: "Broadcast secret not configured" });
+    }
+    return next();
+  }
+  if (req.get("x-internal-secret") !== BROADCAST_SECRET) {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+  next();
+}
+
 apiRouter.get("/health", (req, res) => {
   res.status(200).json({ status: "Backend is running!" });
 });
 
-apiRouter.post("/api/broadcast", (req, res) => {
+apiRouter.post("/api/broadcast", requireBroadcastSecret, (req, res) => {
   const { channelId, message } = req.body;
   if (channelId && message) {
     io.to(channelId).emit("new_message", message);
@@ -33,7 +56,7 @@ apiRouter.post("/api/broadcast", (req, res) => {
   }
 });
 
-apiRouter.post("/api/broadcast-dm", (req, res) => {
+apiRouter.post("/api/broadcast-dm", requireBroadcastSecret, (req, res) => {
   const { toUserId, message } = req.body;
   if (toUserId && message) {
     io.to(`user_${toUserId}`).emit("new_dm", message);
@@ -43,7 +66,7 @@ apiRouter.post("/api/broadcast-dm", (req, res) => {
   }
 });
 
-apiRouter.post("/api/broadcast-pin", (req, res) => {
+apiRouter.post("/api/broadcast-pin", requireBroadcastSecret, (req, res) => {
   const { channelId, pinnedMessage } = req.body;
   if (channelId) {
     io.to(channelId).emit("pin_updated", pinnedMessage ?? null);

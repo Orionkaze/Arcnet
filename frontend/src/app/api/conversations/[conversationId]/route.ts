@@ -173,7 +173,10 @@ export async function POST(
       process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5001";
     fetch(`${backendUrl}/api/broadcast-dm`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-internal-secret": process.env.INTERNAL_BROADCAST_SECRET || "",
+      },
       body: JSON.stringify({ toUserId: recipientId, message }),
     }).catch(() => {});
 
