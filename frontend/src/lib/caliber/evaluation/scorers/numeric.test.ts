@@ -18,4 +18,12 @@ describe("scoreNumeric", () => {
   it("boundary is inclusive", () => {
     expect(scoreNumeric(p, { value: 43 }).score).toBe(100);
   });
+  it("scores 0 for NaN input", () => {
+    expect(scoreNumeric(p, { value: NaN }).score).toBe(0);
+  });
+  it("outcome is 0 when maxPoints is 0 (no divide-by-zero)", () => {
+    const zero = { ...p, maxPoints: 0 };
+    const r = scoreNumeric(zero, { value: 42 });
+    expect(r.outcome).toBe(0);
+  });
 });

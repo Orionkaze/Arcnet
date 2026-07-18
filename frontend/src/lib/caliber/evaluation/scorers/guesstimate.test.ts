@@ -26,4 +26,9 @@ describe("scoreGuesstimate", () => {
   it("outcome is normalized", () => {
     expect(scoreGuesstimate(p, { value: 8_000_000 }).outcome).toBeCloseTo(0.5);
   });
+  it("selects the tightest qualifying band regardless of input order", () => {
+    const rev: GuesstimateProblem = { id: "g2", type: "guesstimate", difficulty: 1600, maxPoints: 100, answer: 1_000_000,
+      bands: [ { maxRatio: 10, points: 50 }, { maxRatio: 2, points: 100 } ] };
+    expect(scoreGuesstimate(rev, { value: 1_500_000 }).score).toBe(100); // within 2x -> tightest band wins
+  });
 });

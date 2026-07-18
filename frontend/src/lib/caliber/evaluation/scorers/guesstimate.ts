@@ -8,7 +8,7 @@ export function scoreGuesstimate(problem: GuesstimateProblem, submission: Submis
     const band = [...problem.bands].sort((a, b) => a.maxRatio - b.maxRatio).find((b) => ratio <= b.maxRatio);
     score = band ? band.points : 0;
   }
-  const orderOfMag = Math.round(Math.log10(problem.answer));
+  const orderOfMag = problem.answer > 0 ? Math.round(Math.log10(problem.answer)) : null;
   return {
     score,
     maxPoints: problem.maxPoints,
@@ -18,6 +18,8 @@ export function scoreGuesstimate(problem: GuesstimateProblem, submission: Submis
         ? "Great estimate — right order of magnitude."
         : score > 0
         ? "Close, but off by roughly an order of magnitude — tighten your assumptions."
-        : `Off by several orders of magnitude. The answer is ~10^${orderOfMag}.`,
+        : orderOfMag !== null
+        ? `Off by several orders of magnitude. The answer is ~10^${orderOfMag}.`
+        : "Off by several orders of magnitude.",
   };
 }
