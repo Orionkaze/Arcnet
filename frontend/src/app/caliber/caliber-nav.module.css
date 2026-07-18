@@ -1,0 +1,7 @@
+.bar { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 1.25rem; padding: .75rem 1.25rem; background: #0A0C10; border-bottom: 1px solid #1C2129; font-family: var(--font-sans); }
+.brand { font-weight: 800; font-size: 1.15rem; letter-spacing: -0.02em; color: #fff; text-decoration: none; }
+.brand span { color: #10B981; }
+.links { display: flex; gap: 1rem; flex-wrap: wrap; }
+.link { color: #9AA0A6; text-decoration: none; font-size: .9rem; }
+.link:hover { color: #E8EAED; }
+.spacer { flex: 1; }
