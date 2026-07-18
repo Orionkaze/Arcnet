@@ -10,9 +10,8 @@ export default function MobileBottomNav() {
   const pathname = usePathname();
 
   const getActiveState = () => {
-    if (pathname === "/") return "home";
-    if (pathname.includes("/game-jams")) return "jams";
-    if (pathname.includes("/find-team")) return "team";
+    if (pathname === "/" || pathname === "/caliber") return "home";
+    if (pathname.startsWith("/caliber/competitions")) return "jams";
     if (pathname.includes("/notifications")) return "notif";
     if (pathname.startsWith("/profile/")) return "profile";
     return "";
@@ -34,11 +33,11 @@ export default function MobileBottomNav() {
         </svg>
       </Link>
 
-      {/* Game Jams — Trophy */}
+      {/* Competitions — Trophy */}
       <Link
-        href="/ecosystem/game-jams"
+        href="/caliber/competitions"
         className={`mobile-nav-btn bottom-nav-btn ${active === "jams" ? "active" : ""}`}
-        aria-label="Game Jams"
+        aria-label="Competitions"
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M6 9H3a1 1 0 01-1-1V5a1 1 0 011-1h3" />
@@ -50,11 +49,11 @@ export default function MobileBottomNav() {
         </svg>
       </Link>
 
-      {/* Find Team — People */}
+      {/* Practice — People */}
       <Link
-        href="/ecosystem/find-team"
-        className={`mobile-nav-btn bottom-nav-btn ${active === "team" ? "active" : ""}`}
-        aria-label="Find Team"
+        href="/caliber"
+        className="mobile-nav-btn bottom-nav-btn"
+        aria-label="Practice"
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />

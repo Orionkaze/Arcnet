@@ -116,17 +116,29 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
             </Link>
           </div>
 
-          {/* ECOSYSTEM */}
+          {/* CALIBER */}
           <div className="sidebar-section">
             <div className="sidebar-section-header">
-              <span className="sidebar-section-label">ECOSYSTEM</span>
+              <span className="sidebar-section-label">CALIBER</span>
               <span className="sidebar-section-line" />
             </div>
 
             <Link
-              href="/ecosystem/game-jams"
-              className={`sidebar-item ${activeItem === "game-jams" ? "active" : ""}`}
-              onClick={() => handleItemClick("game-jams")}
+              href="/caliber"
+              className={`sidebar-item ${activeItem === "caliber-practice" ? "active" : ""}`}
+              onClick={() => handleItemClick("caliber-practice")}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
+              </svg>
+              <span>Practice</span>
+            </Link>
+
+            <Link
+              href="/caliber/competitions"
+              className={`sidebar-item ${activeItem === "caliber-competitions" ? "active" : ""}`}
+              onClick={() => handleItemClick("caliber-competitions")}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M6 9H3a1 1 0 01-1-1V5a1 1 0 011-1h3" />
@@ -136,27 +148,13 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                 <path d="M8 22h8" />
                 <path d="M8 22v-4M16 22v-4" />
               </svg>
-              <span>Game Jams</span>
+              <span>Competitions</span>
             </Link>
 
             <Link
-              href="/ecosystem/find-team"
-              className={`sidebar-item ${activeItem === "find-team" ? "active" : ""}`}
-              onClick={() => handleItemClick("find-team")}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <path d="M23 21v-2a4 4 0 00-3-3.87" />
-                <path d="M16 3.13a4 4 0 010 7.75" />
-              </svg>
-              <span>Find Team</span>
-            </Link>
-
-            <Link
-              href="/ecosystem/mentors"
-              className={`sidebar-item ${activeItem === "mentors" ? "active" : ""}`}
-              onClick={() => handleItemClick("mentors")}
+              href="/caliber/mentors"
+              className={`sidebar-item ${activeItem === "caliber-mentors" ? "active" : ""}`}
+              onClick={() => handleItemClick("caliber-mentors")}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polygon points="12,2 2,7 12,12 22,7" />
@@ -167,9 +165,9 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
             </Link>
 
             <Link
-              href="/ecosystem/jobs"
-              className={`sidebar-item ${activeItem === "jobs" ? "active" : ""}`}
-              onClick={() => handleItemClick("jobs")}
+              href="/caliber/jobs"
+              className={`sidebar-item ${activeItem === "caliber-jobs" ? "active" : ""}`}
+              onClick={() => handleItemClick("caliber-jobs")}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="2" y="7" width="20" height="14" rx="2" />
@@ -177,17 +175,6 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                 <path d="M2 12h20" />
               </svg>
               <span>Jobs</span>
-            </Link>
-
-            <Link
-              href="/ecosystem/ai-match"
-              className={`sidebar-item ${activeItem === "ai-match" ? "active" : ""}`}
-              onClick={() => handleItemClick("ai-match")}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2l2 7h7l-5.5 4 2 7L12 16l-5.5 4 2-7L3 9h7l2-7z" />
-              </svg>
-              <span>AI Match</span>
             </Link>
           </div>
         </div>

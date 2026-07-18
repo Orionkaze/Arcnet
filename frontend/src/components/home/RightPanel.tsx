@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
 
 interface NewsArticle {
   title: string;
@@ -93,10 +92,6 @@ export default function RightPanel() {
                 <div className="happening-time">{formatRelativeTime(item.publishedAt)}</div>
               </a>
             ))}
-
-            <Link href="/latest" className="read-more-link">
-              Read more →
-            </Link>
           </div>
         )}
       </div>
