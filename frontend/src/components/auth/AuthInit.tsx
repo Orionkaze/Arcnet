@@ -21,8 +21,8 @@ export function AuthInit() {
     const isOnboardingPath = ["/setup-username", "/setup-avatar"].includes(pathname);
     // Pages that are public to view but must NOT bounce logged-in users to home
     // (kept separate from isExactPublicPath, which does that bounce). Mirrors the
-    // middleware's public-page allowlist so /latest is reachable while logged out.
-    const isPublicViewablePath = pathname === "/latest";
+    // middleware's public-page allowlist so Caliber is reachable while logged out.
+    const isPublicViewablePath = pathname.startsWith("/caliber");
 
     if (!isAuthenticated) {
       // Unauthenticated users can access auth pages, profile pages, and public-viewable pages
