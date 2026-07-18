@@ -66,16 +66,62 @@ export async function POST(
     });
 
     // Best-effort broadcast so other clients update their pinned banner.
+    // We send the FULL pinned message object (same shape as the messages GET),
+    // or null when the pin is being cleared. A broadcast failure is non-fatal.
     try {
+      let pinnedMessage = null;
+      if (messageId !== null) {
+        pinnedMessage = await prisma.message.findUnique({
+          where: { id: messageId },
+          include: {
+            author: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                username: true,
+                avatar: true,
+                isVerified: true,
+              },
+            },
+            replyTo: {
+              include: {
+                author: {
+                  select: {
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                    username: true,
+                    avatar: true,
+                  },
+                },
+              },
+            },
+            reactions: {
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                    username: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+      }
+
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5001";
-      const response = await fetch(`${backendUrl}/api/broadcast`, {
+      const response = await fetch(`${backendUrl}/api/broadcast-pin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           channelId,
-          pinnedMessageId: messageId,
+          pinnedMessage,
         }),
       });
       if (!response.ok) {

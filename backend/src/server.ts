@@ -33,6 +33,26 @@ apiRouter.post("/api/broadcast", (req, res) => {
   }
 });
 
+apiRouter.post("/api/broadcast-dm", (req, res) => {
+  const { toUserId, message } = req.body;
+  if (toUserId && message) {
+    io.to(`user_${toUserId}`).emit("new_dm", message);
+    res.status(200).json({ status: "Broadcasted successfully" });
+  } else {
+    res.status(400).json({ error: "Missing toUserId or message" });
+  }
+});
+
+apiRouter.post("/api/broadcast-pin", (req, res) => {
+  const { channelId, pinnedMessage } = req.body;
+  if (channelId) {
+    io.to(channelId).emit("pin_updated", pinnedMessage ?? null);
+    res.status(200).json({ status: "Broadcasted successfully" });
+  } else {
+    res.status(400).json({ error: "Missing channelId" });
+  }
+});
+
 // Mount router under root and sub-route for Firebase compatibility
 app.use("/", apiRouter);
 app.use("/_/backend", apiRouter);
@@ -87,6 +107,8 @@ io.on("connection", (socket) => {
   // When a user identifies themselves
   socket.on("identify", ({ userId }) => {
     userSockets.set(socket.id, userId);
+    // Join a personal room so this user can receive direct messages.
+    socket.join(`user_${userId}`);
   });
   
   // Join a specific chat channel to receive messages
