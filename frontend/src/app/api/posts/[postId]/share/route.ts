@@ -17,7 +17,7 @@ export async function POST(
     const fromUserId = session.userId as string;
 
     // Rate limit: 30 shares per minute per user (spam-prone: writes notifications).
-    const rateLimit = checkRateLimit(`post_share_${fromUserId}`, 30, 60 * 1000);
+    const rateLimit = await checkRateLimit(`post_share_${fromUserId}`, 30, 60 * 1000);
     if (!rateLimit.success) {
       return NextResponse.json(
         { error: "Too many requests. Please slow down." },

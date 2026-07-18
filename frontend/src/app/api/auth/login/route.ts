@@ -18,7 +18,7 @@ const DUMMY_HASH = "$2b$12$kYI490Ch3Fzurjpa6UHSQuu8WamdB6MhcFmi5w6G1OIHB7vEdZClK
 export async function POST(req: Request) {
   try {
     const ip = req.headers.get("x-forwarded-for") || "unknown";
-    const rateLimit = checkRateLimit(`login_${ip}`, 5, 15 * 60 * 1000);
+    const rateLimit = await checkRateLimit(`login_${ip}`, 5, 15 * 60 * 1000);
     
     if (!rateLimit.success) {
       return NextResponse.json(
@@ -38,7 +38,7 @@ export async function POST(req: Request) {
 
     // Per-email rate limit (in addition to the IP limiter above) to slow
     // credential-stuffing against a single account. Returns the same 429.
-    const emailRateLimit = checkRateLimit(
+    const emailRateLimit = await checkRateLimit(
       `login_email_${email.toLowerCase()}`,
       10,
       15 * 60 * 1000,
@@ -61,11 +61,25 @@ export async function POST(req: Request) {
       // wrong-password path. Prevents distinguishing "no such account" from
       // "wrong password" by response timing. Result intentionally discarded.
       await comparePassword(password, DUMMY_HASH);
+      console.warn(
+        JSON.stringify({
+          evt: "login_failed",
+          email: email.toLowerCase(),
+          ts: new Date().toISOString(),
+        })
+      );
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
     const isPasswordValid = await comparePassword(password, user.password);
     if (!isPasswordValid) {
+      console.warn(
+        JSON.stringify({
+          evt: "login_failed",
+          email: email.toLowerCase(),
+          ts: new Date().toISOString(),
+        })
+      );
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 

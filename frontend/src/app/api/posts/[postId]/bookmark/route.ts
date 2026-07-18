@@ -17,7 +17,7 @@ export async function POST(
     const userId = session.userId as string;
 
     // Rate limit: 60 bookmark toggles per minute per user.
-    const rateLimit = checkRateLimit(`bookmark_toggle_${userId}`, 60, 60 * 1000);
+    const rateLimit = await checkRateLimit(`bookmark_toggle_${userId}`, 60, 60 * 1000);
     if (!rateLimit.success) {
       return NextResponse.json(
         { error: "Too many requests. Please slow down." },

@@ -48,7 +48,7 @@ export async function POST(
     const userId = session.userId as string;
 
     // Rate limit: 60 comments per minute per user.
-    const rateLimit = checkRateLimit(`comment_create_${userId}`, 60, 60 * 1000);
+    const rateLimit = await checkRateLimit(`comment_create_${userId}`, 60, 60 * 1000);
     if (!rateLimit.success) {
       return NextResponse.json(
         { error: "You're commenting too fast. Please slow down." },

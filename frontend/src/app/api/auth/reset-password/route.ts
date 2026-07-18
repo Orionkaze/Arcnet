@@ -24,7 +24,7 @@ export async function POST(req: Request) {
   try {
     // IP-based limiter (mirrors login) to slow token brute-forcing.
     const ip = req.headers.get("x-forwarded-for") || "unknown";
-    const ipRateLimit = checkRateLimit(`reset_pw_ip_${ip}`, 10, 15 * 60 * 1000);
+    const ipRateLimit = await checkRateLimit(`reset_pw_ip_${ip}`, 10, 15 * 60 * 1000);
     if (!ipRateLimit.success) {
       return NextResponse.json(
         { error: `Too many attempts. Try again in 15 minutes.` },
@@ -43,8 +43,8 @@ export async function POST(req: Request) {
 
     // Per-value limiters so a single token/account can't be hammered even
     // from rotating IPs. Same 429 shape.
-    const tokenRateLimit = checkRateLimit(`reset_pw_token_${token}`, 10, 15 * 60 * 1000);
-    const emailRateLimit = checkRateLimit(
+    const tokenRateLimit = await checkRateLimit(`reset_pw_token_${token}`, 10, 15 * 60 * 1000);
+    const emailRateLimit = await checkRateLimit(
       `reset_pw_email_${email.toLowerCase()}`,
       10,
       15 * 60 * 1000,

@@ -109,7 +109,7 @@ export async function POST(
     const { conversationId } = await params;
 
     // Generous per-user limit to curb DM flooding.
-    const rateLimit = checkRateLimit(`dm_send:${me}`, 60, 60 * 1000);
+    const rateLimit = await checkRateLimit(`dm_send:${me}`, 60, 60 * 1000);
     if (!rateLimit.success) {
       return NextResponse.json(
         { error: "You're sending messages too fast. Please slow down." },

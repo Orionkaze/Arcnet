@@ -17,7 +17,7 @@ export async function POST(req: Request) {
   try {
     // Light IP limiter on this authenticated onboarding endpoint.
     const ip = req.headers.get("x-forwarded-for") || "unknown";
-    const ipRateLimit = checkRateLimit(`setup_username_ip_${ip}`, 15, 15 * 60 * 1000);
+    const ipRateLimit = await checkRateLimit(`setup_username_ip_${ip}`, 15, 15 * 60 * 1000);
     if (!ipRateLimit.success) {
       return NextResponse.json(
         { error: `Too many attempts. Try again in 15 minutes.` },

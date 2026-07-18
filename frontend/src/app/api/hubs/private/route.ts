@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     }
 
     // Generous per-user limit to curb automated hub-spam.
-    const rateLimit = checkRateLimit(
+    const rateLimit = await checkRateLimit(
       `private_hub_create:${session.userId as string}`,
       10,
       60 * 1000

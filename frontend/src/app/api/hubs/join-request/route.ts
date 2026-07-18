@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     }
 
     // Generous per-user limit; also slows join-code guessing.
-    const rateLimit = checkRateLimit(
+    const rateLimit = await checkRateLimit(
       `join_request:${session.userId as string}`,
       20,
       60 * 1000

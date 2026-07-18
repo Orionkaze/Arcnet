@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     }
 
     // Rate limit resends (3 per hour per email)
-    const rateLimit = checkRateLimit(`resend_otp_${email}`, 3, 60 * 60 * 1000);
+    const rateLimit = await checkRateLimit(`resend_otp_${email}`, 3, 60 * 60 * 1000);
     if (!rateLimit.success) {
       return NextResponse.json({ error: "Too many requests. Try again later." }, { status: 429 });
     }

@@ -17,7 +17,7 @@ export async function POST(
     const userId = session.userId as string;
 
     // Rate limit: 60 like toggles per minute per user.
-    const rateLimit = checkRateLimit(`like_toggle_${userId}`, 60, 60 * 1000);
+    const rateLimit = await checkRateLimit(`like_toggle_${userId}`, 60, 60 * 1000);
     if (!rateLimit.success) {
       return NextResponse.json(
         { error: "Too many requests. Please slow down." },

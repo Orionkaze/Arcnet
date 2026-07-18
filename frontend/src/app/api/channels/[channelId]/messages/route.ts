@@ -180,7 +180,7 @@ export async function POST(
     // WARNING: This in-memory rate limiter does not work correctly across
     // multiple server instances. Replace with a Redis-backed counter in production.
     const limitKey = `message_creation:${userId}`;
-    const rateLimitRes = checkRateLimit(limitKey, 10, 60000);
+    const rateLimitRes = await checkRateLimit(limitKey, 10, 60000);
     if (!rateLimitRes.success) {
       return NextResponse.json(
         { error: "You're sending messages too fast. Rate limit: 10 messages per minute." },

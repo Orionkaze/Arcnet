@@ -9,7 +9,7 @@ export async function POST(req: Request) {
   try {
     // IP-based limiter (mirrors login) to curb username enumeration + spam.
     const ip = req.headers.get("x-forwarded-for") || "unknown";
-    const ipRateLimit = checkRateLimit(`check_username_ip_${ip}`, 30, 60 * 1000);
+    const ipRateLimit = await checkRateLimit(`check_username_ip_${ip}`, 30, 60 * 1000);
     if (!ipRateLimit.success) {
       return NextResponse.json(
         { error: `Too many attempts. Try again in a minute.` },

@@ -17,7 +17,7 @@ export async function POST(
     const followerId = session.userId as string;
 
     // Rate limit: 60 follow toggles per minute per user.
-    const rateLimit = checkRateLimit(`follow_toggle_${followerId}`, 60, 60 * 1000);
+    const rateLimit = await checkRateLimit(`follow_toggle_${followerId}`, 60, 60 * 1000);
     if (!rateLimit.success) {
       return NextResponse.json(
         { error: "Too many requests. Please slow down." },

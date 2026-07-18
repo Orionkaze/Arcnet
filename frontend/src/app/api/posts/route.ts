@@ -14,7 +14,7 @@ export async function POST(request: Request) {
 
     // Rate Limit: 10 posts per hour
     const limitKey = `post_creation:${userId}`;
-    const rateLimitRes = checkRateLimit(limitKey, 10, 60 * 60 * 1000);
+    const rateLimitRes = await checkRateLimit(limitKey, 10, 60 * 60 * 1000);
     if (!rateLimitRes.success) {
       return NextResponse.json(
         { error: "You're posting too fast. Please wait before posting again." },

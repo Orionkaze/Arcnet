@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     }
 
     // Rate limit OTP attempts (5 per 15 minutes)
-    const rateLimit = checkRateLimit(`otp_attempt_${email}`, 5, 15 * 60 * 1000);
+    const rateLimit = await checkRateLimit(`otp_attempt_${email}`, 5, 15 * 60 * 1000);
     if (!rateLimit.success) {
       return NextResponse.json({ error: "Too many attempts. Account temporarily locked from verification." }, { status: 429 });
     }
