@@ -31,35 +31,35 @@ export function ResponsiveAuthLayout({
           {/* Logo */}
           <div className="flex">
             <h1 className="font-chakra font-bold text-[22px] tracking-[4px]">
-              <span className="text-arc-accent">ARC</span>
-              <span className="text-white">NET</span>
+              <span className="text-arc-accent">Cali</span>
+              <span className="text-white">ber</span>
             </h1>
           </div>
 
           {/* Centered Content */}
           <div className="flex-1 flex flex-col justify-center">
             <h2 className="font-chakra font-bold text-[52px] leading-tight text-white mb-4">
-              The hub for <span className="text-arc-accent">game creators.</span>
+              Prove your <span className="text-arc-accent">caliber.</span>
             </h2>
             <p className="font-sans text-[15px] text-[rgba(255,255,255,0.4)] max-w-[420px] mb-8">
-              Connect with developers, artists, animators and storytellers — all in one place.
+              Practice real problems, get instant feedback, and build a rating that proves your ability.
             </p>
             <div className="flex gap-3">
               <span className="font-chakra text-[11px] border border-[rgba(0,180,230,0.25)] bg-[rgba(0,180,230,0.06)] text-arc-accent px-[12px] py-[4px] rounded-[2px] uppercase">
-                Game Jams
+                Practice
               </span>
               <span className="font-chakra text-[11px] border border-[rgba(0,180,230,0.25)] bg-[rgba(0,180,230,0.06)] text-arc-accent px-[12px] py-[4px] rounded-[2px] uppercase">
-                Find Team
+                Compete
               </span>
               <span className="font-chakra text-[11px] border border-[rgba(0,180,230,0.25)] bg-[rgba(0,180,230,0.06)] text-arc-accent px-[12px] py-[4px] rounded-[2px] uppercase">
-                AI Match
+                Get Rated
               </span>
             </div>
           </div>
 
           {/* Bottom */}
           <div>
-            <p className="font-sans text-[12px] text-[rgba(255,255,255,0.2)]">Trusted by creators worldwide</p>
+            <p className="font-sans text-[12px] text-[rgba(255,255,255,0.2)]">Trusted by ambitious students</p>
           </div>
           
           {/* Decorative Bracket */}
@@ -83,8 +83,8 @@ export function ResponsiveAuthLayout({
           {/* Mobile Header (hidden on desktop) */}
           <div className="lg:hidden flex flex-col items-center pt-10 pb-6">
             <h1 className="font-chakra font-bold text-[22px] tracking-[4px]">
-              <span className="text-arc-accent">ARC</span>
-              <span className="text-white">NET</span>
+              <span className="text-arc-accent">Cali</span>
+              <span className="text-white">ber</span>
             </h1>
           </div>
 

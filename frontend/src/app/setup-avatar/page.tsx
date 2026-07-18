@@ -120,7 +120,7 @@ export default function SetupAvatarPage() {
     <ResponsiveAuthLayout
       label="LAST STEP"
       heading="Choose your avatar."
-      subheading="Put a face to your name on ARCNET."
+      subheading="Put a face to your name on Caliber."
       oppositeHref="/"
       oppositeText="Skip to home &rarr;"
     >
@@ -235,7 +235,7 @@ export default function SetupAvatarPage() {
           onClick={() => handleSubmit()} 
           disabled={isSubmitting || (activeTab !== "preview" && activeTab !== "options")}
         >
-          {isSubmitting ? "ENTERING..." : "ENTER ARCNET →"}
+          {isSubmitting ? "ENTERING..." : "ENTER CALIBER →"}
         </AuthButton>
 
         {activeTab === "options" && (

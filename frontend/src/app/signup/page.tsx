@@ -83,7 +83,7 @@ export default function SignupPage() {
     <ResponsiveAuthLayout
       label="NEW HERE?"
       heading="Sign up."
-      subheading="Join the network. Find your hub."
+      subheading="Start practicing. Prove your caliber."
       oppositeHref="/login"
       oppositeText="Already have an account? Log in &rarr;"
       backHref="/login"
@@ -171,13 +171,13 @@ export default function SignupPage() {
 
         <div className="mt-2">
           <AuthButton type="submit" disabled={isLoading}>
-            {isLoading ? "JOINING..." : "JOIN THE NETWORK →"}
+            {isLoading ? "JOINING..." : "CREATE ACCOUNT →"}
           </AuthButton>
         </div>
 
         <div className="mt-6 text-center">
           <p className="font-sans text-[11px] text-[rgba(255,255,255,0.35)]">
-            By joining you agree to ARCNET&apos;s Terms of Service and Privacy Policy
+            By joining you agree to Caliber&apos;s Terms of Service and Privacy Policy
           </p>
         </div>
       </form>

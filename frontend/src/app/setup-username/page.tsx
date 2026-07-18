@@ -72,7 +72,7 @@ export default function SetupUsernamePage() {
   const suggestions = useMemo(() => {
     if (!user?.firstName) return [];
     const base = user.firstName.toLowerCase().replace(/[^a-z0-9]/g, "");
-    return [`${base}_`, `${base}.gg`, `${base}01`].slice(0, 3);
+    return [`${base}_`, `${base}.dev`, `${base}01`].slice(0, 3);
   }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -111,7 +111,7 @@ export default function SetupUsernamePage() {
     <ResponsiveAuthLayout
       label="ALMOST THERE"
       heading="Pick your username."
-      subheading="This is how others will find you on ARCNET."
+      subheading="This is how others will find you on Caliber."
       oppositeHref="/"
       oppositeText="Skip to home &rarr;"
     >
