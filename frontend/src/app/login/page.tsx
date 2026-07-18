@@ -132,7 +132,7 @@ export default function LoginPage() {
 
         <div className="mt-8">
           <AuthButton type="submit" disabled={isLoading}>
-            {isLoading ? "LOGGING IN..." : "ACCESS NETWORK →"}
+            {isLoading ? "LOGGING IN..." : "LOG IN"}
           </AuthButton>
         </div>
       </form>

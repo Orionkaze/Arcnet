@@ -43,7 +43,7 @@ export async function sendEmail({
 export function getOTPVerificationEmailHtml(otpCode: string) {
   return `
     <div style="background-color: #080c14; padding: 40px; font-family: sans-serif; color: #fff; text-align: center;">
-      <h1 style="color: #fff; margin-bottom: 20px; font-family: 'Chakra Petch', sans-serif;">ARCNET</h1>
+      <h1 style="color: #fff; margin-bottom: 20px; font-family: 'Chakra Petch', sans-serif;">Caliber</h1>
       <p style="font-size: 16px; color: #a1a1aa; margin-bottom: 30px;">Verify your account to join the network.</p>
       <div style="background-color: #0d131f; padding: 20px; border-radius: 8px; border: 1px solid #1f2937; display: inline-block;">
         <h2 style="color: #06b6d4; font-size: 32px; letter-spacing: 4px; margin: 0;">${otpCode}</h2>
@@ -56,7 +56,7 @@ export function getOTPVerificationEmailHtml(otpCode: string) {
 export function getPasswordResetEmailHtml(resetLink: string) {
   return `
     <div style="background-color: #080c14; padding: 40px; font-family: sans-serif; color: #fff; text-align: center;">
-      <h1 style="color: #fff; margin-bottom: 20px; font-family: 'Chakra Petch', sans-serif;">ARCNET</h1>
+      <h1 style="color: #fff; margin-bottom: 20px; font-family: 'Chakra Petch', sans-serif;">Caliber</h1>
       <p style="font-size: 16px; color: #a1a1aa; margin-bottom: 30px;">We received a request to reset your password.</p>
       <a href="${resetLink}" style="background-color: #06b6d4; color: #000; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block;">Reset Password</a>
       <p style="font-size: 14px; color: #71717a; margin-top: 30px;">This link expires in 15 minutes.</p>

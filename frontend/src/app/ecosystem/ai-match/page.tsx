@@ -18,7 +18,7 @@ interface PreviewFeature {
 const PREVIEW_FEATURES: PreviewFeature[] = [
   {
     title: "Skill-Graph Matching",
-    description: "Maps your stack and strengths to complementary creators.",
+    description: "Maps your skills and strengths to complementary peers.",
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="6" cy="6" r="2.5"></circle>
@@ -31,8 +31,8 @@ const PREVIEW_FEATURES: PreviewFeature[] = [
     ),
   },
   {
-    title: "Smart Jam Squads",
-    description: "Auto-builds balanced teams for your next game jam.",
+    title: "Smart Competition Squads",
+    description: "Auto-builds balanced teams for your next competition.",
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -44,7 +44,7 @@ const PREVIEW_FEATURES: PreviewFeature[] = [
   },
   {
     title: "Mentor Recommendations",
-    description: "Surfaces experienced devs aligned to your goals.",
+    description: "Surfaces experienced professionals aligned to your goals.",
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M12 2l2 7h7l-5.5 4 2 7L12 16l-5.5 4 2-7L3 9h7l2-7z"></path>
@@ -91,7 +91,7 @@ export default function AiMatchPage() {
               AI Match
             </h1>
             <p className="font-inter text-sm text-[#C8C7C7]">
-              Intelligent matchmaking for game-dev collaboration — coming soon.
+              Intelligent matchmaking for skill-building collaboration — coming soon.
             </p>
           </div>
 
@@ -122,10 +122,10 @@ export default function AiMatchPage() {
               AI-Powered Team Matching
             </h2>
             <p className="font-inter text-sm text-[#C8C7C7] max-w-[520px] mx-auto mt-3 leading-relaxed">
-              AI Match will analyze your skills, portfolio, and goals to
-              auto-suggest ideal teammates, jams, and mentors. Think of it as
-              matchmaking for game-dev collaboration — the right people for the
-              project you actually want to build.
+              AI Match will analyze your skills, track record, and goals to
+              auto-suggest ideal teammates, competitions, and mentors. Think of it as
+              matchmaking for skill-building — the right people for the
+              prep you actually want to do.
             </p>
 
             {/* Feature preview grid */}

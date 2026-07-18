@@ -3,16 +3,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import gameDevLogo from "./LeftSideBarLogos/GameDeveloperHub.png";
-import gameTesterLogo from "./LeftSideBarLogos/GameTesterHub.png";
-import Artist from "./LeftSideBarLogos/Artists.png";
-import AnimatorLogo from "./LeftSideBarLogos/Animators.png";
-import StoryWriterLogo from "./LeftSideBarLogos/StorywriterHub.png";
-import GameJam from "./LeftSideBarLogos/GameJam.png";
-import FindTeam from "./LeftSideBarLogos/FindTeam.png";
-import Mentors from "./LeftSideBarLogos/Mentor.png";
-import Jobs from "./LeftSideBarLogos/Jobs.png";
-import AIMatch from "./LeftSideBarLogos/AI-Match.png";
 
 export default function LeftSidebar() {
   const pathname = usePathname();
@@ -95,72 +85,67 @@ export default function LeftSidebar() {
           </div>
 
           <Link
-            href="/hub/game-developers"
-            className={`sidebar-item ${isActive("/hub/game-developers") ? "active" : ""}`}
+            href="/hub/consulting"
+            className={`sidebar-item ${isActive("/hub/consulting") ? "active" : ""}`}
           >
-            {/* Controller icon */}
-            {/* <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="2" y="6" width="20" height="12" rx="3" />
-              <path d="M6 12h4M8 10v4" />
-              <circle cx="17" cy="10" r="1" fill="currentColor" />
-              <circle cx="15" cy="13" r="1" fill="currentColor" />
-            </svg> */}
-            <img src={gameDevLogo.src} alt="Game Developer Hub" style={{width: '20px', height: '20px'}} />
-            <span>Game Developers</span>
+            {/* Briefcase icon */}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" />
+              <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" />
+              <path d="M2 12h20" />
+            </svg>
+            <span>Consulting &amp; Cases</span>
           </Link>
 
           <Link
-            href="/hub/2d-3d-artists"
-            className={`sidebar-item ${isActive("/hub/2d-3d-artists") ? "active" : ""}`}
+            href="/hub/finance"
+            className={`sidebar-item ${isActive("/hub/finance") ? "active" : ""}`}
           >
-            {/* Palette icon */}
-            {/* <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2a10 10 0 00-1 19.95c.6.05 1-.4 1-1v-1.67a1 1 0 00-1.06-1C7.56 18 6 16.5 6 14c0-1.5.8-3 2-4s1.5-2.5 1.5-4a4.5 4.5 0 019 0c0 1.5-.5 3 1.5 4s2 2.5 2 4c0 2.5-1.56 4-4.94 4.28a1 1 0 00-1.06 1V21c0 .6.4 1.05 1 1A10 10 0 0012 2z" />
-              <circle cx="8" cy="10" r="1.5" fill="currentColor" />
-              <circle cx="12" cy="7" r="1.5" fill="currentColor" />
-              <circle cx="16" cy="10" r="1.5" fill="currentColor" />
-            </svg>  */}
-            <img src={Artist.src} alt="2D/3D Artist Hub" style={{width: '20px', height: '20px'}} />
-            <span>2D / 3D Artists</span>
+            {/* Trending-up icon */}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+              <polyline points="17 6 23 6 23 12" />
+            </svg>
+            <span>Finance &amp; IB</span>
           </Link>
 
           <Link
-            href="/hub/animators"
-            className={`sidebar-item ${isActive("/hub/animators") ? "active" : ""}`}
+            href="/hub/product"
+            className={`sidebar-item ${isActive("/hub/product") ? "active" : ""}`}
           >
-            {/* Play icon */}
-            {/* <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polygon points="5,3 19,12 5,21 5,3" />
-            </svg> */}
-            <img src={AnimatorLogo.src} alt="Animator Hub" style={{width: '20px', height: '20px'}} />
-            <span>Animators</span>
+            {/* Box / cube icon */}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+              <line x1="12" y1="22.08" x2="12" y2="12" />
+            </svg>
+            <span>Product &amp; PM</span>
           </Link>
 
           <Link
-            href="/hub/storywriters"
-            className={`sidebar-item ${isActive("/hub/storywriters") ? "active" : ""}`}
+            href="/hub/data"
+            className={`sidebar-item ${isActive("/hub/data") ? "active" : ""}`}
           >
-            {/* Pen icon */}
-            {/* <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 20h9" />
-              <path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
-            </svg> */}
-            <img src={StoryWriterLogo.src} alt="Story Writer Hub" style={{width: '20px', height: '20px'}} />
-            <span>Storywriters</span>
+            {/* Bar-chart icon */}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10" />
+              <line x1="12" y1="20" x2="12" y2="4" />
+              <line x1="6" y1="20" x2="6" y2="14" />
+            </svg>
+            <span>Data &amp; Analytics</span>
           </Link>
 
           <Link
-            href="/hub/game-testers"
-            className={`sidebar-item ${isActive("/hub/game-testers") ? "active" : ""}`}
+            href="/hub/aptitude"
+            className={`sidebar-item ${isActive("/hub/aptitude") ? "active" : ""}`}
           >
-            {/* Bug icon */}
-            {/* <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="8" y="6" width="8" height="14" rx="4" />
-              <path d="M6 10H2M22 10h-4M6 18H2M22 18h-4M8 6l-2-4M16 6l2-4" />
-              <line x1="12" y1="6" x2="12" y2="2" />
-            </svg> */}
-            <img src={gameTesterLogo.src} alt="Game Tester Hub" style={{width: '20px', height: '20px'}} />
-            <span>Game Testers</span>
+            {/* Graduation-cap icon */}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="12,2 2,7 12,12 22,7" />
+              <path d="M2 7v6c0 3 4.5 6 10 6s10-3 10-6V7" />
+              <path d="M22 7v8" />
+            </svg>
+            <span>Aptitude &amp; Placements</span>
           </Link>
         </div>
 
@@ -172,20 +157,32 @@ export default function LeftSidebar() {
           </div>
 
           <Link
-            href="/ecosystem/game-jams"
-            className={`sidebar-item ${isActive("/ecosystem/game-jams") ? "active" : ""}`}
+            href="/caliber"
+            className={`sidebar-item ${isActive("/caliber") ? "active" : ""}`}
+          >
+            {/* Target icon */}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <circle cx="12" cy="12" r="6" />
+              <circle cx="12" cy="12" r="2" />
+            </svg>
+            <span>Practice</span>
+          </Link>
+
+          <Link
+            href="/caliber/competitions"
+            className={`sidebar-item ${isActive("/caliber/competitions") ? "active" : ""}`}
           >
             {/* Trophy icon */}
-            {/* <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M6 9H3a1 1 0 01-1-1V5a1 1 0 011-1h3" />
               <path d="M18 9h3a1 1 0 001-1V5a1 1 0 00-1-1h-3" />
               <path d="M6 4h12v6a6 6 0 01-12 0V4z" />
               <path d="M12 16v2" />
               <path d="M8 22h8" />
               <path d="M8 22v-4M16 22v-4" />
-            </svg> */}
-            <img src={GameJam.src} alt="Game Jam" style={{width: '20px', height: '20px'}} />
-            <span>Game Jams</span>
+            </svg>
+            <span>Competitions</span>
           </Link>
 
           <Link
@@ -193,13 +190,12 @@ export default function LeftSidebar() {
             className={`sidebar-item ${isActive("/ecosystem/find-team") ? "active" : ""}`}
           >
             {/* People icon */}
-            {/* <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
               <circle cx="9" cy="7" r="4" />
               <path d="M23 21v-2a4 4 0 00-3-3.87" />
               <path d="M16 3.13a4 4 0 010 7.75" />
-            </svg> */}
-            <img src={FindTeam.src} alt="Find Team" style={{width: '20px', height: '20px'}} />
+            </svg>
             <span>Find Team</span>
           </Link>
 
@@ -208,12 +204,11 @@ export default function LeftSidebar() {
             className={`sidebar-item ${isActive("/ecosystem/mentors") ? "active" : ""}`}
           >
             {/* Graduation cap icon */}
-            {/* <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polygon points="12,2 2,7 12,12 22,7" />
               <path d="M2 7v6c0 3 4.5 6 10 6s10-3 10-6V7" />
               <path d="M22 7v8" />
-            </svg> */}
-            <img src={Mentors.src} alt="Mentors" style={{width: '20px', height: '20px'}} />
+            </svg>
             <span>Mentors</span>
           </Link>
 
@@ -222,25 +217,36 @@ export default function LeftSidebar() {
             className={`sidebar-item ${isActive("/ecosystem/jobs") ? "active" : ""}`}
           >
             {/* Briefcase icon */}
-            {/* <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="2" y="7" width="20" height="14" rx="2" />
               <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" />
               <path d="M2 12h20" />
-            </svg> */}
-            <img src={Jobs.src} alt="Jobs" style={{width: '20px', height: '20px'}} />
+            </svg>
             <span>Jobs</span>
           </Link>
 
           <Link
-            href="/ecosystem/ai-match"
-            className={`sidebar-item ${isActive("/ecosystem/ai-match") ? "active" : ""}`}
+            href="/caliber/reviews"
+            className={`sidebar-item ${isActive("/caliber/reviews") ? "active" : ""}`}
           >
-            {/* Spark / AI icon */}
-            {/* <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2l2 7h7l-5.5 4 2 7L12 16l-5.5 4 2-7L3 9h7l2-7z" />
-            </svg> */}
-            <img src={AIMatch.src} alt="AI Match" style={{width: '20px', height: '20px'}} />
-            <span>AI Match</span>
+            {/* Review / checklist icon */}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 11l3 3L22 4" />
+              <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+            </svg>
+            <span>Review</span>
+          </Link>
+
+          <Link
+            href="/caliber/me"
+            className={`sidebar-item ${isActive("/caliber/me") ? "active" : ""}`}
+          >
+            {/* Credential / award icon */}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="8" r="6" />
+              <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11" />
+            </svg>
+            <span>Credential</span>
           </Link>
         </div>
 

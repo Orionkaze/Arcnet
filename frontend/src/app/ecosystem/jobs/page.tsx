@@ -34,99 +34,99 @@ const FILTERS: Array<"All" | EmploymentType> = [
 const JOBS: Job[] = [
   {
     id: "1",
-    title: "Senior Gameplay Programmer",
-    company: "Nazara Nexus Studios",
-    location: "Mumbai, MH",
+    title: "Business Analyst",
+    company: "McKinsey & Company",
+    location: "Gurugram, HR",
     type: "Full-Time",
     ctc: "₹18-24 LPA",
-    skills: ["Unreal", "C++", "Multiplayer", "Gameplay AI"],
+    skills: ["Case Solving", "Excel", "PowerPoint", "Problem Structuring"],
     postedAt: "2d ago",
     description:
-      "Own core gameplay systems for our flagship multiplayer title. You'll architect combat, movement, and networked state in Unreal Engine 5, collaborating with designers to ship feel-good mechanics at 60fps across mobile and PC.",
+      "Join our consulting team to solve ambiguous business problems for top clients. You'll structure issues, build models, run analyses, and present crisp recommendations to senior stakeholders across industries.",
   },
   {
     id: "2",
-    title: "Unity Game Developer",
-    company: "SuperGaming Labs",
-    location: "Pune, MH",
+    title: "Investment Banking Analyst",
+    company: "Goldman Sachs",
+    location: "Mumbai, MH",
     type: "Full-Time",
-    ctc: "₹12-18 LPA",
-    skills: ["Unity", "C#", "Shader Graph", "Addressables"],
+    ctc: "₹16-22 LPA",
+    skills: ["Valuation", "Financial Modeling", "DCF", "Excel"],
     postedAt: "3d ago",
     description:
-      "Build and optimize live-ops features for a hyper-casual portfolio reaching millions of players. Expect deep work on performance profiling, memory budgets, and rapid A/B prototyping inside Unity.",
+      "Support M&A and capital-markets deals on the IBD floor. Expect deep work on three-statement models, comparable-company analysis, pitch books, and due diligence for live transactions.",
   },
   {
     id: "3",
-    title: "3D Character Artist (Intern)",
-    company: "Lakshya Digital",
-    location: "Gurugram, HR",
+    title: "Data Analyst Intern",
+    company: "Swiggy",
+    location: "Bengaluru, KA",
     type: "Internship",
-    ctc: "₹25,000/month",
-    skills: ["Maya", "ZBrush", "Substance Painter", "Blender"],
+    ctc: "₹40,000/month",
+    skills: ["SQL", "Python", "Tableau", "Statistics"],
     postedAt: "1d ago",
     description:
-      "A 6-month studio internship sculpting stylized and realistic characters for global AAA co-development projects. You'll learn production topology, PBR texturing, and how a real art pipeline moves from concept to engine.",
+      "A 6-month internship on the analytics team. You'll write SQL, build dashboards, run A/B tests, and turn messy operational data into insights that drive product and growth decisions.",
   },
   {
     id: "4",
-    title: "Technical Animator",
-    company: "Ubisoft Pune",
-    location: "Pune, MH",
+    title: "Consulting Associate",
+    company: "Bain & Company",
+    location: "New Delhi, DL",
     type: "Contract",
     ctc: "₹15-20 LPA",
-    skills: ["Maya", "Rigging", "Motion Builder", "Python"],
+    skills: ["Market Sizing", "Frameworks", "Client Comms", "Research"],
     postedAt: "5d ago",
     description:
-      "12-month contract bridging animation and engineering. Build rigs, tune skinning, and script tools that keep our characters expressive while hitting strict runtime budgets on console.",
+      "12-month engagement supporting case teams on profitability, market-entry, and growth strategy work. Own workstreams, synthesize findings, and help shape the final client recommendation.",
   },
   {
     id: "5",
-    title: "Game Designer",
-    company: "Mech Mocha Studios",
+    title: "Associate Product Manager",
+    company: "Flipkart",
     location: "Remote",
     type: "Remote",
-    ctc: "₹10-15 LPA",
-    skills: ["Systems Design", "Economy Design", "Figma", "LiveOps"],
+    ctc: "₹18-26 LPA",
+    skills: ["Product Sense", "Metrics", "Roadmapping", "SQL"],
     postedAt: "4d ago",
     description:
-      "Design progression, economy, and retention loops for a card-battler with a growing Tier-2 India audience. You'll write clear design docs, balance spreadsheets, and partner with data to iterate on what keeps players coming back.",
+      "Own a slice of the product roadmap for a surface used by millions. You'll write PRDs, define metrics, partner with engineering and design, and iterate on what moves the numbers that matter.",
   },
   {
     id: "6",
-    title: "Environment Art Intern",
-    company: "Rockstar India",
-    location: "Bengaluru, KA",
+    title: "Equity Research Intern",
+    company: "Morgan Stanley",
+    location: "Mumbai, MH",
     type: "Internship",
-    ctc: "₹15,000/month",
-    skills: ["Blender", "Unreal", "Substance Designer", "Trim Sheets"],
+    ctc: "₹35,000/month",
+    skills: ["Excel", "Valuation", "Industry Research", "Modeling"],
     postedAt: "6d ago",
     description:
-      "Assist senior environment artists in building modular kits, foliage, and set-dressing for open-world spaces. Ideal for a portfolio-ready junior who wants mentorship inside a AAA environment art team.",
+      "Assist senior analysts in covering listed companies and sectors. Build models, track earnings, and draft the research notes that inform institutional investment decisions.",
   },
   {
     id: "7",
-    title: "Backend Engineer, Game Services",
-    company: "WinZO Games",
-    location: "New Delhi, DL",
+    title: "Data Scientist",
+    company: "Zomato",
+    location: "Bengaluru, KA",
     type: "Full-Time",
     ctc: "₹20-28 LPA",
-    skills: ["Node.js", "Go", "Redis", "AWS"],
+    skills: ["Python", "SQL", "Machine Learning", "Experimentation"],
     postedAt: "1w ago",
     description:
-      "Scale real-time matchmaking, leaderboards, and wallets for a social gaming platform serving 100M+ users. You'll own low-latency services, fault tolerance, and the infra that keeps competitive matches fair and fast.",
+      "Build models and experiments that power personalization, pricing, and growth for millions of users. You'll own the full loop from problem framing to production impact alongside product and engineering.",
   },
   {
     id: "8",
-    title: "Technical Sound Designer (Contract)",
-    company: "Dhruva Interactive",
+    title: "Strategy Consultant (Contract)",
+    company: "BCG",
     location: "Remote",
     type: "Remote",
-    ctc: "₹8-12 LPA",
-    skills: ["Wwise", "FMOD", "Unreal", "Sound Design"],
+    ctc: "₹18-25 LPA",
+    skills: ["Case Structuring", "Analytics", "Storylining", "Excel"],
     postedAt: "1w ago",
     description:
-      "Remote contract implementing adaptive audio for an action-adventure title. Build interactive music systems and reactive SFX in Wwise, and profile audio memory so the mix sings without blowing the budget.",
+      "Remote engagement helping clients with growth and operations strategy. Structure problems, run the analysis, and turn findings into a clear, executive-ready storyline.",
   },
 ];
 
@@ -185,7 +185,7 @@ export default function JobsPage() {
               India-First Job Board
             </h1>
             <p className="font-inter text-sm text-[#C8C7C7]">
-              Roles from internships to full-time, with transparent CTC. Find your next studio.
+              Roles from internships to full-time, with transparent CTC. Find your next opportunity.
             </p>
           </div>
 
@@ -193,7 +193,7 @@ export default function JobsPage() {
           <div className="mb-4 relative">
             <input
               type="text"
-              placeholder="Search by title, studio, or skill (e.g. Unity, Rigging, Mumbai)..."
+              placeholder="Search by title, company, or skill (e.g. SQL, Valuation, Mumbai)..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full bg-[#10141A] border border-[#2A313C] text-white text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:border-[#10B981] transition-colors font-inter"

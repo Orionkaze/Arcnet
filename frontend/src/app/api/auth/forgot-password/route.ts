@@ -50,7 +50,7 @@ export async function POST(req: Request) {
 
     await sendEmail({
       to: user.email,
-      subject: "Reset your ARCNET password",
+      subject: "Reset your Caliber password",
       html: getPasswordResetEmailHtml(resetLink),
     });
 

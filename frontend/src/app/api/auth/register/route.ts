@@ -60,7 +60,7 @@ export async function POST(req: Request) {
 
     await sendEmail({
       to: user.email,
-      subject: "Verify your ARCNET account",
+      subject: "Verify your Caliber account",
       html: getOTPVerificationEmailHtml(otpCode),
     });
 

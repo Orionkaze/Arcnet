@@ -302,11 +302,11 @@ export default function Home() {
                 Your feed is empty
               </h2>
               <p className="font-inter text-sm text-[#C8C7C7] mb-6 max-w-sm">
-                Follow some creators to see their posts here
+                Follow people to see what the community is working on
               </p>
               <Link href="/ecosystem/find-team">
                 <button className="px-6 py-2.5 border border-[#10B981] bg-transparent text-[#10B981] font-chakra font-bold text-xs uppercase tracking-wider rounded cursor-pointer hover:bg-[rgba(16, 185, 129,0.1)] transition-colors">
-                  Discover Creators
+                  Discover People
                 </button>
               </Link>
             </div>

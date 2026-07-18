@@ -109,10 +109,10 @@ export default function FindTeamPage() {
           <div className="flex flex-col gap-2 mb-6">
             <span className="section-label">ECOSYSTEM</span>
             <h1 className="font-chakra text-2xl text-white font-bold uppercase tracking-wider">
-              Find Creators & Mates
+              Find Teammates
             </h1>
             <p className="font-inter text-sm text-[#C8C7C7]">
-              Browse talent, discover skills, and form your perfect game jam team.
+              Browse talent, discover skills, and form your team for competitions and case prep.
             </p>
           </div>
 
@@ -125,7 +125,7 @@ export default function FindTeamPage() {
             )}
             <input
               type="text"
-              placeholder="Search by name, username, or skills (e.g. Unity, Rigging, 3D Artist)..."
+              placeholder="Search by name, username, or skills (e.g. SQL, Valuation, Product)..."
               value={search}
               onChange={handleSearchChange}
               className="w-full bg-[#10141A] border border-[#2A313C] text-white text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:border-[#10B981] transition-colors font-inter"

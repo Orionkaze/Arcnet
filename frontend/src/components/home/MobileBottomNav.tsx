@@ -11,7 +11,7 @@ export default function MobileBottomNav() {
 
   const getActiveState = () => {
     if (pathname === "/") return "home";
-    if (pathname.includes("/game-jams")) return "jams";
+    if (pathname.includes("/competitions")) return "competitions";
     if (pathname.includes("/find-team")) return "team";
     if (pathname.includes("/notifications")) return "notif";
     if (pathname.startsWith("/profile/")) return "profile";
@@ -34,11 +34,11 @@ export default function MobileBottomNav() {
         </svg>
       </Link>
 
-      {/* Game Jams — Trophy */}
+      {/* Competitions — Trophy */}
       <Link
-        href="/ecosystem/game-jams"
-        className={`mobile-nav-btn bottom-nav-btn ${active === "jams" ? "active" : ""}`}
-        aria-label="Game Jams"
+        href="/caliber/competitions"
+        className={`mobile-nav-btn bottom-nav-btn ${active === "competitions" ? "active" : ""}`}
+        aria-label="Competitions"
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M6 9H3a1 1 0 01-1-1V5a1 1 0 011-1h3" />

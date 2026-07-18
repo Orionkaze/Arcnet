@@ -26,66 +26,66 @@ interface Jam {
 
 const JAMS: Jam[] = [
   {
-    id: "arcavon-void-runners",
-    title: "Void Runners Sprint",
-    host: "Arcavon Studios",
+    id: "national-case-open",
+    title: "National Case Open",
+    host: "Consulting Club, IIM-A",
     status: "Live",
-    theme: "Theme: Gravity Is A Lie",
+    theme: "Track: Market Entry Strategy",
     dates: "Jul 16 – Jul 19, 2026",
     participants: 412,
     prize: "₹1,50,000",
     duration: "72 hours",
   },
   {
-    id: "kolkata-pixel-forge",
-    title: "Pixel Forge Weekend",
-    host: "Naga Interactive, Kolkata",
+    id: "valuation-sprint",
+    title: "Valuation Sprint",
+    host: "Finance Society, SRCC",
     status: "Live",
-    theme: "Theme: One Room, One Rule",
+    theme: "Track: DCF & Comparable Companies",
     dates: "Jul 17 – Jul 19, 2026",
     participants: 268,
     prize: "₹75,000",
     duration: "48 hours",
   },
   {
-    id: "bengaluru-monsoon-jam",
-    title: "Monsoon Micro Jam",
-    host: "Dhruva Games, Bengaluru",
+    id: "product-teardown",
+    title: "Product Teardown Challenge",
+    host: "Product Club, BITS Pilani",
     status: "Upcoming",
-    theme: "Theme: Rising Tides",
+    theme: "Track: Improve a 0-to-1 Feature",
     dates: "Aug 02 – Aug 04, 2026",
     participants: 133,
     prize: "₹50,000",
     duration: "48 hours",
   },
   {
-    id: "pune-lore-loop",
-    title: "Lore Loop Challenge",
-    host: "Chakra Labs, Pune",
+    id: "analytics-datathon",
+    title: "Analytics Datathon",
+    host: "Data Science Club, IIT-B",
     status: "Upcoming",
-    theme: "Theme: Echoes of the Ancients",
+    theme: "Track: Churn Prediction & Dashboards",
     dates: "Aug 15 – Aug 22, 2026",
     participants: 89,
     prize: "₹2,00,000",
     duration: "7 days",
   },
   {
-    id: "hyderabad-neon-nights",
-    title: "Neon Nights Game Jam",
-    host: "Meraki Studio, Hyderabad",
+    id: "placement-aptitude-cup",
+    title: "Placement Aptitude Cup",
+    host: "Placement Cell, NIT Trichy",
     status: "Voting",
-    theme: "Theme: After The Blackout",
+    theme: "Track: Quant, DI & Logical Reasoning",
     dates: "Jul 04 – Jul 07, 2026",
     participants: 341,
     prize: "₹1,00,000",
     duration: "72 hours",
   },
   {
-    id: "mumbai-retro-revival",
-    title: "Retro Revival Jam",
-    host: "Bandra Byte Collective, Mumbai",
+    id: "b-plan-showdown",
+    title: "B-Plan Showdown",
+    host: "E-Cell, IIT Delhi",
     status: "Ended",
-    theme: "Theme: 8-Bit Dreams",
+    theme: "Track: Go-to-Market & Unit Economics",
     dates: "Jun 20 – Jun 22, 2026",
     participants: 502,
     prize: "₹1,25,000",
@@ -94,12 +94,12 @@ const JAMS: Jam[] = [
 ];
 
 const FEATURED: Jam & { statusLabel: string } = {
-  id: "arcavon-monthly-jam",
-  title: "Arcavon Monthly Jam",
-  host: "Arcavon Studios",
+  id: "caliber-flagship-case-comp",
+  title: "Caliber Flagship Case Comp",
+  host: "Caliber",
   status: "Live",
   statusLabel: "Live now",
-  theme: "Theme: Echoes of the Void",
+  theme: "Track: Growth Strategy for a D2C Brand",
   dates: "Jul 18 – Jul 21, 2026",
   participants: 1247,
   prize: "₹5,00,000",
@@ -123,7 +123,7 @@ function statusStyles(status: JamStatus): { bg: string; color: string; label: st
 function actionLabel(status: JamStatus): string {
   switch (status) {
     case "Live":
-      return "Join Jam";
+      return "Register";
     case "Upcoming":
       return "Notify Me";
     case "Voting":
@@ -176,17 +176,17 @@ export default function GameJamsPage() {
           <div className="flex flex-col gap-2 mb-6">
             <span className="section-label">ECOSYSTEM</span>
             <h1 className="font-chakra text-2xl text-white font-bold uppercase tracking-wider">
-              Game Jams
+              Competitions
             </h1>
             <p className="font-inter text-sm text-[#C8C7C7]">
-              Featured and upcoming competitions from studios across India. Build, ship, and win.
+              Featured and upcoming case, finance, product, and analytics competitions from clubs across India. Enter, solve, and win.
             </p>
           </div>
 
           {/* Featured Hero Card */}
           <div className="featured-jam mb-8">
             <div className="flex items-center gap-2 mb-3">
-              <span className="section-label">FEATURED JAM</span>
+              <span className="section-label">FEATURED COMPETITION</span>
               <span
                 className="inline-flex items-center gap-1.5 text-[10px] font-chakra font-bold uppercase tracking-wide px-2 py-0.5 rounded"
                 style={{ background: "rgba(34,197,94,0.15)", color: "#22C55E" }}
@@ -226,17 +226,17 @@ export default function GameJamsPage() {
             </div>
 
             <button
-              onClick={() => showToast("You're on the list for the Arcavon Monthly Jam!")}
+              onClick={() => showToast("You're registered for the Caliber Flagship Case Comp!")}
               className="join-btn mt-6"
             >
-              Join Jam
+              Register
             </button>
           </div>
 
           {/* Section title + filters */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
             <h3 className="font-chakra text-lg text-white font-bold uppercase tracking-wider">
-              Upcoming &amp; Active Jams
+              Upcoming &amp; Active Competitions
             </h3>
             <div className="flex gap-2">
               {filters.map((f) => (
@@ -289,7 +289,7 @@ export default function GameJamsPage() {
                       <div className="stat-value-sm">{jam.prize}</div>
                     </div>
                     <div>
-                      <div className="stat-label">Players</div>
+                      <div className="stat-label">Entrants</div>
                       <div className="stat-value-sm">{jam.participants.toLocaleString("en-IN")}</div>
                     </div>
                     <div>
@@ -320,7 +320,7 @@ export default function GameJamsPage() {
           {filteredJams.length === 0 && (
             <div className="text-center py-16">
               <div className="text-[#C8C7C7] font-inter text-sm">
-                No jams found for this filter.
+                No competitions found for this filter.
               </div>
             </div>
           )}

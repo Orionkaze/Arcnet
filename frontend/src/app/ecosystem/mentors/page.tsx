@@ -25,19 +25,19 @@ interface Mentor {
   verified: boolean;
 }
 
-const SPECIALTIES = ["All", "Game Design", "Animation", "VFX", "Programming", "Art"];
+const SPECIALTIES = ["All", "Consulting", "Finance", "Product", "Data", "Aptitude"];
 
 const MENTORS: Mentor[] = [
   {
     id: "m1",
     firstName: "Aarav",
     lastName: "Menon",
-    role: "Senior Game Designer",
-    studio: "Nodding Heads Games",
-    specialty: "Game Design",
+    role: "Engagement Manager",
+    studio: "McKinsey & Company",
+    specialty: "Consulting",
     years: 11,
-    bio: "Shipped 3 console titles. I help you turn a loose idea into a tight, playable core loop.",
-    expertise: ["Systems Design", "Level Design", "Prototyping"],
+    bio: "Ex-BCG, now EM. I help you structure ambiguous cases and land a crisp, MECE recommendation.",
+    expertise: ["Case Structuring", "Guesstimates", "Frameworks"],
     rating: 4.9,
     sessions: 132,
     price: 1800,
@@ -47,12 +47,12 @@ const MENTORS: Mentor[] = [
     id: "m2",
     firstName: "Priya",
     lastName: "Sharma",
-    role: "Lead Character Animator",
-    studio: "Technicolor India",
-    specialty: "Animation",
+    role: "Investment Banking Associate",
+    studio: "Goldman Sachs",
+    specialty: "Finance",
     years: 9,
-    bio: "Ex-feature-film animator now in games. Rigging, weight, and believable secondary motion.",
-    expertise: ["Rigging", "Maya", "Motion Capture"],
+    bio: "IB associate on the M&A desk. Valuation, LBOs, and building models that survive scrutiny.",
+    expertise: ["DCF", "LBO", "Financial Modeling"],
     rating: 4.8,
     sessions: 88,
     price: 1500,
@@ -62,12 +62,12 @@ const MENTORS: Mentor[] = [
     id: "m3",
     firstName: "Rohan",
     lastName: "Iyer",
-    role: "Senior VFX Artist",
-    studio: "Sumo Digital Pune",
-    specialty: "VFX",
+    role: "Senior Product Manager",
+    studio: "Flipkart",
+    specialty: "Product",
     years: 8,
-    bio: "Real-time particles and shaders in Niagara. Make your abilities read and feel impactful.",
-    expertise: ["Niagara", "Shaders", "Houdini"],
+    bio: "Shipped 0-to-1 features to millions. Sharpen your product sense and metric-driven thinking.",
+    expertise: ["Product Sense", "Metrics", "Prioritization"],
     rating: 4.9,
     sessions: 64,
     price: 1600,
@@ -77,12 +77,12 @@ const MENTORS: Mentor[] = [
     id: "m4",
     firstName: "Ananya",
     lastName: "Nair",
-    role: "Gameplay Programmer",
-    studio: "Ubisoft Pune",
-    specialty: "Programming",
+    role: "Data Scientist",
+    studio: "Swiggy",
+    specialty: "Data",
     years: 7,
-    bio: "C++ and Unreal blueprints. I debug your gameplay loops and clean up your architecture.",
-    expertise: ["Unreal", "C++", "Multiplayer"],
+    bio: "SQL, statistics, and A/B testing. I review your case approach and clean up your analysis.",
+    expertise: ["SQL", "A/B Testing", "Statistics"],
     rating: 5.0,
     sessions: 45,
     price: 2000,
@@ -92,12 +92,12 @@ const MENTORS: Mentor[] = [
     id: "m5",
     firstName: "Vikram",
     lastName: "Reddy",
-    role: "Environment Artist",
-    studio: "Rockstar India",
-    specialty: "Art",
+    role: "Placement Mentor",
+    studio: "Ex-CAT 99.8%iler",
+    specialty: "Aptitude",
     years: 10,
-    bio: "AAA world-building. From blockout to lit, dressed scenes that stay within a memory budget.",
-    expertise: ["Substance", "Blender", "Trim Sheets"],
+    bio: "Quant and DI coach. From fundamentals to speed, I get you interview- and test-ready.",
+    expertise: ["Quant", "Data Interpretation", "Logical Reasoning"],
     rating: 4.7,
     sessions: 97,
     price: 1500,
@@ -107,12 +107,12 @@ const MENTORS: Mentor[] = [
     id: "m6",
     firstName: "Sneha",
     lastName: "Kulkarni",
-    role: "Technical Animator",
-    studio: "Lakshya Digital",
-    specialty: "Animation",
+    role: "Strategy Consultant",
+    studio: "Bain & Company",
+    specialty: "Consulting",
     years: 6,
-    bio: "Bridge between animation and code. Animation pipelines, retargeting, and state machines.",
-    expertise: ["Rigging", "Python", "Unity Mecanim"],
+    bio: "Profitability and market-entry cases. I stress-test your logic before the interviewer does.",
+    expertise: ["Profitability", "Market Entry", "Mock Interviews"],
     rating: 4.8,
     sessions: 51,
     price: 1400,
@@ -122,12 +122,12 @@ const MENTORS: Mentor[] = [
     id: "m7",
     firstName: "Kabir",
     lastName: "Deshmukh",
-    role: "Narrative & Systems Designer",
-    studio: "Studio Sirah",
-    specialty: "Game Design",
+    role: "Equity Research Analyst",
+    studio: "Morgan Stanley",
+    specialty: "Finance",
     years: 8,
-    bio: "Branching narrative and economy balancing. I stress-test your progression before players do.",
-    expertise: ["Narrative", "Economy", "Balancing"],
+    bio: "Markets, comps, and three-statement models. I help you talk stocks like a pro in interviews.",
+    expertise: ["Equity Research", "Comparables", "Markets"],
     rating: 4.9,
     sessions: 73,
     price: 1700,
@@ -137,12 +137,12 @@ const MENTORS: Mentor[] = [
     id: "m8",
     firstName: "Meera",
     lastName: "Pillai",
-    role: "Tools & Engine Programmer",
-    studio: "Zynga Bangalore",
-    specialty: "Programming",
+    role: "Analytics Lead",
+    studio: "Zomato",
+    specialty: "Data",
     years: 12,
-    bio: "Editor tooling and performance. If your build is slow or your workflow hurts, talk to me.",
-    expertise: ["C#", "Profiling", "Editor Tools"],
+    bio: "Dashboards, experimentation, and metrics. If your analysis is slow or fuzzy, talk to me.",
+    expertise: ["Dashboards", "Experimentation", "Product Analytics"],
     rating: 4.9,
     sessions: 110,
     price: 2200,
@@ -196,8 +196,8 @@ export default function MentorsPage() {
               Find Mentors
             </h1>
             <p className="font-inter text-sm text-[#C8C7C7]">
-              Browse verified professionals across game design, animation, VFX, art
-              and code &mdash; then book a session.
+              Browse verified professionals across consulting, finance, product,
+              data, and aptitude &mdash; then book a session.
             </p>
           </div>
 
@@ -205,7 +205,7 @@ export default function MentorsPage() {
           <div className="mb-4 relative">
             <input
               type="text"
-              placeholder="Search by name or expertise (e.g. Rigging, Unreal, Level Design)..."
+              placeholder="Search by name or expertise (e.g. DCF, Case Structuring, SQL)..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full bg-[#161c24] border border-[#2A313C] text-white text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:border-[#10B981] transition-colors font-inter"
