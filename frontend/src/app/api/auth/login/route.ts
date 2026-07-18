@@ -9,6 +9,12 @@ const loginSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
+// A valid throwaway bcrypt hash (of a random string). When no matching account
+// exists, we still run a bcrypt comparison against this so the not-found path
+// takes the same ~time as a wrong-password path — closing a user-enumeration
+// timing oracle. The result is discarded.
+const DUMMY_HASH = "$2b$12$kYI490Ch3Fzurjpa6UHSQuu8WamdB6MhcFmi5w6G1OIHB7vEdZClK";
+
 export async function POST(req: Request) {
   try {
     const ip = req.headers.get("x-forwarded-for") || "unknown";
@@ -51,6 +57,10 @@ export async function POST(req: Request) {
     // know the password. "User not found" and "wrong password" return an
     // identical 401 so the two cases are indistinguishable.
     if (!user || !user.password) {
+      // Perform a dummy bcrypt comparison so this path costs ~the same as a
+      // wrong-password path. Prevents distinguishing "no such account" from
+      // "wrong password" by response timing. Result intentionally discarded.
+      await comparePassword(password, DUMMY_HASH);
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
