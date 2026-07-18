@@ -15,8 +15,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "ARCNET",
-  description: "The India-First AVGC Ecosystem",
+  title: "Caliber",
+  description: "Practice real problems. Get instant feedback. Build a rating that proves your ability.",
 };
 
 export default function RootLayout({
