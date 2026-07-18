@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rateLimit";
@@ -33,18 +34,23 @@ export async function POST(
 
     // Validate: every criterion present, an integer within [0, maxPoints].
     let total = 0;
+    const cleanScores: Record<string, number> = {};
     for (const c of rubric) {
       const v = (scores as Record<string, unknown>)[c.key];
       if (typeof v !== "number" || !Number.isInteger(v) || v < 0 || v > c.maxPoints) {
         return NextResponse.json({ error: `Invalid score for "${c.key}" (0..${c.maxPoints})` }, { status: 400 });
       }
+      cleanScores[c.key] = v;
       total += v;
     }
 
     try {
-      await prisma.caliberReview.create({ data: { submissionId, reviewerId, scores, total } });
-    } catch {
-      return NextResponse.json({ error: "You already reviewed this submission." }, { status: 409 });
+      await prisma.caliberReview.create({ data: { submissionId, reviewerId, scores: cleanScores, total } });
+    } catch (err) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+        return NextResponse.json({ error: "You already reviewed this submission." }, { status: 409 });
+      }
+      throw err;
     }
 
     // Recompute aggregate from all reviews.

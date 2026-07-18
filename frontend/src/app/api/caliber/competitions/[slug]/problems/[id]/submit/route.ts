@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rateLimit";
@@ -62,9 +63,12 @@ export async function POST(
           data: { totalScore: agg._sum.score ?? 0, lastScoredAt: new Date() },
         });
       });
-    } catch {
+    } catch (err) {
       // Unique violation => already answered this problem in this competition.
-      return NextResponse.json({ error: "You already answered this problem." }, { status: 409 });
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+        return NextResponse.json({ error: "You already answered this problem." }, { status: 409 });
+      }
+      throw err;
     }
 
     return NextResponse.json({ result: { score: result.score, maxPoints: result.maxPoints, feedback: result.feedback } });

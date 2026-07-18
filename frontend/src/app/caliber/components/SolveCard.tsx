@@ -50,6 +50,7 @@ export default function SolveCard({ problem }: { problem: PublicProblem }) {
           <input
             className={s.input}
             inputMode="decimal"
+            aria-label="Your answer"
             placeholder="Your answer"
             value={numberValue}
             onChange={(e) => setNumberValue(e.target.value)}
@@ -61,6 +62,7 @@ export default function SolveCard({ problem }: { problem: PublicProblem }) {
               <button
                 key={i}
                 className={`${s.choice} ${choice === i ? s.choiceSel : ""}`}
+                aria-pressed={choice === i}
                 onClick={() => setChoice(i)}
                 disabled={!!resp}
               >

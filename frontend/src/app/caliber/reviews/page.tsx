@@ -18,7 +18,17 @@ export default function ReviewInbox() {
     const r = await fetch("/api/caliber/reviews/queue");
     if (r.status === 401) { setAuthed(false); setLoading(false); return; }
     const d = await r.json().catch(() => ({ tasks: [] }));
-    setTasks(d.tasks || []); setLoading(false);
+    const loaded: Task[] = d.tasks || [];
+    setTasks(loaded);
+    // Seed every criterion to 0 so an untouched criterion submits 0 (not missing).
+    setScores((prev) => {
+      const next = { ...prev };
+      for (const t of loaded) {
+        next[t.id] = { ...Object.fromEntries(t.problem.rubric.map((c) => [c.key, 0])), ...next[t.id] };
+      }
+      return next;
+    });
+    setLoading(false);
   }, []);
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { load(); }, [load]);
@@ -52,6 +62,7 @@ export default function ReviewInbox() {
             <div key={c.key} className={s.rowBetween}>
               <span>{c.label} (0–{c.maxPoints})</span>
               <input className={s.input} style={{ width: 90 }} type="number" min={0} max={c.maxPoints}
+                value={scores[t.id]?.[c.key] ?? 0}
                 onChange={(e) => setScore(t.id, c.key, Number(e.target.value))} />
             </div>
           ))}
