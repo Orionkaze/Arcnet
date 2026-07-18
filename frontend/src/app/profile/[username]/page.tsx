@@ -1302,6 +1302,14 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                         </svg>
                         <span>Joined {joinedDate}</span>
                       </div>
+                      <Link href="/caliber/me" className="profile-detail-item" style={{ color: "#3B82F6", textDecoration: "none" }}>
+                        {/* Award icon */}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="8" r="6" />
+                          <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" />
+                        </svg>
+                        <span>Caliber credential →</span>
+                      </Link>
                     </div>
                   </div>
 
