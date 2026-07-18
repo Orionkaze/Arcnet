@@ -46,6 +46,8 @@ model User {
   conversationsAsUser1     Conversation[]    @relation("ConversationUser1")
   conversationsAsUser2     Conversation[]    @relation("ConversationUser2")
   sentDirectMessages       DirectMessage[]   @relation("SentDirectMessages")
+  caliberSubmissions       CaliberSubmission[] @relation("CaliberSubmissions")
+  caliberRatings           CaliberRating[]     @relation("CaliberRatings")
 }
 
 model Conversation {
@@ -246,4 +248,64 @@ model PortfolioProject {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model CaliberTrack {
+  id          String           @id @default(cuid())
+  slug        String           @unique
+  name        String
+  kind        String           // "quant" | "open"
+  description String
+  problems    CaliberProblem[]
+  createdAt   DateTime         @default(now())
+}
+
+model CaliberProblem {
+  id          String              @id @default(cuid())
+  trackId     String
+  track       CaliberTrack        @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  type        String              // "numeric" | "guesstimate" | "mcq"
+  prompt      String
+  difficulty  Int
+  maxPoints   Int
+  config      Json                // server-only answer key / bands / options
+  status      String              @default("published")
+  submissions CaliberSubmission[]
+  createdAt   DateTime            @default(now())
+  @@index([trackId])
+}
+
+model CaliberSubmission {
+  id             String         @id @default(cuid())
+  problemId      String
+  problem        CaliberProblem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User           @relation("CaliberSubmissions", fields: [userId], references: [id], onDelete: Cascade)
+  value          Float
+  score          Int
+  feedback       String
+  countedForRating Boolean      @default(false)
+  createdAt      DateTime       @default(now())
+  @@index([problemId, userId])
+}
+
+model CaliberRating {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation("CaliberRatings", fields: [userId], references: [id], onDelete: Cascade)
+  trackId   String
+  value     Int
+  updatedAt DateTime @updatedAt
+  @@unique([userId, trackId])
+}
+
+model CaliberRatingHistory {
+  id        String   @id @default(cuid())
+  userId    String
+  trackId   String
+  value     Int
+  delta     Int
+  problemId String
+  createdAt DateTime @default(now())
+  @@index([userId, trackId])
 }
