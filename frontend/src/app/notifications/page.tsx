@@ -165,7 +165,7 @@ export default function NotificationsPage() {
               Notifications
             </h1>
             <p className="font-inter text-sm text-[#C8C7C7]">
-              Follows, reactions, and hub activity from across the ArcNet ecosystem.
+              Follows, reactions, and hub activity from across the Caliber ecosystem.
             </p>
           </div>
 

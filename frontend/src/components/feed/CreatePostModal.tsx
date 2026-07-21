@@ -115,7 +115,7 @@ export default function CreatePostModal({
               {user.firstName} {user.lastName}
             </h3>
             <p className="text-[#C8C7C7] font-inter text-sm">
-              {user.role || "Creator @ArcNet"}
+              {user.role || "Member @Caliber"}
             </p>
           </div>
         </div>

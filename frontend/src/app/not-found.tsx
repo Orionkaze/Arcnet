@@ -11,7 +11,7 @@ export default function NotFound() {
           Hub / Page Not Found
         </h2>
         <p className="text-[#C8C7C7] text-sm mt-2 max-w-md mx-auto">
-          The coordinate you requested does not exist in the ArcNet grid. Check the path or return to base.
+          The page you requested does not exist on Caliber. Check the path or return to base.
         </p>
         <div className="mt-8">
           <Link

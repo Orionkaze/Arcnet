@@ -156,6 +156,8 @@ export default function MentorsPage() {
 
   const [search, setSearch] = useState("");
   const [activeSpecialty, setActiveSpecialty] = useState("All");
+  // No booking backend yet — record the request locally so the CTA is honest and live.
+  const [requested, setRequested] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     checkAuth();
@@ -198,6 +200,7 @@ export default function MentorsPage() {
             <p className="font-inter text-sm text-[#C8C7C7]">
               Browse verified professionals across consulting, finance, product,
               data, and aptitude &mdash; then book a session.
+              <span className="block mt-1 text-xs text-[#8A9099]">Sample profiles — live mentor booking rolls out soon. Request a session to be notified.</span>
             </p>
           </div>
 
@@ -305,7 +308,12 @@ export default function MentorsPage() {
                       &#8377;{mentor.price.toLocaleString("en-IN")} / 45 min
                     </span>
                   </div>
-                  <button className="book-btn">Book a Session</button>
+                  <button
+                    className="book-btn"
+                    onClick={() => setRequested((r) => ({ ...r, [mentor.id]: !r[mentor.id] }))}
+                  >
+                    {requested[mentor.id] ? "Session Requested ✓" : "Book a Session"}
+                  </button>
                 </div>
               </div>
             ))}

@@ -144,6 +144,8 @@ export default function JobsPage() {
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState<"All" | EmploymentType>("All");
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  // No employer backend yet — record interest locally so the CTA is honest and live.
+  const [requested, setRequested] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     checkAuth();
@@ -186,6 +188,7 @@ export default function JobsPage() {
             </h1>
             <p className="font-inter text-sm text-[#C8C7C7]">
               Roles from internships to full-time, with transparent CTC. Find your next opportunity.
+              <span className="block mt-1 text-xs text-[#8A9099]">Sample listings — live employer postings roll out soon. Register interest to be notified.</span>
             </p>
           </div>
 
@@ -284,7 +287,12 @@ export default function JobsPage() {
                     >
                       {isOpen ? "Hide Description" : "View Description"}
                     </button>
-                    <button className="job-btn-primary">Apply Now</button>
+                    <button
+                      className="job-btn-primary"
+                      onClick={() => setRequested((r) => ({ ...r, [job.id]: !r[job.id] }))}
+                    >
+                      {requested[job.id] ? "Interest Registered ✓" : "Apply Now"}
+                    </button>
                   </div>
                 </div>
               );

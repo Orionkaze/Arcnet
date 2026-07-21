@@ -270,10 +270,10 @@ export default function LatestPage() {
         <LeftSidebar />
 
         <main className="center-feed">
-          {/* SECTION 1: GAME DEV NEWS */}
+          {/* SECTION 1: CAREERS & INDUSTRY NEWS */}
           <section className="news-section">
             <div className="flex justify-between items-center mb-4">
-              <span className="section-label">GAME DEV NEWS</span>
+              <span className="section-label">CAREERS &amp; INDUSTRY NEWS</span>
               <button
                 onClick={fetchNews}
                 disabled={newsLoading}

@@ -398,7 +398,7 @@ export default function HubPage() {
       });
       if (res.ok) {
         // Refresh members
-        const membersRes = await fetch(`/api/hubs/${slug}/members?onlineOnly=${onlineOnly ? "true" : "false"}&search=${membersSearch}`);
+        const membersRes = await fetch(`/api/hubs/${slug}/members?online=${onlineOnly ? "true" : "false"}&search=${membersSearch}`);
         if (membersRes.ok) {
           const data = await membersRes.json();
           setMembers(data.members || []);

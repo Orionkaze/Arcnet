@@ -17,6 +17,7 @@
 import "dotenv/config";
 import bcrypt from "bcrypt";
 import { prisma } from "../src/lib/prisma";
+import { seedHubs } from "../src/lib/seedHubs";
 
 const DEMO_PASSWORD = "caliber1234";
 
@@ -61,6 +62,7 @@ async function main() {
   await prisma.caliberRating.deleteMany({});
   await prisma.caliberTrack.deleteMany({}); // cascades problems -> submissions & competition links
   await prisma.notification.deleteMany({ where: { userId: { in: demoIds } } });
+  await prisma.hubMember.deleteMany({ where: { userId: { in: demoIds } } });
   await prisma.conversation.deleteMany({
     where: { OR: [{ user1Id: { in: demoIds } }, { user2Id: { in: demoIds } }] },
   }); // cascades direct messages
@@ -206,6 +208,22 @@ async function main() {
   await prisma.notification.create({
     data: { type: "follow", userId: demo, fromUserId: arjun },
   });
+
+  // --- Community hubs --------------------------------------------------------
+  // The left sidebar links to /hub/{consulting,finance,product,data,aptitude};
+  // seed the hubs (+ channels) so those aren't "Hub not found", and make the
+  // three demo users members so each hub shows a populated community.
+  const hubs = await seedHubs();
+  for (const hub of hubs) {
+    await prisma.hubMember.createMany({
+      data: [
+        { hubId: hub.id, userId: demo, role: "owner" },
+        { hubId: hub.id, userId: arjun, role: "member" },
+        { hubId: hub.id, userId: sara, role: "member" },
+      ],
+    });
+    await prisma.hub.update({ where: { id: hub.id }, data: { memberCount: 3 } });
+  }
 
   console.log("\n✅ Caliber demo seed complete.\n");
   console.log("   Log in at /login with any of these (all password: " + DEMO_PASSWORD + "):");

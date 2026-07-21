@@ -306,7 +306,7 @@ function MessagesInner() {
               Messages
             </h1>
             <p className="font-inter text-sm text-[#C8C7C7]">
-              Private 1-to-1 conversations with people across the ArcNet
+              Private 1-to-1 conversations with people across the Caliber
               ecosystem.
             </p>
           </div>

@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
+import CreatePrivateHubModal from "./CreatePrivateHubModal";
 
 interface MobileDrawerProps {
   isOpen: boolean;
@@ -12,6 +13,7 @@ interface MobileDrawerProps {
 
 export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
   const [activeItem, setActiveItem] = React.useState("consulting");
+  const [isCreateHubOpen, setIsCreateHubOpen] = React.useState(false);
   const { user, logout } = useAuthStore();
   const router = useRouter();
 
@@ -220,7 +222,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
 
         {/* Bottom: Private Hub */}
         <div className="sidebar-bottom">
-          <button className="private-hub-btn">PRIVATE HUB +</button>
+          <button className="private-hub-btn" onClick={() => setIsCreateHubOpen(true)}>PRIVATE HUB +</button>
           {user && (
             <button 
               onClick={handleSignOut} 
@@ -237,6 +239,8 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
           )}
         </div>
       </div>
+
+      <CreatePrivateHubModal open={isCreateHubOpen} onClose={() => setIsCreateHubOpen(false)} />
     </>
   );
 }

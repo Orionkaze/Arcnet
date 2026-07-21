@@ -8,11 +8,23 @@ export async function GET() {
     if (!session || !session.userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const ratings = await prisma.caliberRating.findMany({
+    const rows = await prisma.caliberRating.findMany({
       where: { userId: session.userId as string },
       select: { trackId: true, value: true, updatedAt: true },
       orderBy: { value: "desc" },
     });
+    // CaliberRating has no relation to CaliberTrack (trackId is a bare string),
+    // so resolve human-readable names/slugs in one batched query and attach them.
+    const tracks = await prisma.caliberTrack.findMany({
+      where: { id: { in: rows.map((r) => r.trackId) } },
+      select: { id: true, name: true, slug: true },
+    });
+    const byId = new Map(tracks.map((t) => [t.id, t]));
+    const ratings = rows.map((r) => ({
+      ...r,
+      trackName: byId.get(r.trackId)?.name ?? "Unknown track",
+      trackSlug: byId.get(r.trackId)?.slug ?? null,
+    }));
     return NextResponse.json({ ratings });
   } catch (error) {
     console.error("GET caliber ratings error:", error);

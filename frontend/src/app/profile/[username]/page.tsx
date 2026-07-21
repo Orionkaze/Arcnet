@@ -10,6 +10,7 @@ import LeftSidebar from "@/components/home/LeftSidebar";
 import MobileBottomNav from "@/components/home/MobileBottomNav";
 import MobileDrawer from "@/components/home/MobileDrawer";
 import PostCard from "@/components/home/PostCard";
+import "../../home.css";
 import "../profile.css";
 
 // --- PLATFORM ICONS ---
@@ -1953,7 +1954,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                     </div>
                     <span className="cover-upload-text">Drag and drop your image here</span>
                     <span className="cover-upload-subtext">or</span>
-                    <button type="button" className="cover-browse-btn">Browse Files</button>
+                    <button type="button" className="cover-browse-btn" onClick={(e) => { e.stopPropagation(); triggerFileInput(); }}>Browse Files</button>
                   </>
                 )}
                 <input 

@@ -35,7 +35,19 @@ export async function POST(
 
     let joined = false;
     if (existingMembership) {
-      // Leave
+      // Leave — but never let the last owner leave, which would orphan the hub
+      // (no one could then approve join requests or manage settings).
+      if (existingMembership.role === "owner") {
+        const ownerCount = await prisma.hubMember.count({
+          where: { hubId: hub.id, role: "owner" },
+        });
+        if (ownerCount <= 1) {
+          return NextResponse.json(
+            { error: "You are the last owner. Transfer ownership before leaving." },
+            { status: 400 }
+          );
+        }
+      }
       await prisma.hubMember.delete({
         where: {
           id: existingMembership.id,

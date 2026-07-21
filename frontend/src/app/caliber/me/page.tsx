@@ -11,7 +11,7 @@ import MobileDrawer from "@/components/home/MobileDrawer";
 import { useAuthStore } from "@/store/useAuthStore";
 import s from "../caliber.module.css";
 
-interface Rating { trackId: string; value: number; }
+interface Rating { trackId: string; value: number; trackName?: string; trackSlug?: string | null; }
 interface OpenSub { id: string; status: string; score: number | null; problem: { id: string; prompt: string; maxPoints: number }; }
 
 export default function CredentialPage() {
@@ -66,7 +66,7 @@ export default function CredentialPage() {
               {ratings.length === 0 ? <div className={s.muted}>No ratings yet. <Link href="/caliber" className={s.muted}>Start practicing →</Link></div>
                 : ratings.map((r) => (
                   <div key={r.trackId} className={s.card} style={{ cursor: "default" }}>
-                    <div className={s.rowBetween}><span className={s.muted}>{r.trackId}</span><strong>{r.value}</strong></div>
+                    <div className={s.rowBetween}><span className={s.muted}>{r.trackName ?? r.trackId}</span><strong>{r.value}</strong></div>
                   </div>
                 ))}
 

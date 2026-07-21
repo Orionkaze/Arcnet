@@ -11,9 +11,15 @@ import MobileBottomNav from "@/components/home/MobileBottomNav";
 import MobileDrawer from "@/components/home/MobileDrawer";
 import { useAuthStore } from "@/store/useAuthStore";
 import s from "../../caliber.module.css";
+import CompetitionSolveCard, { type CompetitionProblem } from "../../components/CompetitionSolveCard";
 
-interface PublicProblem { id: string; type: string; prompt: string; difficulty: number; maxPoints: number; }
-interface Detail { competition: { slug: string; name: string; description: string; state: string }; problems: PublicProblem[]; }
+type PublicProblem = CompetitionProblem;
+interface Detail {
+  competition: { slug: string; name: string; description: string; state: string };
+  problems: PublicProblem[];
+  joined?: boolean;
+  answeredProblemIds?: string[];
+}
 interface Row { rank: number; score: number; user?: { username: string | null; firstName: string; lastName: string } | null; }
 
 export default function CompetitionDetail() {
@@ -35,7 +41,16 @@ export default function CompetitionDetail() {
         fetch(`/api/caliber/competitions/${slug}/leaderboard`).then((r) => (r.ok ? r.json() : { leaderboard: [] })),
       ]);
       setDetail(d); setBoard(b.leaderboard || []);
+      if (d.joined) setJoined(true);
     } catch { setDetail(null); } finally { setLoading(false); }
+  }, [slug]);
+
+  const reloadBoard = useCallback(async () => {
+    if (!slug) return;
+    try {
+      const b = await fetch(`/api/caliber/competitions/${slug}/leaderboard`).then((r) => (r.ok ? r.json() : { leaderboard: [] }));
+      setBoard(b.leaderboard || []);
+    } catch { /* leaderboard refresh is best-effort */ }
   }, [slug]);
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -83,9 +98,15 @@ export default function CompetitionDetail() {
               {detail.problems.length === 0 ? (
                 <div className={s.muted}>{detail.competition.state === "upcoming" ? "Revealed when the competition starts." : "No problems."}</div>
               ) : detail.problems.map((p) => (
-                <div key={p.id} className={s.card} style={{ cursor: "default" }}>
-                  <div className={s.rowBetween}><span>{p.prompt}</span><span className={s.pill}>{p.difficulty}</span></div>
-                </div>
+                <CompetitionSolveCard
+                  key={p.id}
+                  slug={slug as string}
+                  problem={p}
+                  joined={joined}
+                  live={detail.competition.state === "live"}
+                  alreadyAnswered={(detail.answeredProblemIds ?? []).includes(p.id)}
+                  onScored={reloadBoard}
+                />
               ))}
 
               <h2 className={s.h1} style={{ fontSize: "1.15rem", marginTop: "2rem" }}>Leaderboard</h2>

@@ -29,6 +29,15 @@ export async function POST(
       return NextResponse.json({ error: "You cannot follow yourself" }, { status: 400 });
     }
 
+    // Verify the target exists, otherwise follow.create throws an opaque FK 500.
+    const targetUser = await prisma.user.findUnique({
+      where: { id: followingId },
+      select: { id: true },
+    });
+    if (!targetUser) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const existingFollow = await prisma.follow.findUnique({
       where: {
         followerId_followingId: {
@@ -49,10 +58,24 @@ export async function POST(
           followingId,
         },
       });
+
+      // Best-effort notification; must never break the follow action
+      // (mirrors the username-based follow route).
+      try {
+        await prisma.notification.create({
+          data: {
+            type: "follow",
+            userId: followingId,
+            fromUserId: followerId,
+          },
+        });
+      } catch (notifyError) {
+        console.error("Follow Notification Error:", notifyError);
+      }
     }
 
-    return NextResponse.json({ 
-      isFollowing: !existingFollow 
+    return NextResponse.json({
+      isFollowing: !existingFollow
     }, { status: 200 });
 
   } catch (error) {

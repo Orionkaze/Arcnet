@@ -3,17 +3,13 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import CreatePrivateHubModal from "./CreatePrivateHubModal";
 
 export default function LeftSidebar() {
   const pathname = usePathname();
 
-  // Create Private Hub Modal States
+  // Create-private-hub modal open state (form/submit logic lives in the modal).
   const [isCreateHubOpen, setIsCreateHubOpen] = useState(false);
-  const [hubName, setHubName] = useState("");
-  const [hubDesc, setHubDesc] = useState("");
-  const [isCreating, setIsCreating] = useState(false);
-  const [createdHubCode, setCreatedHubCode] = useState<string | null>(null);
-  const [error, setError] = useState("");
   const [privateHubs, setPrivateHubs] = useState<{ id: string; slug: string; name: string }[]>([]);
 
   // Fetch Private Hubs
@@ -31,36 +27,6 @@ export default function LeftSidebar() {
     }
     fetchPrivateHubs();
   }, []);
-
-  const handleCreatePrivateHub = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!hubName.trim() || !hubDesc.trim()) return;
-    setIsCreating(true);
-    setError("");
-
-    try {
-      const res = await fetch("/api/hubs/private", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: hubName, description: hubDesc }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to create hub");
-      }
-
-      const data = await res.json();
-      setCreatedHubCode(data.joinCode);
-      setHubName("");
-      setHubDesc("");
-    } catch (err) {
-      const error = err as Error;
-      setError(error.message);
-    } finally {
-      setIsCreating(false);
-    }
-  };
 
   const isActive = (path: string) => {
     if (path.startsWith("/ecosystem/")) {
@@ -292,78 +258,8 @@ export default function LeftSidebar() {
         </div>
       </div>
 
-      {/* CREATE PRIVATE HUB MODAL */}
-      {isCreateHubOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-[#10141A] border border-[#2A313C] rounded-lg p-6 w-[400px] max-w-[90vw] shadow-2xl relative">
-            <button
-              onClick={() => {
-                setIsCreateHubOpen(false);
-                setCreatedHubCode(null);
-              }}
-              className="absolute top-4 right-4 text-[#C8C7C7] hover:text-white transition-colors"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M18 6L6 18M6 6l12 12" />
-              </svg>
-            </button>
-            <h2 className="text-xl font-chakra font-bold text-white mb-4">Create Private Hub</h2>
-            
-            {createdHubCode ? (
-              <div className="text-center py-6">
-                <div className="mb-4 text-[#10B981] flex justify-center">
-                  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 3l1.9 5.7L20 10l-6.1 1.3L12 17l-1.9-5.7L4 10l6.1-1.3z" />
-                    <path d="M19 15l.7 2.1L22 18l-2.3.9L19 21l-.7-2.1L16 18l2.3-.9z" opacity="0.7" />
-                  </svg>
-                </div>
-                <h3 className="text-white font-chakra font-bold text-lg mb-2">Hub Created!</h3>
-                <p className="text-[#C8C7C7] text-sm mb-6">Share this code with your friends so they can request to join:</p>
-                <div className="bg-[#161c24] border border-[#2A313C] rounded px-4 py-3 text-2xl font-mono text-[#10B981] tracking-widest font-bold">
-                  {createdHubCode}
-                </div>
-              </div>
-            ) : (
-              <form onSubmit={handleCreatePrivateHub} className="space-y-4">
-                {error && <div className="text-[#FF4D4D] text-sm font-chakra">{error}</div>}
-                <div>
-                  <label className="block text-xs font-chakra text-[#C8C7C7] mb-1 uppercase tracking-wider">
-                    Hub Name
-                  </label>
-                  <input
-                    type="text"
-                    value={hubName}
-                    onChange={(e) => setHubName(e.target.value)}
-                    required
-                    className="w-full bg-[#161c24] border border-[#2A313C] rounded p-2 text-white font-inter text-sm focus:outline-none focus:border-[#10B981] transition-colors"
-                    placeholder="E.g. Secret Lair"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-chakra text-[#C8C7C7] mb-1 uppercase tracking-wider">
-                    Description
-                  </label>
-                  <textarea
-                    value={hubDesc}
-                    onChange={(e) => setHubDesc(e.target.value)}
-                    required
-                    rows={3}
-                    className="w-full bg-[#161c24] border border-[#2A313C] rounded p-2 text-white font-inter text-sm focus:outline-none focus:border-[#10B981] transition-colors resize-none"
-                    placeholder="What is this hub about?"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={isCreating}
-                  className="w-full py-2.5 rounded bg-[#10B981] text-[#10141A] font-chakra font-bold text-sm uppercase tracking-wider hover:bg-[#00d0e0] transition-colors mt-2 disabled:opacity-50"
-                >
-                  {isCreating ? "Creating..." : "Create Hub"}
-                </button>
-              </form>
-            )}
-          </div>
-        </div>
-      )}
+      {/* CREATE PRIVATE HUB MODAL (shared with MobileDrawer) */}
+      <CreatePrivateHubModal open={isCreateHubOpen} onClose={() => setIsCreateHubOpen(false)} />
     </aside>
   );
 }

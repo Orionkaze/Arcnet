@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import { useAuthStore } from "@/store/useAuthStore";
 import ShareModal from "./ShareModal";
@@ -110,6 +110,9 @@ export default function PostCard({
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [commentsCountState, setCommentsCountState] = useState(commentsCount);
+  // Mirrors commentsCountState without the stale-closure problem, so rapid
+  // comments report the correct running total to the parent (not lagging by one).
+  const commentsCountRef = useRef(commentsCount);
 
   const [errorToast, setErrorToast] = useState<string | null>(null);
   const [showMenu, setShowMenu] = useState(false);
@@ -358,7 +361,8 @@ export default function PostCard({
     };
 
     setCommentsList((prev) => [...prev, tempComment]);
-    setCommentsCountState((prev) => prev + 1);
+    commentsCountRef.current += 1;
+    setCommentsCountState(commentsCountRef.current);
 
     try {
       const res = await fetch(`/api/posts/${id}/comments`, {
@@ -374,12 +378,13 @@ export default function PostCard({
         prev.map((c) => (c.id === tempId ? data.comment : c))
       );
       if (onInteraction) {
-        onInteraction(id, { commentsCount: commentsCountState + 1 });
+        onInteraction(id, { commentsCount: commentsCountRef.current });
       }
     } catch {
       // Revert comments state
       setCommentsList((prev) => prev.filter((c) => c.id !== tempId));
-      setCommentsCountState((prev) => prev - 1);
+      commentsCountRef.current -= 1;
+      setCommentsCountState(commentsCountRef.current);
       showErrorToast("Could not post comment. Please try again.");
     }
   };
