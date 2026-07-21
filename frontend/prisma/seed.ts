@@ -63,6 +63,15 @@ async function main() {
   await prisma.caliberTrack.deleteMany({}); // cascades problems -> submissions & competition links
   await prisma.notification.deleteMany({ where: { userId: { in: demoIds } } });
   await prisma.hubMember.deleteMany({ where: { userId: { in: demoIds } } });
+  // Post children have no cascade, so clear them before the posts themselves.
+  await prisma.like.deleteMany({});
+  await prisma.comment.deleteMany({});
+  await prisma.repost.deleteMany({});
+  await prisma.bookmark.deleteMany({});
+  await prisma.post.deleteMany({});
+  await prisma.follow.deleteMany({
+    where: { OR: [{ followerId: { in: demoIds } }, { followingId: { in: demoIds } }] },
+  });
   await prisma.conversation.deleteMany({
     where: { OR: [{ user1Id: { in: demoIds } }, { user2Id: { in: demoIds } }] },
   }); // cascades direct messages
@@ -166,6 +175,34 @@ async function main() {
     ],
   });
 
+  // Pending submissions from the *other* users, so the signed-in demo user
+  // actually has something in their review inbox. (The queue excludes your own
+  // submissions, so without these the peer-review feature looks empty.)
+  const openProblem2 = await prisma.caliberOpenProblem.create({
+    data: {
+      trackId: consulting.id, maxPoints: 100,
+      prompt: "A B2B SaaS company's net revenue retention dropped from 115% to 98% in two quarters. Diagnose the likely drivers and recommend where to focus first.",
+      rubric: [
+        { key: "structure", label: "Problem structure", maxPoints: 30 },
+        { key: "analysis", label: "Analysis & insight", maxPoints: 40 },
+        { key: "recommendation", label: "Recommendation", maxPoints: 30 },
+      ],
+    },
+    select: { id: true },
+  });
+  await prisma.caliberOpenSubmission.createMany({
+    data: [
+      {
+        problemId: openProblem2.id, userId: arjun, status: "pending",
+        answer: "NRR is expansion minus churn and downgrade, so I'd decompose it into those three first. A 17-point drop is too large for pricing alone, so I'd check whether a cohort renewed onto a cheaper tier, whether seat counts shrank inside retained accounts, and whether logo churn concentrated in one segment. My hypothesis is seat contraction in the SMB cohort. First focus: instrument seat-level usage before touching price.",
+      },
+      {
+        problemId: openProblem2.id, userId: sara, status: "pending",
+        answer: "I'd start by splitting retained vs churned accounts and looking at expansion revenue separately, because NRR blends three very different motions. If gross retention held and expansion collapsed, that's a product-adoption problem, not a churn problem. I'd look at time-to-value for accounts onboarded in the last two quarters and prioritise the onboarding fix, since it compounds across every future cohort.",
+      },
+    ],
+  });
+
   // --- Live competition with a ranked leaderboard (incl. a tie) --------------
   const now = Date.now();
   const comp = await prisma.caliberCompetition.create({
@@ -224,6 +261,92 @@ async function main() {
     });
     await prisma.hub.update({ where: { id: hub.id }, data: { memberCount: 3 } });
   }
+  const hubBySlug = Object.fromEntries(hubs.map((h) => [h.slug, h.id])) as Record<string, string>;
+
+  // --- Follows ---------------------------------------------------------------
+  // The home feed shows posts from people you follow or hubs you've joined, so
+  // without follows the landing page is empty on a fresh demo.
+  await prisma.follow.createMany({
+    data: [
+      { followerId: demo, followingId: arjun },
+      { followerId: demo, followingId: sara },
+      { followerId: arjun, followingId: demo },
+      { followerId: sara, followingId: demo },
+      { followerId: arjun, followingId: sara },
+    ],
+  });
+
+  // --- Community posts -------------------------------------------------------
+  // Populates the home feed, /latest "Trending", each hub's Feed tab, and the
+  // profile Posts tab — all of which were empty on a fresh demo.
+  const minsAgo = (m: number) => new Date(now - m * 60 * 1000);
+  const postSeed: { authorId: string; content: string; hub?: string; createdAt: Date }[] = [
+    { authorId: arjun, hub: "consulting", createdAt: minsAgo(25),
+      content: "Cracked a market-sizing case today by segmenting demand before supply instead of the other way round. Way cleaner math, and the interviewer actually followed the logic. Anyone else default to supply-side first?" },
+    { authorId: sara, hub: "finance", createdAt: minsAgo(70),
+      content: "Reminder that a DCF is only as good as your terminal value assumption. Ran the same model at 2% vs 3% perpetual growth and the implied share price moved 22%. Always show the sensitivity table." },
+    { authorId: demo, hub: "consulting", createdAt: minsAgo(120),
+      content: "Went 3 for 3 on guesstimates this week. The trick that finally clicked: state your assumptions out loud *before* touching numbers, then the arithmetic is the easy part." },
+    { authorId: sara, hub: "product", createdAt: minsAgo(190),
+      content: "Product sense tip from a PM screen I just did: they don't want your feature list, they want to know which metric you'd move and what you'd sacrifice to move it. Pick a tradeoff and defend it." },
+    { authorId: arjun, hub: "data", createdAt: minsAgo(260),
+      content: "Window functions show up in almost every analyst screen now. If you can write a running total and a rank-per-group without looking it up, you're ahead of most candidates." },
+    { authorId: demo, hub: "aptitude", createdAt: minsAgo(330),
+      content: "Timed 30 DI questions this morning. Accuracy is fine, speed isn't — averaging 70s per question and the target is 45s. Going to drill percentage tables next week." },
+    { authorId: arjun, createdAt: minsAgo(400),
+      content: "Hit 1400 on the Guesstimates track. The rating actually moving with each submission makes practice feel like it counts for something." },
+  ];
+
+  const createdPosts = [];
+  for (const p of postSeed) {
+    const post = await prisma.post.create({
+      data: {
+        authorId: p.authorId,
+        content: p.content,
+        hubId: p.hub ? hubBySlug[p.hub] ?? null : null,
+        createdAt: p.createdAt,
+      },
+      select: { id: true, authorId: true },
+    });
+    createdPosts.push(post);
+  }
+
+  // A little engagement so counts aren't all zero (and trending has signal).
+  const [p1, p2, p3, p4, p5, p6] = createdPosts;
+  await prisma.like.createMany({
+    data: [
+      { postId: p1.id, userId: demo }, { postId: p1.id, userId: sara },
+      { postId: p2.id, userId: demo }, { postId: p2.id, userId: arjun },
+      { postId: p3.id, userId: arjun }, { postId: p3.id, userId: sara },
+      { postId: p4.id, userId: demo }, { postId: p5.id, userId: sara },
+      { postId: p6.id, userId: arjun },
+    ],
+  });
+  await prisma.comment.createMany({
+    data: [
+      { postId: p1.id, userId: demo, content: "Segmenting demand first saved me on a retail case too. Stealing this." },
+      { postId: p2.id, userId: demo, content: "The sensitivity table point is underrated — nobody asks for it until it's missing." },
+      { postId: p4.id, userId: arjun, content: "This is exactly what I got dinged on last round. Pick a metric, commit to it." },
+      { postId: p3.id, userId: sara, content: "Assumptions-first is the whole game. Congrats on the streak!" },
+      { postId: p6.id, userId: arjun, content: "45s is aggressive but doable — ratio tables are what got me there." },
+    ],
+  });
+  await prisma.repost.createMany({
+    data: [{ postId: p2.id, userId: demo }, { postId: p3.id, userId: arjun }],
+  });
+  // Notifications the *demo* user will actually see, so their inbox shows the
+  // full range of types rather than just the seeded follow.
+  await prisma.notification.createMany({
+    data: [
+      { type: "like", userId: arjun, fromUserId: demo, postId: p1.id },
+      { type: "comment", userId: sara, fromUserId: demo, postId: p2.id },
+      { type: "like", userId: demo, fromUserId: arjun, postId: p3.id },
+      { type: "like", userId: demo, fromUserId: sara, postId: p3.id },
+      { type: "comment", userId: demo, fromUserId: sara, postId: p3.id },
+      { type: "repost", userId: demo, fromUserId: arjun, postId: p3.id },
+      { type: "comment", userId: demo, fromUserId: arjun, postId: p6.id },
+    ],
+  });
 
   console.log("\n✅ Caliber demo seed complete.\n");
   console.log("   Log in at /login with any of these (all password: " + DEMO_PASSWORD + "):");

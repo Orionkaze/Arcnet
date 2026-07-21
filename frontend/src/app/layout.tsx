@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Chakra_Petch, Inter, Manrope } from "next/font/google";
 import "./globals.css";
 import { AuthInit } from "@/components/auth/AuthInit";
+import { DemoAuthGate } from "@/components/auth/DemoAuthGate";
 
 const chakraPetch = Chakra_Petch({
   variable: "--font-chakra-petch",
@@ -37,7 +38,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col font-sans text-arc-primary" suppressHydrationWarning>
         <AuthInit />
-        {children}
+        <DemoAuthGate>{children}</DemoAuthGate>
       </body>
     </html>
   );
