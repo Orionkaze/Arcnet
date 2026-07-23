@@ -2,8 +2,8 @@
 
 .settings-layout {
   min-height: 100vh;
-  background-color: #10141A;
-  color: #FFFFFF;
+  background-color: var(--c-surface);
+  color: var(--c-text);
   display: flex;
   flex-direction: column;
 }
@@ -25,7 +25,7 @@
 
 .settings-container {
   background: rgba(16, 20, 26, 0.6);
-  border: 1px border #2A313C;
+  border: 1px border var(--c-border);
   border-radius: 8px;
   padding: 32px;
   margin-top: 16px;
@@ -37,13 +37,13 @@
   font-family: 'Chakra Petch', sans-serif;
   font-size: 24px;
   font-weight: 700;
-  color: #FFFFFF;
+  color: var(--c-text);
   letter-spacing: 0.05em;
   margin-bottom: 24px;
   display: flex;
   align-items: center;
   gap: 10px;
-  border-bottom: 1px solid #2A313C;
+  border-bottom: 1px solid var(--c-border);
   padding-bottom: 16px;
 }
 
@@ -93,7 +93,7 @@
   font-family: 'Chakra Petch', sans-serif;
   font-size: 12px;
   font-weight: 600;
-  color: #C8C7C7;
+  color: var(--c-text-muted);
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
@@ -102,10 +102,10 @@
 .form-textarea {
   font-family: 'Inter', sans-serif;
   font-size: 14px;
-  background-color: #10141A;
-  border: 1px solid #2A313C;
+  background-color: var(--c-surface);
+  border: 1px solid var(--c-border);
   border-radius: 4px;
-  color: #FFFFFF;
+  color: var(--c-text);
   padding: 10px 14px;
   transition: all 0.2s ease-in-out;
   width: 100%;
@@ -126,7 +126,7 @@
 .form-desc {
   font-family: 'Inter', sans-serif;
   font-size: 11px;
-  color: #C8C7C7;
+  color: var(--c-text-muted);
   margin-top: 4px;
 }
 
@@ -137,7 +137,7 @@
   gap: 24px;
   padding: 16px;
   background: rgba(42, 49, 60, 0.2);
-  border: 1px solid #2A313C;
+  border: 1px solid var(--c-border);
   border-radius: 6px;
 }
 
@@ -153,13 +153,13 @@
   width: 96px;
   height: 96px;
   border-radius: 50%;
-  border: 2px solid #2A313C;
+  border: 2px solid var(--c-border);
   overflow: hidden;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #10141A;
+  background-color: var(--c-surface);
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
   flex-shrink: 0;
 }
@@ -188,9 +188,9 @@
   font-family: 'Chakra Petch', sans-serif;
   font-size: 11px;
   font-weight: 600;
-  color: #C8C7C7;
+  color: var(--c-text-muted);
   background: transparent;
-  border: 1px solid #2A313C;
+  border: 1px solid var(--c-border);
   border-radius: 4px;
   padding: 6px 12px;
   cursor: pointer;
@@ -204,7 +204,7 @@
 
 .btn-editor-secondary:hover {
   border-color: #10B981;
-  color: #FFFFFF;
+  color: var(--c-text);
 }
 
 /* Avatar presets slider/grid */
@@ -226,11 +226,11 @@
   width: 100%;
   aspect-ratio: 1;
   border-radius: 50%;
-  border: 1px solid #2A313C;
+  border: 1px solid var(--c-border);
   overflow: hidden;
   cursor: pointer;
   transition: all 0.2s ease;
-  background-color: #10141A;
+  background-color: var(--c-surface);
 }
 
 .preset-editor-item:hover {
@@ -257,7 +257,7 @@
   width: 100%;
   max-width: 320px;
   aspect-ratio: 4/3;
-  border: 1px solid #2A313C;
+  border: 1px solid var(--c-border);
   border-radius: 4px;
   background-color: #000000;
   object-fit: cover;
@@ -269,7 +269,7 @@
   justify-content: flex-end;
   gap: 16px;
   margin-top: 32px;
-  border-top: 1px solid #2A313C;
+  border-top: 1px solid var(--c-border);
   padding-top: 24px;
 }
 
@@ -277,7 +277,7 @@
   font-family: 'Chakra Petch', sans-serif;
   font-size: 14px;
   font-weight: 700;
-  color: #10141A;
+  color: var(--c-surface);
   background-color: #10B981;
   border: none;
   border-radius: 4px;
@@ -290,13 +290,13 @@
 }
 
 .btn-settings-save:hover:not(:disabled) {
-  background-color: #FFFFFF;
+  background-color: var(--c-text);
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
 }
 
 .btn-settings-save:disabled {
-  background-color: #2A313C;
-  color: #C8C7C7;
+  background-color: var(--c-border);
+  color: var(--c-text-muted);
   cursor: not-allowed;
   box-shadow: none;
 }
@@ -305,9 +305,9 @@
   font-family: 'Chakra Petch', sans-serif;
   font-size: 14px;
   font-weight: 600;
-  color: #C8C7C7;
+  color: var(--c-text-muted);
   background: transparent;
-  border: 1px solid #2A313C;
+  border: 1px solid var(--c-border);
   border-radius: 4px;
   padding: 10px 24px;
   cursor: pointer;
@@ -321,8 +321,8 @@
 }
 
 .btn-settings-cancel:hover {
-  border-color: #FFFFFF;
-  color: #FFFFFF;
+  border-color: var(--c-text);
+  color: var(--c-text);
 }
 
 .status-message {
@@ -350,9 +350,9 @@
   position: fixed;
   top: 24px;
   right: 24px;
-  background-color: #10141A;
+  background-color: var(--c-surface);
   border: 1px solid #10B981;
-  color: #FFFFFF;
+  color: var(--c-text);
   padding: 16px 24px;
   border-radius: 8px;
   box-shadow: 0 0 20px rgba(16, 185, 129, 0.25);
@@ -418,7 +418,7 @@
   height: 36px;
   border-radius: 50%;
   background: rgba(16, 185, 129, 0.06);
-  border: 1px solid #2A313C;
+  border: 1px solid var(--c-border);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -433,10 +433,10 @@
 
 .social-input {
   height: 44px;
-  background-color: #10141A;
-  border: 1px solid #2A313C;
+  background-color: var(--c-surface);
+  border: 1px solid var(--c-border);
   border-radius: 8px;
-  color: #FFFFFF;
+  color: var(--c-text);
   padding: 0 16px;
   font-family: 'Inter', sans-serif;
   font-size: 14px;
@@ -453,7 +453,7 @@
 .social-remove-btn {
   background: none;
   border: none;
-  color: #C8C7C7;
+  color: var(--c-text-muted);
   cursor: pointer;
   font-size: 20px;
   line-height: 1;
@@ -477,9 +477,9 @@
   height: 44px;
   width: 100%;
   background: transparent;
-  border: 1px dashed #2A313C;
+  border: 1px dashed var(--c-border);
   border-radius: 8px;
-  color: #C8C7C7;
+  color: var(--c-text-muted);
   font-family: 'Inter', sans-serif;
   font-size: 14px;
   cursor: pointer;
@@ -489,7 +489,7 @@
 
 .btn-add-social:hover {
   border-color: #10B981;
-  color: #FFFFFF;
+  color: var(--c-text);
   box-shadow: 0 0 10px rgba(16, 185, 129, 0.1);
 }
 
@@ -527,13 +527,13 @@
 .social-connections-line {
   flex: 1;
   height: 1px;
-  background-color: #2A313C;
+  background-color: var(--c-border);
 }
 
 .social-hint-text {
   font-family: 'Inter', sans-serif;
   font-size: 11px;
-  color: #C8C7C7;
+  color: var(--c-text-muted);
   margin-top: 4px;
   padding-left: 48px; /* aligns with input (36px circle + 12px gap) */
 }

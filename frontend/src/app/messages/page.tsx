@@ -305,7 +305,7 @@ function MessagesInner() {
             <h1 className="font-chakra text-2xl text-white font-bold uppercase tracking-wider">
               Messages
             </h1>
-            <p className="font-inter text-sm text-[#C8C7C7]">
+            <p className="font-inter text-sm text-[var(--c-text-muted)]">
               Private 1-to-1 conversations with people across the Caliber
               ecosystem.
             </p>
@@ -322,7 +322,7 @@ function MessagesInner() {
               <div className="text-white font-chakra font-bold text-sm mb-1">
                 You&apos;re logged out
               </div>
-              <div className="text-[#C8C7C7] font-inter text-sm">
+              <div className="text-[var(--c-text-muted)] font-inter text-sm">
                 <Link href="/login" className="text-[#10B981] hover:underline">
                   Log in
                 </Link>{" "}
@@ -355,7 +355,7 @@ function MessagesInner() {
                     <div className="text-white font-chakra font-bold text-sm mb-1">
                       No conversations yet
                     </div>
-                    <div className="text-[#C8C7C7] font-inter text-sm">
+                    <div className="text-[var(--c-text-muted)] font-inter text-sm">
                       Start one from someone&apos;s profile.
                     </div>
                   </div>
@@ -393,7 +393,7 @@ function MessagesInner() {
                             )}
                           </div>
                           <div className="flex justify-between items-center gap-2">
-                            <span className="font-inter text-xs text-[#C8C7C7] truncate">
+                            <span className="font-inter text-xs text-[var(--c-text-muted)] truncate">
                               {c.lastMessage
                                 ? c.lastMessage.content
                                 : `@${c.otherUser.username ?? "user"}`}
@@ -419,7 +419,7 @@ function MessagesInner() {
               >
                 {!activeId || !activeOther ? (
                   <div className="flex flex-col items-center justify-center h-full text-center px-6 py-16">
-                    <div className="mx-auto mb-4 w-14 h-14 rounded-full bg-[#10141A] border border-[#2A313C] flex items-center justify-center">
+                    <div className="mx-auto mb-4 w-14 h-14 rounded-full bg-[var(--c-surface)] border border-[var(--c-border)] flex items-center justify-center">
                       <svg
                         width="24"
                         height="24"
@@ -436,7 +436,7 @@ function MessagesInner() {
                     <div className="text-white font-chakra font-bold text-sm mb-1">
                       Select a conversation
                     </div>
-                    <div className="text-[#C8C7C7] font-inter text-sm">
+                    <div className="text-[var(--c-text-muted)] font-inter text-sm">
                       Pick someone on the left to see your messages.
                     </div>
                   </div>
@@ -487,7 +487,7 @@ function MessagesInner() {
                             <div className="font-inter text-sm font-bold text-white truncate">
                               {fullName(activeOther)}
                             </div>
-                            <div className="font-inter text-xs text-[#C8C7C7] truncate">
+                            <div className="font-inter text-xs text-[var(--c-text-muted)] truncate">
                               @{activeOther.username}
                             </div>
                           </div>
@@ -522,7 +522,7 @@ function MessagesInner() {
                           />
                         </div>
                       ) : messages.length === 0 ? (
-                        <div className="text-center text-[#C8C7C7] font-inter text-sm py-10">
+                        <div className="text-center text-[var(--c-text-muted)] font-inter text-sm py-10">
                           No messages yet. Say hello.
                         </div>
                       ) : (
@@ -596,24 +596,24 @@ function MessagesInner() {
         .dm-shell {
           display: flex;
           flex-direction: column;
-          border: 1px solid #2a313c;
+          border: 1px solid var(--c-border);
           border-radius: 12px;
           overflow: hidden;
-          background: #0b0e13;
+          background: var(--c-bg);
           height: calc(100vh - 260px);
           min-height: 420px;
         }
         .dm-list {
           width: 100%;
           overflow-y: auto;
-          background: #0b0e13;
+          background: var(--c-bg);
         }
         .dm-thread {
           display: flex;
           flex-direction: column;
           flex: 1;
           min-height: 0;
-          background: #0b0e13;
+          background: var(--c-bg);
         }
         .dm-row {
           display: flex;
@@ -636,7 +636,7 @@ function MessagesInner() {
           width: 40px;
           height: 40px;
           border-radius: 9999px;
-          background: #2a313c;
+          background: var(--c-border);
           overflow: hidden;
           display: flex;
           align-items: center;
@@ -644,7 +644,7 @@ function MessagesInner() {
           font-weight: 700;
           font-size: 1rem;
           color: #fff;
-          border: 1px solid #2a313c;
+          border: 1px solid var(--c-border);
         }
         .dm-unread {
           min-width: 18px;
@@ -652,7 +652,7 @@ function MessagesInner() {
           padding: 0 5px;
           border-radius: 9999px;
           background: #10B981;
-          color: #0b0e13;
+          color: var(--c-bg);
           font-size: 11px;
           font-weight: 700;
           display: flex;
@@ -665,13 +665,13 @@ function MessagesInner() {
           align-items: center;
           gap: 0.5rem;
           padding: 0.75rem 1rem;
-          border-bottom: 1px solid #2a313c;
-          background: #10141a;
+          border-bottom: 1px solid var(--c-border);
+          background: var(--c-surface);
         }
         .dm-back-btn {
           background: transparent;
           border: none;
-          color: #c8c7c7;
+          color: var(--c-text-muted);
           padding: 4px;
           margin-right: 2px;
           cursor: pointer;
@@ -712,8 +712,8 @@ function MessagesInner() {
           border-bottom-right-radius: 3px;
         }
         .dm-bubble-theirs {
-          background: #161c24;
-          border: 1px solid #2a313c;
+          background: var(--c-surface-2);
+          border: 1px solid var(--c-border);
           border-bottom-left-radius: 3px;
         }
         .dm-bubble-text {
@@ -734,13 +734,13 @@ function MessagesInner() {
           gap: 0.5rem;
           align-items: flex-end;
           padding: 0.75rem;
-          border-top: 1px solid #2a313c;
-          background: #10141a;
+          border-top: 1px solid var(--c-border);
+          background: var(--c-surface);
         }
         .dm-input {
           flex: 1;
-          background: #161c24;
-          border: 1px solid #2a313c;
+          background: var(--c-surface-2);
+          border: 1px solid var(--c-border);
           color: #fff;
           font-family: var(--font-inter), sans-serif;
           font-size: 13px;
@@ -756,7 +756,7 @@ function MessagesInner() {
         }
         .dm-send-btn {
           background: #10B981;
-          color: #0b0e13;
+          color: var(--c-bg);
           font-family: var(--font-chakra-petch), sans-serif;
           font-weight: 700;
           font-size: 13px;
@@ -780,7 +780,7 @@ function MessagesInner() {
           .dm-list {
             width: 300px;
             flex-shrink: 0;
-            border-right: 1px solid #2a313c;
+            border-right: 1px solid var(--c-border);
           }
           .dm-hide-mobile {
             display: flex;

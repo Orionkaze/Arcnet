@@ -86,7 +86,7 @@ export function OTPInput({ length = 6, value, onChange, onComplete }: OTPInputPr
           value={digit}
           onChange={(e) => handleChange(e, index)}
           onKeyDown={(e) => handleKeyDown(e, index)}
-          className="w-[48px] h-[56px] bg-[#080c14] border border-[rgba(16, 185, 129,0.18)] focus:border-[#10B981] rounded-[8px] text-center text-white font-chakra font-bold text-[24px] outline-none transition-colors duration-200 flex-1 md:flex-none"
+          className="w-[48px] h-[56px] bg-[var(--c-bg)] border border-[rgba(16, 185, 129,0.18)] focus:border-[#10B981] rounded-[8px] text-center text-white font-chakra font-bold text-[24px] outline-none transition-colors duration-200 flex-1 md:flex-none"
         />
       ))}
     </div>

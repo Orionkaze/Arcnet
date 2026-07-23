@@ -59,7 +59,7 @@ export default function NewsCard({
               height="24"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="#2A313C"
+              stroke="var(--c-border)"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -80,8 +80,8 @@ export default function NewsCard({
 
       <style jsx>{`
         .news-card {
-          background: #10141A;
-          border: 1px solid #2A313C;
+          background: var(--c-surface);
+          border: 1px solid var(--c-border);
           border-radius: 10px;
           overflow: hidden;
           width: 280px;
@@ -96,7 +96,7 @@ export default function NewsCard({
         }
         .news-image-container {
           height: 140px;
-          background: #2A313C;
+          background: var(--c-border);
           width: 100%;
           overflow: hidden;
         }
@@ -136,7 +136,7 @@ export default function NewsCard({
           font-family: var(--font-inter), sans-serif;
           font-size: 14px;
           font-weight: 700;
-          color: #FFFFFF;
+          color: var(--c-text);
           line-height: 1.4;
           margin: 0 0 6px 0;
           display: -webkit-box;
@@ -148,7 +148,7 @@ export default function NewsCard({
         .news-description {
           font-family: var(--font-inter), sans-serif;
           font-size: 12px;
-          color: #C8C7C7;
+          color: var(--c-text-muted);
           line-height: 1.4;
           margin: 0 0 10px 0;
           display: -webkit-box;
@@ -161,7 +161,7 @@ export default function NewsCard({
         .news-time {
           font-family: var(--font-inter), sans-serif;
           font-size: 11px;
-          color: #C8C7C7;
+          color: var(--c-text-muted);
         }
       `}</style>
     </a>

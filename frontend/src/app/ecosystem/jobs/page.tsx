@@ -186,7 +186,7 @@ export default function JobsPage() {
             <h1 className="font-chakra text-2xl text-white font-bold uppercase tracking-wider">
               India-First Job Board
             </h1>
-            <p className="font-inter text-sm text-[#C8C7C7]">
+            <p className="font-inter text-sm text-[var(--c-text-muted)]">
               Roles from internships to full-time, with transparent CTC. Find your next opportunity.
               <span className="block mt-1 text-xs text-[#8A9099]">Sample listings — live employer postings roll out soon. Register interest to be notified.</span>
             </p>
@@ -199,7 +199,7 @@ export default function JobsPage() {
               placeholder="Search by title, company, or skill (e.g. SQL, Valuation, Mumbai)..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-[#10141A] border border-[#2A313C] text-white text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:border-[#10B981] transition-colors font-inter"
+              className="w-full bg-[var(--c-surface)] border border-[var(--c-border)] text-white text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:border-[#10B981] transition-colors font-inter"
               style={{ height: "44px" }}
             />
           </div>
@@ -232,7 +232,7 @@ export default function JobsPage() {
                       <h3 className="font-chakra text-base font-bold text-white leading-tight uppercase tracking-wide">
                         {job.title}
                       </h3>
-                      <p className="font-inter text-sm text-[#C8C7C7] mt-0.5">
+                      <p className="font-inter text-sm text-[var(--c-text-muted)] mt-0.5">
                         {job.company}{" "}
                         <span className="text-[#6B7280]">&middot;</span>{" "}
                         {job.location}
@@ -265,7 +265,7 @@ export default function JobsPage() {
                     {job.skills.map((skill, sIdx) => (
                       <span
                         key={sIdx}
-                        className="text-[10px] font-inter bg-[#2A313C] text-white px-2 py-0.5 rounded"
+                        className="text-[10px] font-inter bg-[var(--c-border)] text-white px-2 py-0.5 rounded"
                       >
                         {skill}
                       </span>
@@ -274,7 +274,7 @@ export default function JobsPage() {
 
                   {/* Expandable description */}
                   {isOpen && (
-                    <p className="font-inter text-sm text-[#C8C7C7] leading-relaxed mt-4 pt-4 border-t border-[#2A313C]">
+                    <p className="font-inter text-sm text-[var(--c-text-muted)] leading-relaxed mt-4 pt-4 border-t border-[var(--c-border)]">
                       {job.description}
                     </p>
                   )}
@@ -302,7 +302,7 @@ export default function JobsPage() {
           {/* Empty state */}
           {filteredJobs.length === 0 && (
             <div className="text-center py-16">
-              <div className="text-[#C8C7C7] font-inter text-sm">
+              <div className="text-[var(--c-text-muted)] font-inter text-sm">
                 No roles found matching &quot;{search}&quot;.
               </div>
             </div>
@@ -323,8 +323,8 @@ export default function JobsPage() {
           color: rgba(16, 185, 129, 0.6);
         }
         .job-card {
-          background: #10141a;
-          border: 1px solid #2a313c;
+          background: var(--c-surface);
+          border: 1px solid var(--c-border);
           border-radius: 10px;
           padding: 1rem;
           transition: border-color 0.2s;
@@ -338,9 +338,9 @@ export default function JobsPage() {
           font-weight: 700;
           letter-spacing: 0.5px;
           text-transform: uppercase;
-          color: #c8c7c7;
-          background: #10141a;
-          border: 1px solid #2a313c;
+          color: var(--c-text-muted);
+          background: var(--c-surface);
+          border: 1px solid var(--c-border);
           border-radius: 999px;
           padding: 0.35rem 0.9rem;
           cursor: pointer;
@@ -371,9 +371,9 @@ export default function JobsPage() {
           font-weight: 700;
           letter-spacing: 0.5px;
           text-transform: uppercase;
-          color: #c8c7c7;
+          color: var(--c-text-muted);
           background: transparent;
-          border: 1px solid #2a313c;
+          border: 1px solid var(--c-border);
           border-radius: 8px;
           padding: 0.5rem 1rem;
           cursor: pointer;
@@ -389,7 +389,7 @@ export default function JobsPage() {
           font-weight: 700;
           letter-spacing: 0.5px;
           text-transform: uppercase;
-          color: #0b0e13;
+          color: var(--c-bg);
           background: #10B981;
           border: 1px solid #10B981;
           border-radius: 8px;

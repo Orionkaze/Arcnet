@@ -226,7 +226,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
           {user && (
             <button 
               onClick={handleSignOut} 
-              className="w-full py-2 px-3 border border-[#2A313C] hover:border-red-500/50 hover:bg-red-500/10 text-xs font-chakra text-[#C8C7C7] hover:text-red-400 rounded transition-all duration-200 flex items-center justify-center gap-2 mt-2"
+              className="w-full py-2 px-3 border border-[var(--c-border)] hover:border-red-500/50 hover:bg-red-500/10 text-xs font-chakra text-[var(--c-text-muted)] hover:text-red-400 rounded transition-all duration-200 flex items-center justify-center gap-2 mt-2"
             >
               {/* Logout icon */}
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

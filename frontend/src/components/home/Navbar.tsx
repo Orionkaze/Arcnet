@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useAuthStore } from "@/store/useAuthStore";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import ThemeToggle from "@/components/theme/ThemeToggle";
 
 interface NavbarProps {
   onMenuToggle?: () => void;
@@ -111,6 +112,9 @@ export default function Navbar({ onMenuToggle }: NavbarProps) {
 
       {/* Right — Actions */}
       <div className="navbar-right">
+        {/* Light/dark theme switcher */}
+        <ThemeToggle />
+
         {/* Chat bubble icon */}
         <Link href="/messages" className="navbar-icon-btn" aria-label="Messages">
           <svg

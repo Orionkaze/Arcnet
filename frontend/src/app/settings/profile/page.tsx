@@ -179,7 +179,7 @@ function extractDomainName(url: string): string {
 function getPlatformInfo(url: string) {
   const trimmed = url.trim();
   if (!trimmed) {
-    return { name: "empty", color: "#C8C7C7", isHardcoded: false, useFavicon: false, domain: "" };
+    return { name: "empty", color: "var(--c-text-muted)", isHardcoded: false, useFavicon: false, domain: "" };
   }
 
   const lowerUrl = trimmed.toLowerCase();
@@ -187,7 +187,7 @@ function getPlatformInfo(url: string) {
 
   if (hasUrlMarkers) {
     if (trimmed.length < 5) {
-      return { name: "empty", color: "#C8C7C7", isHardcoded: false, useFavicon: false, domain: "" };
+      return { name: "empty", color: "var(--c-text-muted)", isHardcoded: false, useFavicon: false, domain: "" };
     }
 
     // Gmail
@@ -260,7 +260,7 @@ function getPlatformInfo(url: string) {
     }
     // GitHub
     if (lowerUrl.includes("github.com")) {
-      return { name: "github", color: "#FFFFFF", isHardcoded: true, useFavicon: false, domain: "github.com" };
+      return { name: "github", color: "var(--c-text)", isHardcoded: true, useFavicon: false, domain: "github.com" };
     }
     // GitLab
     if (lowerUrl.includes("gitlab.com")) {
@@ -272,7 +272,7 @@ function getPlatformInfo(url: string) {
     }
     // CodePen
     if (lowerUrl.includes("codepen.io")) {
-      return { name: "codepen", color: "#FFFFFF", isHardcoded: true, useFavicon: true, domain: "codepen.io" };
+      return { name: "codepen", color: "var(--c-text)", isHardcoded: true, useFavicon: true, domain: "codepen.io" };
     }
     // LeetCode
     if (lowerUrl.includes("leetcode.com")) {
@@ -300,7 +300,7 @@ function getPlatformInfo(url: string) {
     }
     // Dev.to
     if (lowerUrl.includes("dev.to")) {
-      return { name: "devto", color: "#FFFFFF", isHardcoded: true, useFavicon: true, domain: "dev.to" };
+      return { name: "devto", color: "var(--c-text)", isHardcoded: true, useFavicon: true, domain: "dev.to" };
     }
     // Hashnode
     if (lowerUrl.includes("hashnode.com")) {
@@ -308,7 +308,7 @@ function getPlatformInfo(url: string) {
     }
     // Medium
     if (lowerUrl.includes("medium.com")) {
-      return { name: "medium", color: "#FFFFFF", isHardcoded: true, useFavicon: true, domain: "medium.com" };
+      return { name: "medium", color: "var(--c-text)", isHardcoded: true, useFavicon: true, domain: "medium.com" };
     }
     // Substack
     if (lowerUrl.includes("substack.com")) {
@@ -332,7 +332,7 @@ function getPlatformInfo(url: string) {
     }
     // Notion
     if (lowerUrl.includes("notion.so")) {
-      return { name: "notion", color: "#FFFFFF", isHardcoded: true, useFavicon: true, domain: "notion.so" };
+      return { name: "notion", color: "var(--c-text)", isHardcoded: true, useFavicon: true, domain: "notion.so" };
     }
     // Adobe Portfolio
     if (lowerUrl.includes("adobe.com")) {
@@ -437,10 +437,10 @@ function getPlatformInfo(url: string) {
     }
     // Unity Asset Store must be checked before plain Unity
     if (lowerUrl.includes("assetstore.unity.com")) {
-      return { name: "unityassetstore", color: "#FFFFFF", isHardcoded: true, useFavicon: true, domain: "assetstore.unity.com" };
+      return { name: "unityassetstore", color: "var(--c-text)", isHardcoded: true, useFavicon: true, domain: "assetstore.unity.com" };
     }
     if (lowerUrl.includes("discussions.unity.com") || lowerUrl.includes("unity.com")) {
-      return { name: "unity", color: "#FFFFFF", isHardcoded: true, useFavicon: true, domain: "unity.com" };
+      return { name: "unity", color: "var(--c-text)", isHardcoded: true, useFavicon: true, domain: "unity.com" };
     }
     if (lowerUrl.includes("godotengine.org")) {
       return { name: "godot", color: "#478CBF", isHardcoded: true, useFavicon: true, domain: "godotengine.org" };
@@ -607,7 +607,7 @@ function getPlatformInfo(url: string) {
     }
 
     const domain = extractDomainName(trimmed);
-    return { name: "custom", color: "#C8C7C7", isHardcoded: false, useFavicon: true, domain };
+    return { name: "custom", color: "var(--c-text-muted)", isHardcoded: false, useFavicon: true, domain };
   }
 
   if (!hasUrlMarkers) {
@@ -627,7 +627,7 @@ function getPlatformInfo(url: string) {
     }
   }
 
-  return { name: "empty", color: "#C8C7C7", isHardcoded: false, useFavicon: false, domain: "" };
+  return { name: "empty", color: "var(--c-text-muted)", isHardcoded: false, useFavicon: false, domain: "" };
 }
 
 const PlatformIcon = ({ url }: { url: string }) => {
@@ -713,8 +713,8 @@ const PlatformIcon = ({ url }: { url: string }) => {
   const showFavicon = info.useFavicon && info.domain && !faviconFailed;
 
   const hasError = faviconFailed;
-  const iconColor = hasError ? "#C8C7C7" : info.color;
-  const borderColor = hasError || !info.isHardcoded || info.color === "#FFFFFF" ? "#2A313C" : info.color;
+  const iconColor = hasError ? "var(--c-text-muted)" : info.color;
+  const borderColor = hasError || !info.isHardcoded || info.color === "var(--c-text)" ? "var(--c-border)" : info.color;
   const boxShadow = !hasError && info.isHardcoded && info.name !== "empty" ? `0 0 8px ${info.color}33` : "none";
 
   return (
@@ -1283,7 +1283,7 @@ export default function SettingsProfilePage() {
 
               {/* Presets Selection Mode */}
               {avatarMode === "presets" && (
-                <div className="p-4 border border-[#2A313C] rounded bg-[#10141A]/50">
+                <div className="p-4 border border-[var(--c-border)] rounded bg-[color-mix(in_srgb,var(--c-surface)_50%,transparent)]">
                   <span className="form-label">SELECT ROBOT PRESET</span>
                   <div className="presets-editor-grid">
                     {presetAvatars.map((preset, idx) => (
@@ -1303,7 +1303,7 @@ export default function SettingsProfilePage() {
 
               {/* Camera Webcam Mode */}
               {avatarMode === "camera" && (
-                <div className="p-4 border border-[#2A313C] rounded bg-[#10141A]/50">
+                <div className="p-4 border border-[var(--c-border)] rounded bg-[color-mix(in_srgb,var(--c-surface)_50%,transparent)]">
                   <div className="camera-editor-box">
                     <video ref={videoRef} autoPlay playsInline className="video-editor-preview" />
                     <canvas ref={canvasRef} style={{ display: "none" }} />
@@ -1354,7 +1354,7 @@ export default function SettingsProfilePage() {
                 <div className="form-group full-width">
                   <label htmlFor="username" className="form-label">Username *</label>
                   <div className="relative">
-                    <span className="absolute left-3 top-2.5 text-[#C8C7C7] text-sm">@</span>
+                    <span className="absolute left-3 top-2.5 text-[var(--c-text-muted)] text-sm">@</span>
                     <input
                       id="username"
                       type="text"
@@ -1444,13 +1444,13 @@ export default function SettingsProfilePage() {
                 ) : (
                   <>
                     {experienceList.map((exp) => (
-                      <div key={exp.id} className="p-4 border border-[#2A313C] rounded bg-[#10141A]/50 relative group">
-                        <h4 className="text-[#E0E0E0] font-medium">{exp.role} at {exp.company}</h4>
+                      <div key={exp.id} className="p-4 border border-[var(--c-border)] rounded bg-[color-mix(in_srgb,var(--c-surface)_50%,transparent)] relative group">
+                        <h4 className="text-[var(--c-text)] font-medium">{exp.role} at {exp.company}</h4>
                         <p className="text-sm text-[#8E95A3] mt-1">
                           {exp.startDate} - {exp.current ? "Present" : exp.endDate}
                         </p>
                         {exp.description && (
-                          <p className="text-sm text-[#C8C7C7] mt-2 whitespace-pre-wrap">{exp.description}</p>
+                          <p className="text-sm text-[var(--c-text-muted)] mt-2 whitespace-pre-wrap">{exp.description}</p>
                         )}
                         <button
                           type="button"
@@ -1476,7 +1476,7 @@ export default function SettingsProfilePage() {
                     )}
 
                     {showAddExperience && (
-                      <div className="p-4 border border-[#10B981]/30 rounded bg-[#10141A] flex flex-col gap-4 mt-2">
+                      <div className="p-4 border border-[#10B981]/30 rounded bg-[var(--c-surface)] flex flex-col gap-4 mt-2">
                         <h4 className="text-[#10B981] text-sm tracking-wider font-chakra mb-2">ADD NEW EXPERIENCE</h4>
                         {expError && <div className="text-red-400 text-sm mb-2">{expError}</div>}
                         
@@ -1528,7 +1528,7 @@ export default function SettingsProfilePage() {
                                   setExpCurrent(e.target.checked);
                                   if (e.target.checked) setExpEndDate("");
                                 }}
-                                className="w-4 h-4 rounded border-[#2A313C] bg-transparent text-[#10B981] focus:ring-[#10B981] focus:ring-offset-0"
+                                className="w-4 h-4 rounded border-[var(--c-border)] bg-transparent text-[#10B981] focus:ring-[#10B981] focus:ring-offset-0"
                               />
                               <label htmlFor="current" className="text-sm text-[#8E95A3]">I currently work here</label>
                             </div>

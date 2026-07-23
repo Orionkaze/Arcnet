@@ -111,7 +111,7 @@ export default function FindTeamPage() {
             <h1 className="font-chakra text-2xl text-white font-bold uppercase tracking-wider">
               Find Teammates
             </h1>
-            <p className="font-inter text-sm text-[#C8C7C7]">
+            <p className="font-inter text-sm text-[var(--c-text-muted)]">
               Browse talent, discover skills, and form your team for competitions and case prep.
             </p>
           </div>
@@ -128,7 +128,7 @@ export default function FindTeamPage() {
               placeholder="Search by name, username, or skills (e.g. SQL, Valuation, Product)..."
               value={search}
               onChange={handleSearchChange}
-              className="w-full bg-[#10141A] border border-[#2A313C] text-white text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:border-[#10B981] transition-colors font-inter"
+              className="w-full bg-[var(--c-surface)] border border-[var(--c-border)] text-white text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:border-[#10B981] transition-colors font-inter"
               style={{ height: "44px" }}
             />
           </div>
@@ -148,7 +148,7 @@ export default function FindTeamPage() {
                   <div className="flex gap-4 items-start">
                     {/* Avatar */}
                     <Link href={`/profile/${creator.username}`} className="flex-shrink-0 cursor-pointer block">
-                      <div className="w-12 h-12 rounded-full bg-[#2A313C] overflow-hidden flex items-center justify-center font-bold text-lg border border-[#2A313C] hover:border-[#10B981] transition-colors">
+                      <div className="w-12 h-12 rounded-full bg-[var(--c-border)] overflow-hidden flex items-center justify-center font-bold text-lg border border-[var(--c-border)] hover:border-[#10B981] transition-colors">
                         {creator.avatar ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={creator.avatar} alt={creator.firstName} className="w-full h-full object-cover" />
@@ -165,7 +165,7 @@ export default function FindTeamPage() {
                           <h3 className="font-inter text-sm font-bold text-white leading-tight truncate">
                             {creator.firstName} {creator.lastName}
                           </h3>
-                          <span className="font-inter text-xs text-[#C8C7C7]">
+                          <span className="font-inter text-xs text-[var(--c-text-muted)]">
                             @{creator.username}
                           </span>
                         </Link>
@@ -176,8 +176,8 @@ export default function FindTeamPage() {
                               creator.isFollowing ? "following" : ""
                             }`}
                             style={{
-                              borderColor: creator.isFollowing ? "#2A313C" : "#10B981",
-                              color: creator.isFollowing ? "#C8C7C7" : "#10B981",
+                              borderColor: creator.isFollowing ? "var(--c-border)" : "#10B981",
+                              color: creator.isFollowing ? "var(--c-text-muted)" : "#10B981",
                             }}
                           >
                             {creator.isFollowing ? "Following" : "+ Follow"}
@@ -199,7 +199,7 @@ export default function FindTeamPage() {
                             .map((skill: string, sIdx: number) => (
                               <span
                                 key={sIdx}
-                                className="text-[10px] font-inter bg-[#2A313C] text-white px-2 py-0.5 rounded"
+                                className="text-[10px] font-inter bg-[var(--c-border)] text-white px-2 py-0.5 rounded"
                               >
                                 {skill}
                               </span>
@@ -216,7 +216,7 @@ export default function FindTeamPage() {
           {/* Empty search state */}
           {!loading && creators.length === 0 && (
             <div className="text-center py-16">
-              <div className="text-[#C8C7C7] font-inter text-sm">
+              <div className="text-[var(--c-text-muted)] font-inter text-sm">
                 No creators found matching &quot;{search}&quot;.
               </div>
             </div>
@@ -240,8 +240,8 @@ export default function FindTeamPage() {
           color: rgba(16, 185, 129, 0.6);
         }
         .creator-card {
-          background: #10141A;
-          border: 1px solid #2A313C;
+          background: var(--c-surface);
+          border: 1px solid var(--c-border);
           border-radius: 10px;
           padding: 1rem;
           transition: border-color 0.2s;

@@ -3,6 +3,7 @@ import { Chakra_Petch, Inter, Manrope } from "next/font/google";
 import "./globals.css";
 import { AuthInit } from "@/components/auth/AuthInit";
 import { DemoAuthGate } from "@/components/auth/DemoAuthGate";
+import { ThemeScript } from "@/components/theme/ThemeScript";
 
 const chakraPetch = Chakra_Petch({
   variable: "--font-chakra-petch",
@@ -36,6 +37,9 @@ export default function RootLayout({
       className={`${chakraPetch.variable} ${inter.variable} ${manrope.variable} h-full antialiased`}
       suppressHydrationWarning
     >
+      <head>
+        <ThemeScript />
+      </head>
       <body className="min-h-full flex flex-col font-sans text-arc-primary" suppressHydrationWarning>
         <AuthInit />
         <DemoAuthGate>{children}</DemoAuthGate>

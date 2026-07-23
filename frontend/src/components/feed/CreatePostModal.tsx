@@ -85,12 +85,12 @@ export default function CreatePostModal({
     >
       <div
         ref={modalRef}
-        className="w-full max-w-2xl bg-[#14181F] border border-[#2A313C] rounded-xl shadow-2xl relative flex flex-col"
+        className="w-full max-w-2xl bg-[var(--c-surface-2)] border border-[var(--c-border)] rounded-xl shadow-2xl relative flex flex-col"
       >
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-[#C8C7C7] hover:text-white transition-colors"
+          className="absolute top-4 right-4 text-[var(--c-text-muted)] hover:text-white transition-colors"
           disabled={isPosting}
         >
           <X size={20} />
@@ -98,7 +98,7 @@ export default function CreatePostModal({
 
         {/* User Info Header */}
         <div className="flex items-center gap-3 p-6 pb-4">
-          <div className="w-12 h-12 rounded-full bg-[#2A313C] flex-shrink-0 overflow-hidden flex items-center justify-center font-bold text-lg text-white">
+          <div className="w-12 h-12 rounded-full bg-[var(--c-border)] flex-shrink-0 overflow-hidden flex items-center justify-center font-bold text-lg text-white">
             {user.avatar ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -114,7 +114,7 @@ export default function CreatePostModal({
             <h3 className="text-white font-inter font-semibold text-lg leading-tight">
               {user.firstName} {user.lastName}
             </h3>
-            <p className="text-[#C8C7C7] font-inter text-sm">
+            <p className="text-[var(--c-text-muted)] font-inter text-sm">
               {user.role || "Member @Caliber"}
             </p>
           </div>
@@ -122,7 +122,7 @@ export default function CreatePostModal({
 
         {/* Text Area */}
         <div className="px-6 pb-2">
-          <div className="bg-[#1D232D] rounded-xl p-4 border border-transparent focus-within:border-[#2A313C] transition-colors relative min-h-[200px] flex flex-col">
+          <div className="bg-[var(--c-surface-2)] rounded-xl p-4 border border-transparent focus-within:border-[var(--c-border)] transition-colors relative min-h-[200px] flex flex-col">
             <textarea
               placeholder="What do you want to talk about ?"
               value={content}
@@ -139,7 +139,7 @@ export default function CreatePostModal({
                 <img
                   src={imageUrl}
                   alt="Attachment Preview"
-                  className="w-full max-h-[300px] object-cover rounded-lg border border-[#2A313C]"
+                  className="w-full max-h-[300px] object-cover rounded-lg border border-[var(--c-border)]"
                 />
                 <button
                   onClick={() => setImageUrl("")}
@@ -156,7 +156,7 @@ export default function CreatePostModal({
               <div className="relative">
                 <button
                   onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                  className="text-[#C8C7C7] hover:text-[#10B981] p-1.5 rounded-full hover:bg-[rgba(16, 185, 129,0.1)] transition-colors"
+                  className="text-[var(--c-text-muted)] hover:text-[#10B981] p-1.5 rounded-full hover:bg-[rgba(16, 185, 129,0.1)] transition-colors"
                   title="Add Emoji"
                 >
                   <Smile size={22} />
@@ -191,7 +191,7 @@ export default function CreatePostModal({
             />
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="text-[#C8C7C7] hover:text-[#10B981] p-2 rounded-full hover:bg-[rgba(16, 185, 129,0.1)] transition-colors flex items-center justify-center"
+              className="text-[var(--c-text-muted)] hover:text-[#10B981] p-2 rounded-full hover:bg-[rgba(16, 185, 129,0.1)] transition-colors flex items-center justify-center"
               title="Upload from Device"
             >
               <ImageIcon size={24} />
@@ -201,7 +201,7 @@ export default function CreatePostModal({
           <button
             onClick={handleSubmit}
             disabled={isPosting || (!content.trim() && !imageUrl)}
-            className="px-8 py-2 bg-transparent border border-[#10B981] text-[#10B981] hover:bg-[#10B981] hover:text-[#10141A] font-chakra font-bold text-sm tracking-wider rounded-lg transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-8 py-2 bg-transparent border border-[#10B981] text-[#10B981] hover:bg-[#10B981] hover:text-[var(--c-surface)] font-chakra font-bold text-sm tracking-wider rounded-lg transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isPosting ? "Posting..." : "Post"}
           </button>

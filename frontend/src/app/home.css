@@ -5,21 +5,21 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #10141A;
+  background: var(--c-surface);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2A313C;
+  background: var(--c-border);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3a4250;
+  background: var(--c-border);
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #2A313C #10141A;
+  scrollbar-color: var(--c-border) var(--c-surface);
 }
 
 /* ====== OVERALL LAYOUT ====== */
@@ -29,7 +29,7 @@
   height: 100vh;
   width: 100vw;
   overflow: hidden;
-  background: #10141A;
+  background: var(--c-surface);
 }
 
 .home-content {
@@ -46,8 +46,8 @@
   left: 0;
   right: 0;
   height: 56px;
-  background: #10141A;
-  border-bottom: 1px solid #2A313C;
+  background: var(--c-surface);
+  border-bottom: 1px solid var(--c-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -71,7 +71,7 @@
 }
 
 .navbar-logo .logo-net {
-  color: #FFFFFF;
+  color: var(--c-text);
 }
 
 .navbar-center {
@@ -89,7 +89,7 @@
   gap: 8px;
   font-family: var(--font-inter), sans-serif;
   font-size: 14px;
-  color: #C8C7C7;
+  color: var(--c-text-muted);
   text-decoration: none;
   padding: 4px 8px;
   border-radius: 6px;
@@ -98,11 +98,11 @@
 }
 
 .navbar-link:hover {
-  color: #FFFFFF;
+  color: var(--c-text);
 }
 
 .navbar-link.active {
-  color: #FFFFFF;
+  color: var(--c-text);
   border-bottom-color: #10B981;
   border-radius: 6px 6px 0 0;
 }
@@ -121,7 +121,7 @@
 .navbar-icon {
   background: none;
   border: none;
-  color: #C8C7C7;
+  color: var(--c-text-muted);
   cursor: pointer;
   padding: 6px;
   border-radius: 6px;
@@ -134,10 +134,27 @@
   color: #10B981;
 }
 
+/* Light/dark switcher — matches the other navbar icon buttons. */
+.theme-toggle-btn {
+  background: none;
+  border: none;
+  color: var(--c-text-muted);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.theme-toggle-btn:hover {
+  color: #10B981;
+}
+
 .navbar-divider {
   width: 1px;
   height: 24px;
-  background: #2A313C;
+  background: var(--c-border);
 }
 
 .navbar-avatar {
@@ -145,14 +162,14 @@
   height: 36px;
   border-radius: 50%;
   border: 2px solid #10B981;
-  background: #10141A;
+  background: var(--c-surface);
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-inter), sans-serif;
   font-size: 12px;
   font-weight: bold;
-  color: #FFFFFF;
+  color: var(--c-text);
   cursor: pointer;
   overflow: hidden;
   transition: background-color 0.2s;
@@ -173,7 +190,7 @@
   display: none;
   background: none;
   border: none;
-  color: #C8C7C7;
+  color: var(--c-text-muted);
   cursor: pointer;
   padding: 6px;
   border-radius: 6px;
@@ -183,7 +200,7 @@
 }
 
 .hamburger-btn:hover {
-  color: #FFFFFF;
+  color: var(--c-text);
 }
 
 .hamburger-btn svg {
@@ -196,8 +213,8 @@
   width: 200px;
   min-width: 200px;
   height: calc(100vh - 56px);
-  background: #10141A;
-  border-right: 1px solid #2A313C;
+  background: var(--c-surface);
+  border-right: 1px solid var(--c-border);
   padding: 1.5rem 1rem;
   overflow-y: auto;
   display: flex;
@@ -221,7 +238,7 @@
   content: '';
   flex: 1;
   height: 1px;
-  background: #2A313C;
+  background: var(--c-border);
 }
 
 .sidebar-item {
@@ -230,7 +247,7 @@
   gap: 10px;
   font-family: var(--font-inter), sans-serif;
   font-size: 13px;
-  color: #C8C7C7;
+  color: var(--c-text-muted);
   padding: 8px 10px;
   border-radius: 6px;
   cursor: pointer;
@@ -241,13 +258,13 @@
 
 .sidebar-item:hover {
   background: rgba(16, 185, 129, 0.06);
-  color: #FFFFFF;
+  color: var(--c-text);
 }
 
 .sidebar-item.active {
   border-left-color: #10B981;
   background: rgba(16, 185, 129, 0.08);
-  color: #FFFFFF;
+  color: var(--c-text);
 }
 
 .sidebar-item svg {
@@ -291,8 +308,8 @@
 
 /* ====== POST CARD ====== */
 .post-card {
-  background: #10141A;
-  border: 1px solid #2A313C;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
   border-radius: 10px;
   padding: 1.25rem;
   transition: border-color 0.2s;
@@ -312,7 +329,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #2A313C;
+  background: var(--c-border);
   flex-shrink: 0;
   overflow: hidden;
   display: flex;
@@ -335,20 +352,20 @@
   font-family: var(--font-inter), sans-serif;
   font-size: 14px;
   font-weight: 700;
-  color: #FFFFFF;
+  color: var(--c-text);
 }
 
 .post-handle {
   font-family: var(--font-inter), sans-serif;
   font-size: 12px;
-  color: #C8C7C7;
+  color: var(--c-text-muted);
 }
 
 .follow-btn {
   font-family: var(--font-chakra-petch), sans-serif;
   font-size: 11px;
-  border: 1px solid #2A313C;
-  color: #C8C7C7;
+  border: 1px solid var(--c-border);
+  color: var(--c-text-muted);
   background: none;
   padding: 4px 12px;
   border-radius: 4px;
@@ -370,7 +387,7 @@
 .post-text {
   font-family: var(--font-inter), sans-serif;
   font-size: 14px;
-  color: #FFFFFF;
+  color: var(--c-text);
   line-height: 1.6;
   margin-top: 0.75rem;
 }
@@ -378,7 +395,7 @@
 .post-image {
   width: 100%;
   aspect-ratio: 16 / 9;
-  background: #2A313C;
+  background: var(--c-border);
   border-radius: 8px;
   margin-top: 0.75rem;
   display: flex;
@@ -395,7 +412,7 @@
 }
 
 .post-image svg {
-  color: #C8C7C7;
+  color: var(--c-text-muted);
   opacity: 0.3;
 }
 
@@ -410,7 +427,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  color: #C8C7C7;
+  color: var(--c-text-muted);
   background: none;
   border: none;
   cursor: pointer;
@@ -434,15 +451,15 @@
   width: 260px;
   min-width: 260px;
   height: calc(100vh - 56px);
-  background: #10141A;
-  border-left: 1px solid #2A313C;
+  background: var(--c-surface);
+  border-left: 1px solid var(--c-border);
   padding: 1.5rem 1rem;
   overflow-y: auto;
 }
 
 .happenings-card {
-  background: #10141A;
-  border: 1px solid #2A313C;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
   border-radius: 8px;
   padding: 1rem;
 }
@@ -451,20 +468,20 @@
   font-family: var(--font-chakra-petch), sans-serif;
   font-weight: 700;
   font-size: 14px;
-  color: #FFFFFF;
+  color: var(--c-text);
   margin-bottom: 0.75rem;
 }
 
 .happenings-item {
   font-family: var(--font-inter), sans-serif;
   font-size: 13px;
-  color: #C8C7C7;
+  color: var(--c-text-muted);
   padding: 0.6rem 0;
   line-height: 1.5;
 }
 
 .happenings-item:not(:last-child) {
-  border-bottom: 1px solid #2A313C;
+  border-bottom: 1px solid var(--c-border);
 }
 
 /* ====== MOBILE BOTTOM NAV ====== */
@@ -475,8 +492,8 @@
   left: 0;
   right: 0;
   height: 56px;
-  background: #10141A;
-  border-top: 1px solid #2A313C;
+  background: var(--c-surface);
+  border-top: 1px solid var(--c-border);
   z-index: 100;
   align-items: center;
   justify-content: space-around;
@@ -488,7 +505,7 @@
   justify-content: center;
   background: none;
   border: none;
-  color: #C8C7C7;
+  color: var(--c-text-muted);
   cursor: pointer;
   padding: 8px;
   border-radius: 6px;
@@ -497,7 +514,7 @@
 }
 
 .mobile-nav-btn:hover {
-  color: #FFFFFF;
+  color: var(--c-text);
 }
 
 .mobile-nav-btn.active {
@@ -531,8 +548,8 @@
   right: 0;
   width: 280px;
   height: 100%;
-  background: #10141A;
-  border-left: 1px solid #2A313C;
+  background: var(--c-surface);
+  border-left: 1px solid var(--c-border);
   z-index: 201;
   padding: 1.5rem 1rem;
   overflow-y: auto;
@@ -550,7 +567,7 @@
   right: 1rem;
   background: none;
   border: none;
-  color: #C8C7C7;
+  color: var(--c-text-muted);
   cursor: pointer;
   padding: 4px;
   border-radius: 4px;
@@ -561,7 +578,7 @@
 }
 
 .drawer-close:hover {
-  color: #FFFFFF;
+  color: var(--c-text);
 }
 
 .drawer-close svg {
@@ -687,8 +704,8 @@
 
 /* ====== SKELETON SHIMMER ====== */
 .skeleton-card {
-  background: #10141A;
-  border: 1px solid #2A313C;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
   border-radius: 10px;
   padding: 1.25rem;
   position: relative;
@@ -696,7 +713,7 @@
 }
 
 .skeleton-shimmer {
-  background: linear-gradient(90deg, #2A313C 25%, #3a4a5c 50%, #2A313C 75%);
+  background: linear-gradient(90deg, var(--c-border) 25%, #3a4a5c 50%, var(--c-border) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite linear;
 }

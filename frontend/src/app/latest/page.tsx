@@ -294,7 +294,7 @@ export default function LatestPage() {
                 <div className="news-skeleton animate-pulse" />
               </div>
             ) : newsError ? (
-              <div className="news-error font-chakra text-xs text-[#C8C7C7] p-4 text-center border border-[#2A313C] rounded-lg">
+              <div className="news-error font-chakra text-xs text-[var(--c-text-muted)] p-4 text-center border border-[var(--c-border)] rounded-lg">
                 Could not load news.{" "}
                 <span className="text-[#10B981] cursor-pointer" onClick={fetchNews}>
                   Try again
@@ -362,7 +362,7 @@ export default function LatestPage() {
 
             {/* Empty State */}
             {!postsLoading && posts.length === 0 && !postsError && (
-              <div className="text-center py-12 text-[#C8C7C7] font-inter text-sm">
+              <div className="text-center py-12 text-[var(--c-text-muted)] font-inter text-sm">
                 No trending posts yet. Be the first to post!
               </div>
             )}
@@ -375,7 +375,7 @@ export default function LatestPage() {
                 </h3>
                 <button
                   onClick={() => fetchTrending(1, false)}
-                  className="px-4 py-1.5 bg-[#10B981] hover:bg-[#00d0e0] text-[#10141A] font-chakra font-bold text-xs uppercase tracking-wider rounded cursor-pointer transition-colors"
+                  className="px-4 py-1.5 bg-[#10B981] hover:bg-[#00d0e0] text-[var(--c-surface)] font-chakra font-bold text-xs uppercase tracking-wider rounded cursor-pointer transition-colors"
                 >
                   Retry
                 </button>
@@ -446,7 +446,7 @@ export default function LatestPage() {
           width: 280px;
           min-width: 280px;
           height: 250px;
-          background: #2A313C;
+          background: var(--c-border);
           border-radius: 10px;
         }
         .trending-post-wrapper {

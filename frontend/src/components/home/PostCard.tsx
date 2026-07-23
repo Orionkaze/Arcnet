@@ -437,7 +437,7 @@ export default function PostCard({
             {hub && (
               <Link
                 href={`/hub/${hub.slug}`}
-                className="inline-flex items-center bg-[#1c2331] text-[#10B981] hover:text-[#10B981] font-chakra text-[10px] px-2 py-0.5 rounded border border-[#2A313C] hover:border-[#10B981] transition-all"
+                className="inline-flex items-center bg-[var(--c-surface-2)] text-[#10B981] hover:text-[#10B981] font-chakra text-[10px] px-2 py-0.5 rounded border border-[var(--c-border)] hover:border-[#10B981] transition-all"
               >
                 # {hub.name}
               </Link>
@@ -450,8 +450,8 @@ export default function PostCard({
             onClick={handleFollow}
             className={`follow-btn ${following ? "following" : ""}`}
             style={{
-              borderColor: following ? "#2A313C" : "#10B981",
-              color: following ? "#C8C7C7" : "#10B981",
+              borderColor: following ? "var(--c-border)" : "#10B981",
+              color: following ? "var(--c-text-muted)" : "#10B981",
             }}
           >
             {following ? "Following" : "+ Follow"}
@@ -472,7 +472,7 @@ export default function PostCard({
               </svg>
             </button>
             {showMenu && (
-              <div className="absolute right-0 mt-2 w-36 bg-[#10141A] border border-[#2A313C] rounded-lg shadow-lg overflow-hidden z-50 animate-fade-in">
+              <div className="absolute right-0 mt-2 w-36 bg-[var(--c-surface)] border border-[var(--c-border)] rounded-lg shadow-lg overflow-hidden z-50 animate-fade-in">
                 <button
                   onClick={handleDeletePost}
                   className="w-full text-left px-4 py-2 text-sm font-inter text-[#FF3366] hover:bg-[#1A202A] transition-colors"
@@ -490,7 +490,7 @@ export default function PostCard({
 
       {/* Optional image */}
       {imageUrl && (
-        <div className="post-image relative max-h-[500px] bg-[#10141A] rounded-lg overflow-hidden flex items-center justify-center cursor-pointer" onClick={() => setShowLightbox(true)}>
+        <div className="post-image relative max-h-[500px] bg-[var(--c-surface)] rounded-lg overflow-hidden flex items-center justify-center cursor-pointer" onClick={() => setShowLightbox(true)}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={imageUrl}
@@ -501,12 +501,12 @@ export default function PostCard({
       )}
 
       {/* Actions row */}
-      <div className="post-actions border-t border-[#2A313C] mt-4 pt-3 flex justify-between relative">
+      <div className="post-actions border-t border-[var(--c-border)] mt-4 pt-3 flex justify-between relative">
         <button
           onClick={handleLike}
           className="post-action flex items-center gap-1.5 relative"
           style={{
-            color: liked ? "#10B981" : "#C8C7C7",
+            color: liked ? "#10B981" : "var(--c-text-muted)",
             transition: "color 0.3s ease",
           }}
           aria-label="Like"
@@ -563,7 +563,7 @@ export default function PostCard({
         <button
           onClick={toggleComments}
           className="post-action flex items-center gap-1.5"
-          style={{ color: commentsOpen ? "#10B981" : "#C8C7C7" }}
+          style={{ color: commentsOpen ? "#10B981" : "var(--c-text-muted)" }}
           aria-label="Comment"
         >
           <svg
@@ -586,7 +586,7 @@ export default function PostCard({
           onClick={handleRepost}
           className="post-action flex items-center gap-1.5"
           style={{
-            color: reposted ? "#10B981" : "#C8C7C7",
+            color: reposted ? "#10B981" : "var(--c-text-muted)",
             transition: "color 0.4s ease",
           }}
           aria-label="Repost"
@@ -613,7 +613,7 @@ export default function PostCard({
         <button
           onClick={handleBookmark}
           className="post-action flex items-center gap-1.5"
-          style={{ color: bookmarked ? "#10B981" : "#C8C7C7" }}
+          style={{ color: bookmarked ? "#10B981" : "var(--c-text-muted)" }}
           aria-label="Bookmark"
         >
           <svg
@@ -636,7 +636,7 @@ export default function PostCard({
           onClick={handleShare}
           className="post-action flex items-center gap-1.5"
           aria-label="Share"
-          style={{ color: shareModalOpen ? "#10B981" : "#C8C7C7" }}
+          style={{ color: shareModalOpen ? "#10B981" : "var(--c-text-muted)" }}
         >
           <svg
             width="18"
@@ -661,7 +661,7 @@ export default function PostCard({
         style={{
           maxHeight: commentsOpen ? "1000px" : "0px",
           opacity: commentsOpen ? 1 : 0,
-          borderTop: commentsOpen ? "1px solid #2A313C" : "1px solid transparent",
+          borderTop: commentsOpen ? "1px solid var(--c-border)" : "1px solid transparent",
           marginTop: commentsOpen ? "1rem" : "0px",
           paddingTop: commentsOpen ? "1rem" : "0px",
           transition: "max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease, margin 0.3s ease, border-color 0.3s ease",
@@ -672,21 +672,21 @@ export default function PostCard({
         </h4>
 
         {commentsLoading ? (
-          <div className="text-center py-4 text-[#C8C7C7] text-xs font-chakra">
+          <div className="text-center py-4 text-[var(--c-text-muted)] text-xs font-chakra">
             Loading comments...
           </div>
         ) : (
           <div className="comments-list space-y-3 mb-4 max-h-60 overflow-y-auto pr-1">
             {commentsList.length === 0 ? (
-              <div className="text-[#C8C7C7] text-xs italic py-2">
+              <div className="text-[var(--c-text-muted)] text-xs italic py-2">
                 No comments yet. Be the first to share your thoughts!
               </div>
             ) : (
               commentsList.map((comment) => (
                 <div key={comment.id} className="comment-item flex gap-2.5">
                   <div
-                    className="comment-avatar flex-shrink-0 w-7 h-7 rounded-full bg-[#2A313C] overflow-hidden flex items-center justify-center font-bold text-xs"
-                    style={{ border: "1px solid #2A313C" }}
+                    className="comment-avatar flex-shrink-0 w-7 h-7 rounded-full bg-[var(--c-border)] overflow-hidden flex items-center justify-center font-bold text-xs"
+                    style={{ border: "1px solid var(--c-border)" }}
                   >
                     {comment.user.avatar ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -699,15 +699,15 @@ export default function PostCard({
                       comment.user.firstName.charAt(0).toUpperCase()
                     )}
                   </div>
-                  <div className="comment-bubble flex-grow bg-[#0d1320] border border-[#2A313C] p-2.5 rounded-lg">
+                  <div className="comment-bubble flex-grow bg-[var(--c-surface)] border border-[var(--c-border)] p-2.5 rounded-lg">
                     <div className="flex justify-between items-center mb-1">
                       <span className="text-xs font-bold text-white">
                         {comment.user.firstName} {comment.user.lastName}{" "}
-                        <span className="text-[10px] text-[#C8C7C7] font-normal">
+                        <span className="text-[10px] text-[var(--c-text-muted)] font-normal">
                           @{comment.user.username}
                         </span>
                       </span>
-                      <span className="text-[10px] text-[#C8C7C7]">
+                      <span className="text-[10px] text-[var(--c-text-muted)]">
                         {getRelativeTime(comment.createdAt)}
                       </span>
                     </div>
@@ -730,20 +730,20 @@ export default function PostCard({
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
               maxLength={300}
-              className="flex-grow bg-[#10141A] border border-[#2A313C] text-white text-xs px-3.5 py-2.5 rounded-lg focus:outline-none focus:border-[#10B981] transition-colors font-inter"
+              className="flex-grow bg-[var(--c-surface)] border border-[var(--c-border)] text-white text-xs px-3.5 py-2.5 rounded-lg focus:outline-none focus:border-[#10B981] transition-colors font-inter"
               style={{ height: "44px" }}
             />
             <button
               type="submit"
               disabled={!commentText.trim()}
-              className="px-4 bg-[#10B981] hover:bg-[#00d0e0] text-[#10141A] font-bold font-chakra text-xs tracking-wider uppercase rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              className="px-4 bg-[#10B981] hover:bg-[#00d0e0] text-[var(--c-surface)] font-bold font-chakra text-xs tracking-wider uppercase rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               style={{ height: "44px" }}
             >
               Post
             </button>
           </form>
         ) : (
-          <div className="text-xs text-[#C8C7C7] italic py-2 text-center border-t border-[#2A313C] mt-2">
+          <div className="text-xs text-[var(--c-text-muted)] italic py-2 text-center border-t border-[var(--c-border)] mt-2">
             Please log in to add comments.
           </div>
         )}
@@ -856,8 +856,8 @@ export default function PostCard({
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm animate-fade-in">
-          <div className="bg-[#10141A] border border-[#2A313C] p-6 rounded-lg shadow-2xl max-w-sm w-full mx-4">
-            <h3 className="text-xl font-chakra font-bold text-[#E0E0E0] mb-3">Delete Post</h3>
+          <div className="bg-[var(--c-surface)] border border-[var(--c-border)] p-6 rounded-lg shadow-2xl max-w-sm w-full mx-4">
+            <h3 className="text-xl font-chakra font-bold text-[var(--c-text)] mb-3">Delete Post</h3>
             <p className="text-[#8E95A3] text-sm font-inter mb-6">
               Are you sure you want to delete this post? This action cannot be undone.
             </p>
@@ -865,7 +865,7 @@ export default function PostCard({
               <button
                 onClick={() => setShowDeleteConfirm(false)}
                 disabled={isDeleting}
-                className="px-4 py-2 rounded font-inter font-medium text-sm text-[#E0E0E0] bg-[#1c2331] hover:bg-[#2A313C] transition-colors disabled:opacity-50"
+                className="px-4 py-2 rounded font-inter font-medium text-sm text-[var(--c-text)] bg-[var(--c-surface-2)] hover:bg-[var(--c-border)] transition-colors disabled:opacity-50"
               >
                 Cancel
               </button>

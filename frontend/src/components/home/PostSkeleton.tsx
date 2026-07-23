@@ -18,7 +18,7 @@ export default function PostSkeleton() {
 
       <div className="skeleton-media skeleton-shimmer" />
 
-      <div className="post-actions" style={{ justifyContent: "space-between", marginTop: "1rem", borderTop: "1px solid #2A313C", paddingTop: "0.75rem" }}>
+      <div className="post-actions" style={{ justifyContent: "space-between", marginTop: "1rem", borderTop: "1px solid var(--c-border)", paddingTop: "0.75rem" }}>
         <div className="skeleton-text skeleton-shimmer" style={{ width: "15%", height: "14px", margin: 0 }} />
         <div className="skeleton-text skeleton-shimmer" style={{ width: "15%", height: "14px", margin: 0 }} />
         <div className="skeleton-text skeleton-shimmer" style={{ width: "15%", height: "14px", margin: 0 }} />

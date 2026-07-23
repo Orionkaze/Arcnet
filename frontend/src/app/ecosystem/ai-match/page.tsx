@@ -90,7 +90,7 @@ export default function AiMatchPage() {
             <h1 className="font-chakra text-2xl text-white font-bold uppercase tracking-wider">
               AI Match
             </h1>
-            <p className="font-inter text-sm text-[#C8C7C7]">
+            <p className="font-inter text-sm text-[var(--c-text-muted)]">
               Intelligent matchmaking for skill-building collaboration — coming soon.
             </p>
           </div>
@@ -121,7 +121,7 @@ export default function AiMatchPage() {
             <h2 className="font-chakra text-xl md:text-2xl text-white font-bold uppercase tracking-wide mt-4">
               AI-Powered Team Matching
             </h2>
-            <p className="font-inter text-sm text-[#C8C7C7] max-w-[520px] mx-auto mt-3 leading-relaxed">
+            <p className="font-inter text-sm text-[var(--c-text-muted)] max-w-[520px] mx-auto mt-3 leading-relaxed">
               AI Match will analyze your skills, track record, and goals to
               auto-suggest ideal teammates, competitions, and mentors. Think of it as
               matchmaking for skill-building — the right people for the
@@ -136,7 +136,7 @@ export default function AiMatchPage() {
                   <h3 className="font-chakra text-sm text-white font-bold uppercase tracking-wide mt-3">
                     {feature.title}
                   </h3>
-                  <p className="font-inter text-xs text-[#C8C7C7] mt-1.5 leading-relaxed">
+                  <p className="font-inter text-xs text-[var(--c-text-muted)] mt-1.5 leading-relaxed">
                     {feature.description}
                   </p>
                 </div>
@@ -150,7 +150,7 @@ export default function AiMatchPage() {
                   {successToast}
                 </div>
               )}
-              <p className="font-inter text-xs text-[#C8C7C7] mb-3">
+              <p className="font-inter text-xs text-[var(--c-text-muted)] mb-3">
                 Be the first to know when AI Match goes live.
               </p>
               <form
@@ -163,7 +163,7 @@ export default function AiMatchPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="flex-grow bg-[#161c24] border border-[#2A313C] text-white text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:border-[#10B981] transition-colors font-inter"
+                  className="flex-grow bg-[var(--c-surface-2)] border border-[var(--c-border)] text-white text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:border-[#10B981] transition-colors font-inter"
                   style={{ height: "44px" }}
                 />
                 <button type="submit" className="notify-btn">
@@ -188,8 +188,8 @@ export default function AiMatchPage() {
           color: rgba(16, 185, 129, 0.6);
         }
         .coming-soon-panel {
-          background: #10141A;
-          border: 1px solid #2A313C;
+          background: var(--c-surface);
+          border: 1px solid var(--c-border);
           border-radius: 14px;
           padding: 3rem 2rem;
           text-align: center;
@@ -256,8 +256,8 @@ export default function AiMatchPage() {
           z-index: 1;
         }
         .preview-card {
-          background: #10141A;
-          border: 1px solid #2A313C;
+          background: var(--c-surface);
+          border: 1px solid var(--c-border);
           border-radius: 10px;
           padding: 1.25rem;
           transition: border-color 0.2s;

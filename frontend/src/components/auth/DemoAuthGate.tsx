@@ -38,7 +38,7 @@ export function DemoAuthGate({ children }: { children: React.ReactNode }) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "#080c14",
+        background: "var(--c-bg)",
         color: "#10B981",
         fontFamily: "var(--font-manrope), sans-serif",
         fontSize: "0.8rem",

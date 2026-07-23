@@ -59,23 +59,23 @@ export default function RightPanel() {
   return (
     <aside className="right-panel">
       <div className="happenings-card">
-        <h3 className="happenings-title" style={{ fontFamily: "var(--font-chakra-petch), sans-serif", fontSize: "14px", fontWeight: 700, color: "#FFFFFF", marginBottom: "0.75rem" }}>
+        <h3 className="happenings-title" style={{ fontFamily: "var(--font-chakra-petch), sans-serif", fontSize: "14px", fontWeight: 700, color: "var(--c-text)", marginBottom: "0.75rem" }}>
           Recent Happenings
         </h3>
 
         {loading ? (
           <div className="space-y-4 animate-pulse">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="py-3 border-b border-[#2A313C] last:border-0">
-                <div className="h-2 bg-[#2A313C] rounded w-16 mb-2" />
-                <div className="h-3 bg-[#2A313C] rounded w-full mb-1" />
-                <div className="h-3 bg-[#2A313C] rounded w-4/5 mb-2" />
-                <div className="h-2 bg-[#2A313C] rounded w-10" />
+              <div key={i} className="py-3 border-b border-[var(--c-border)] last:border-0">
+                <div className="h-2 bg-[var(--c-border)] rounded w-16 mb-2" />
+                <div className="h-3 bg-[var(--c-border)] rounded w-full mb-1" />
+                <div className="h-3 bg-[var(--c-border)] rounded w-4/5 mb-2" />
+                <div className="h-2 bg-[var(--c-border)] rounded w-10" />
               </div>
             ))}
           </div>
         ) : error || news.length === 0 ? (
-          <div className="text-xs text-[#C8C7C7] py-4 text-center">
+          <div className="text-xs text-[var(--c-text-muted)] py-4 text-center">
             No recent news available.
           </div>
         ) : (
@@ -106,7 +106,7 @@ export default function RightPanel() {
           display: block;
           text-decoration: none;
           padding: 0.75rem 0;
-          border-bottom: 1px solid #2A313C;
+          border-bottom: 1px solid var(--c-border);
           transition: all 0.2s;
         }
         .happening-link:last-of-type {
@@ -124,7 +124,7 @@ export default function RightPanel() {
         .happening-title {
           font-family: var(--font-inter), sans-serif;
           font-size: 13px;
-          color: #FFFFFF;
+          color: var(--c-text);
           line-height: 1.4;
           display: -webkit-box;
           -webkit-line-clamp: 2;
@@ -139,7 +139,7 @@ export default function RightPanel() {
         .happening-time {
           font-family: var(--font-inter), sans-serif;
           font-size: 11px;
-          color: #C8C7C7;
+          color: var(--c-text-muted);
           margin-top: 4px;
         }
         .read-more-link {

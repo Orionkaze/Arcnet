@@ -69,7 +69,7 @@ export function ResponsiveAuthLayout({
         {/* =========================================
             RIGHT PANEL (DESKTOP) / MAIN (MOBILE)
             ========================================= */}
-        <div className="w-full lg:w-[45%] min-h-screen lg:h-screen flex flex-col relative lg:bg-[#0d1320] lg:overflow-y-auto">
+        <div className="w-full lg:w-[45%] min-h-screen lg:h-screen flex flex-col relative lg:bg-[var(--c-surface)] lg:overflow-y-auto">
           {/* Top cyan edge on desktop */}
           <div className="hidden lg:block absolute top-0 left-0 right-0 h-[2px] bg-arc-accent w-full" />
           
@@ -91,7 +91,7 @@ export function ResponsiveAuthLayout({
           {/* Center container */}
           <div className="flex-1 flex items-center justify-center p-4 lg:p-12 pb-12">
             {/* Form Wrapper (acts as card on mobile, transparent on desktop) */}
-            <div className="relative w-full max-w-md mx-auto lg:max-w-[380px] lg:mx-auto p-8 lg:p-0 rounded-[3px] bg-[#0d1320] lg:bg-transparent border border-[rgba(16, 185, 129,0.22)] lg:border-none">
+            <div className="relative w-full max-w-md mx-auto lg:max-w-[380px] lg:mx-auto p-8 lg:p-0 rounded-[3px] bg-[var(--c-surface)] lg:bg-transparent border border-[rgba(16, 185, 129,0.22)] lg:border-none">
               
               {/* Mobile Card Ornaments (hidden on desktop) */}
               <div className="lg:hidden absolute top-0 left-0 right-0 h-[1px] bg-arc-accent w-full" />

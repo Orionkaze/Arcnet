@@ -197,7 +197,7 @@ export default function MentorsPage() {
             <h1 className="font-chakra text-2xl text-white font-bold uppercase tracking-wider">
               Find Mentors
             </h1>
-            <p className="font-inter text-sm text-[#C8C7C7]">
+            <p className="font-inter text-sm text-[var(--c-text-muted)]">
               Browse verified professionals across consulting, finance, product,
               data, and aptitude &mdash; then book a session.
               <span className="block mt-1 text-xs text-[#8A9099]">Sample profiles — live mentor booking rolls out soon. Request a session to be notified.</span>
@@ -211,7 +211,7 @@ export default function MentorsPage() {
               placeholder="Search by name or expertise (e.g. DCF, Case Structuring, SQL)..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-[#161c24] border border-[#2A313C] text-white text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:border-[#10B981] transition-colors font-inter"
+              className="w-full bg-[var(--c-surface-2)] border border-[var(--c-border)] text-white text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:border-[#10B981] transition-colors font-inter"
               style={{ height: "44px" }}
             />
           </div>
@@ -238,7 +238,7 @@ export default function MentorsPage() {
                 <div className="flex gap-4 items-start">
                   {/* Avatar */}
                   <div className="flex-shrink-0">
-                    <div className="w-12 h-12 rounded-full bg-[#2A313C] overflow-hidden flex items-center justify-center font-bold text-lg text-white border border-[#2A313C]">
+                    <div className="w-12 h-12 rounded-full bg-[var(--c-border)] overflow-hidden flex items-center justify-center font-bold text-lg text-white border border-[var(--c-border)]">
                       {mentor.firstName.charAt(0).toUpperCase()}
                     </div>
                   </div>
@@ -274,14 +274,14 @@ export default function MentorsPage() {
                     <p className="font-chakra text-xs text-[#10B981] uppercase tracking-wide mt-1 font-bold truncate">
                       {mentor.role} @ {mentor.studio}
                     </p>
-                    <span className="font-inter text-[11px] text-[#C8C7C7]">
+                    <span className="font-inter text-[11px] text-[var(--c-text-muted)]">
                       {mentor.years} yrs experience
                     </span>
                   </div>
                 </div>
 
                 {/* Bio */}
-                <p className="font-inter text-xs text-[#C8C7C7] mt-3 leading-relaxed">
+                <p className="font-inter text-xs text-[var(--c-text-muted)] mt-3 leading-relaxed">
                   {mentor.bio}
                 </p>
 
@@ -290,7 +290,7 @@ export default function MentorsPage() {
                   {mentor.expertise.map((tag, tIdx) => (
                     <span
                       key={tIdx}
-                      className="text-[10px] font-inter bg-[#2A313C] text-white px-2 py-0.5 rounded"
+                      className="text-[10px] font-inter bg-[var(--c-border)] text-white px-2 py-0.5 rounded"
                     >
                       {tag}
                     </span>
@@ -298,11 +298,11 @@ export default function MentorsPage() {
                 </div>
 
                 {/* Rating + price + CTA */}
-                <div className="flex items-center justify-between mt-4 pt-3 border-t border-[#2A313C]">
+                <div className="flex items-center justify-between mt-4 pt-3 border-t border-[var(--c-border)]">
                   <div className="flex flex-col">
                     <span className="font-inter text-xs text-white">
                       <span className="text-[#10B981]">&#9733;</span> {mentor.rating.toFixed(1)}{" "}
-                      <span className="text-[#C8C7C7]">({mentor.sessions} sessions)</span>
+                      <span className="text-[var(--c-text-muted)]">({mentor.sessions} sessions)</span>
                     </span>
                     <span className="font-chakra text-xs text-white font-bold mt-0.5">
                       &#8377;{mentor.price.toLocaleString("en-IN")} / 45 min
@@ -322,7 +322,7 @@ export default function MentorsPage() {
           {/* Empty state */}
           {filteredMentors.length === 0 && (
             <div className="text-center py-16">
-              <div className="text-[#C8C7C7] font-inter text-sm">
+              <div className="text-[var(--c-text-muted)] font-inter text-sm">
                 No mentors found matching &quot;{search}&quot;.
               </div>
             </div>
@@ -343,8 +343,8 @@ export default function MentorsPage() {
           color: rgba(16, 185, 129, 0.6);
         }
         .mentor-card {
-          background: #10141a;
-          border: 1px solid #2a313c;
+          background: var(--c-surface);
+          border: 1px solid var(--c-border);
           border-radius: 10px;
           padding: 1rem;
           transition: border-color 0.2s;
@@ -358,9 +358,9 @@ export default function MentorsPage() {
           font-weight: 700;
           letter-spacing: 1px;
           text-transform: uppercase;
-          color: #c8c7c7;
-          background: #10141a;
-          border: 1px solid #2a313c;
+          color: var(--c-text-muted);
+          background: var(--c-surface);
+          border: 1px solid var(--c-border);
           border-radius: 9999px;
           padding: 6px 14px;
           cursor: pointer;
@@ -368,7 +368,7 @@ export default function MentorsPage() {
         }
         .specialty-pill:hover {
           border-color: rgba(16, 185, 129, 0.3);
-          color: #ffffff;
+          color: var(--c-text);
         }
         .specialty-pill.active {
           color: #10B981;

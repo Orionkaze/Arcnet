@@ -251,7 +251,7 @@ export default function Home() {
             <div className="flex justify-center sticky top-0 z-10 my-2">
               <button
                 onClick={loadNewPosts}
-                className="bg-[#10B981] text-[#10141A] font-chakra font-bold text-xs tracking-wide uppercase px-4 py-1.5 rounded-full border border-[#10B981] shadow-[0_0_10px_rgba(16, 185, 129,0.4)] cursor-pointer hover:bg-[#00d0e0] transition-all"
+                className="bg-[#10B981] text-[var(--c-surface)] font-chakra font-bold text-xs tracking-wide uppercase px-4 py-1.5 rounded-full border border-[#10B981] shadow-[0_0_10px_rgba(16, 185, 129,0.4)] cursor-pointer hover:bg-[#00d0e0] transition-all"
               >
                 New posts available
               </button>
@@ -281,7 +281,7 @@ export default function Home() {
           {!loading && posts.length === 0 && !error && (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               {/* Cyan Icon */}
-              <div className="w-16 h-16 rounded-full bg-[#10141A] border border-[#10B981] flex items-center justify-center shadow-[0_0_15px_rgba(16, 185, 129,0.2)] mb-4">
+              <div className="w-16 h-16 rounded-full bg-[var(--c-surface)] border border-[#10B981] flex items-center justify-center shadow-[0_0_15px_rgba(16, 185, 129,0.2)] mb-4">
                 <svg
                   width="28"
                   height="28"
@@ -301,7 +301,7 @@ export default function Home() {
               <h2 className="font-chakra text-lg text-white mb-2 uppercase tracking-wide">
                 Your feed is empty
               </h2>
-              <p className="font-inter text-sm text-[#C8C7C7] mb-6 max-w-sm">
+              <p className="font-inter text-sm text-[var(--c-text-muted)] mb-6 max-w-sm">
                 Follow people to see what the community is working on
               </p>
               <Link href="/ecosystem/find-team">
@@ -318,12 +318,12 @@ export default function Home() {
               <h3 className="font-chakra text-base text-white mb-2 uppercase">
                 Failed to load feed
               </h3>
-              <p className="font-inter text-sm text-[#C8C7C7] mb-4">
+              <p className="font-inter text-sm text-[var(--c-text-muted)] mb-4">
                 Please check your network and try again.
               </p>
               <button
                 onClick={() => fetchFeed(1, false)}
-                className="px-6 py-2 bg-[#10B981] hover:bg-[#00d0e0] text-[#10141A] font-chakra font-bold text-xs uppercase tracking-wider rounded cursor-pointer transition-colors"
+                className="px-6 py-2 bg-[#10B981] hover:bg-[#00d0e0] text-[var(--c-surface)] font-chakra font-bold text-xs uppercase tracking-wider rounded cursor-pointer transition-colors"
               >
                 Retry
               </button>
@@ -340,7 +340,7 @@ export default function Home() {
         <div className="fixed top-[72px] right-6 z-50">
           <div className="relative">
             <button
-              className="w-9 h-9 rounded-full bg-[#10141A] border-2 border-[#10B981] flex items-center justify-center hover:bg-[rgba(16, 185, 129,0.1)] transition-colors cursor-pointer"
+              className="w-9 h-9 rounded-full bg-[var(--c-surface)] border-2 border-[#10B981] flex items-center justify-center hover:bg-[rgba(16, 185, 129,0.1)] transition-colors cursor-pointer"
               onClick={() => setDropdownOpen(!dropdownOpen)}
             >
               <svg
@@ -361,9 +361,9 @@ export default function Home() {
             </button>
             
             {dropdownOpen && (
-              <div className="absolute top-full mt-2 right-0 bg-[#14181F] border border-[#2A313C] rounded-lg shadow-2xl py-2 w-48 font-inter">
+              <div className="absolute top-full mt-2 right-0 bg-[var(--c-surface-2)] border border-[var(--c-border)] rounded-lg shadow-2xl py-2 w-48 font-inter">
                 <button
-                  className="w-full text-left px-4 py-2 text-[#C8C7C7] hover:text-white hover:bg-[#1D232D] transition-colors text-sm"
+                  className="w-full text-left px-4 py-2 text-[var(--c-text-muted)] hover:text-white hover:bg-[var(--c-surface-2)] transition-colors text-sm"
                   onClick={() => {
                     setDropdownOpen(false);
                     setIsJoinHubModalOpen(true);
@@ -372,7 +372,7 @@ export default function Home() {
                   Join New Hub
                 </button>
                 <button
-                  className="w-full text-left px-4 py-2 text-white hover:bg-[#1D232D] transition-colors text-sm"
+                  className="w-full text-left px-4 py-2 text-white hover:bg-[var(--c-surface-2)] transition-colors text-sm"
                   onClick={() => {
                     setDropdownOpen(false);
                     setIsCreatePostModalOpen(true);
@@ -401,7 +401,7 @@ export default function Home() {
       {/* JOIN HUB MODAL */}
       {isJoinHubModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-[#10141A] border border-[#2A313C] rounded-lg p-6 w-[400px] max-w-[90vw] shadow-2xl relative">
+          <div className="bg-[var(--c-surface)] border border-[var(--c-border)] rounded-lg p-6 w-[400px] max-w-[90vw] shadow-2xl relative">
             <button
               onClick={() => {
                 setIsJoinHubModalOpen(false);
@@ -409,7 +409,7 @@ export default function Home() {
                 setJoinError("");
                 setJoinSuccess("");
               }}
-              className="absolute top-4 right-4 text-[#C8C7C7] hover:text-white transition-colors"
+              className="absolute top-4 right-4 text-[var(--c-text-muted)] hover:text-white transition-colors"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M18 6L6 18M6 6l12 12" />
@@ -420,7 +420,7 @@ export default function Home() {
               {joinError && <div className="text-[#FF4D4D] text-sm font-chakra">{joinError}</div>}
               {joinSuccess && <div className="text-[#10B981] text-sm font-chakra">{joinSuccess}</div>}
               <div>
-                <label className="block text-xs font-chakra text-[#C8C7C7] mb-1 uppercase tracking-wider">
+                <label className="block text-xs font-chakra text-[var(--c-text-muted)] mb-1 uppercase tracking-wider">
                   Enter Hub Code
                 </label>
                 <input
@@ -429,14 +429,14 @@ export default function Home() {
                   onChange={(e) => setJoinCode(e.target.value)}
                   required
                   maxLength={6}
-                  className="w-full bg-[#161c24] border border-[#2A313C] rounded p-2 text-white font-mono text-center text-2xl tracking-[0.5em] focus:outline-none focus:border-[#10B981] transition-colors uppercase"
+                  className="w-full bg-[var(--c-surface-2)] border border-[var(--c-border)] rounded p-2 text-white font-mono text-center text-2xl tracking-[0.5em] focus:outline-none focus:border-[#10B981] transition-colors uppercase"
                   placeholder="------"
                 />
               </div>
               <button
                 type="submit"
                 disabled={isJoining || !!joinSuccess}
-                className="w-full py-2.5 rounded bg-[#10B981] text-[#10141A] font-chakra font-bold text-sm uppercase tracking-wider hover:bg-[#00d0e0] transition-colors mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-2.5 rounded bg-[#10B981] text-[var(--c-surface)] font-chakra font-bold text-sm uppercase tracking-wider hover:bg-[#00d0e0] transition-colors mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isJoining ? "Sending..." : "Request"}
               </button>

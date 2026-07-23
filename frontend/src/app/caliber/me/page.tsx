@@ -51,7 +51,7 @@ export default function CredentialPage() {
             <h1 className="font-chakra text-2xl text-white font-bold uppercase tracking-wider">
               Your Credential
             </h1>
-            <p className="font-inter text-sm text-[#C8C7C7]">
+            <p className="font-inter text-sm text-[var(--c-text-muted)]">
               Ratings earned from deterministic practice — a portable signal of ability.
             </p>
           </div>

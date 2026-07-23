@@ -333,8 +333,8 @@ export default function ShareModal({ isOpen, onClose, postId, postContent }: Sha
           z-index: 999;
         }
         .share-modal-content {
-          background: #10141A;
-          border: 1px solid #2A313C;
+          background: var(--c-surface);
+          border: 1px solid var(--c-border);
           border-radius: 16px;
           padding: 1.25rem;
           width: 420px;
@@ -365,14 +365,14 @@ export default function ShareModal({ isOpen, onClose, postId, postContent }: Sha
           font-family: var(--font-chakra-petch), sans-serif;
           font-weight: 700;
           font-size: 16px;
-          color: #FFFFFF;
+          color: var(--c-text);
           text-transform: uppercase;
           letter-spacing: 0.5px;
         }
         .share-modal-close {
           background: none;
           border: none;
-          color: #C8C7C7;
+          color: var(--c-text-muted);
           cursor: pointer;
           padding: 4px;
           transition: color 0.2s;
@@ -387,9 +387,9 @@ export default function ShareModal({ isOpen, onClose, postId, postContent }: Sha
           width: 100%;
           height: 40px;
           border-radius: 8px;
-          background: #0d1320;
-          border: 1px solid #2A313C;
-          color: #FFFFFF;
+          background: var(--c-surface);
+          border: 1px solid var(--c-border);
+          color: var(--c-text);
           padding: 0 12px;
           font-family: var(--font-inter), sans-serif;
           font-size: 14px;
@@ -407,7 +407,7 @@ export default function ShareModal({ isOpen, onClose, postId, postContent }: Sha
         }
         .share-loading {
           text-align: center;
-          color: #C8C7C7;
+          color: var(--c-text-muted);
           font-size: 12px;
           padding: 1.5rem 0;
         }
@@ -436,7 +436,7 @@ export default function ShareModal({ isOpen, onClose, postId, postContent }: Sha
           width: 36px;
           height: 36px;
           border-radius: 50%;
-          background: #2A313C;
+          background: var(--c-border);
           overflow: hidden;
           display: flex;
           align-items: center;
@@ -444,7 +444,7 @@ export default function ShareModal({ isOpen, onClose, postId, postContent }: Sha
           font-family: var(--font-inter), sans-serif;
           font-size: 14px;
           font-weight: 700;
-          color: #FFFFFF;
+          color: var(--c-text);
         }
         .share-person-avatar img {
           width: 100%;
@@ -459,21 +459,21 @@ export default function ShareModal({ isOpen, onClose, postId, postContent }: Sha
           font-family: var(--font-inter), sans-serif;
           font-size: 14px;
           font-weight: 600;
-          color: #FFFFFF;
+          color: var(--c-text);
         }
         .share-person-handle {
           font-family: var(--font-inter), sans-serif;
           font-size: 12px;
-          color: #C8C7C7;
+          color: var(--c-text-muted);
         }
         .share-send-btn {
           font-family: var(--font-chakra-petch), sans-serif;
           font-size: 11px;
           font-weight: 700;
           text-transform: uppercase;
-          border: 1px solid #2A313C;
+          border: 1px solid var(--c-border);
           background: transparent;
-          color: #C8C7C7;
+          color: var(--c-text-muted);
           border-radius: 6px;
           padding: 4px 12px;
           cursor: pointer;
@@ -493,9 +493,9 @@ export default function ShareModal({ isOpen, onClose, postId, postContent }: Sha
           font-family: var(--font-chakra-petch), sans-serif;
           font-size: 11px;
           font-weight: 700;
-          border: 1px solid #2A313C;
+          border: 1px solid var(--c-border);
           background: transparent;
-          color: #C8C7C7;
+          color: var(--c-text-muted);
           border-radius: 6px;
           padding: 4px 12px;
           cursor: pointer;
@@ -516,12 +516,12 @@ export default function ShareModal({ isOpen, onClose, postId, postContent }: Sha
         .share-empty-message {
           font-family: var(--font-inter), sans-serif;
           font-size: 13px;
-          color: #C8C7C7;
+          color: var(--c-text-muted);
           margin-bottom: 1.5rem;
         }
         .share-suggestions-section {
           text-align: left;
-          border-top: 1px solid #2A313C;
+          border-top: 1px solid var(--c-border);
           padding-top: 1rem;
         }
         .share-suggestions-title {
@@ -546,12 +546,12 @@ export default function ShareModal({ isOpen, onClose, postId, postContent }: Sha
         .divider-line {
           flex: 1;
           height: 1px;
-          background: #2A313C;
+          background: var(--c-border);
         }
         .divider-text {
           font-family: var(--font-inter), sans-serif;
           font-size: 11px;
-          color: #C8C7C7;
+          color: var(--c-text-muted);
         }
         .share-external-row {
           display: flex;
@@ -562,9 +562,9 @@ export default function ShareModal({ isOpen, onClose, postId, postContent }: Sha
           width: 40px;
           height: 40px;
           border-radius: 50%;
-          background: #0d1320;
-          border: 1px solid #2A313C;
-          color: #C8C7C7;
+          background: var(--c-surface);
+          border: 1px solid var(--c-border);
+          color: var(--c-text-muted);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -581,7 +581,7 @@ export default function ShareModal({ isOpen, onClose, postId, postContent }: Sha
           left: 50%;
           transform: translateX(-50%);
           background: #10B981;
-          color: #10141A;
+          color: var(--c-surface);
           font-family: var(--font-chakra-petch), sans-serif;
           font-weight: 700;
           font-size: 12px;

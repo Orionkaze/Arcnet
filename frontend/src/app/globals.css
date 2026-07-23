@@ -1,19 +1,59 @@
 @import "tailwindcss";
 @config "../../tailwind.config.ts";
 
+/*
+ * Semantic theme palette.
+ *
+ * The app was built dark-only with the palette hardcoded as hex literals in
+ * ~40 files. Those literals now resolve through these variables, so switching
+ * `data-theme` on <html> re-themes the whole app (see ThemeProvider).
+ * The emerald accent (#10B981) and danger red are deliberately shared by both
+ * themes — they read correctly on light and dark surfaces alike.
+ */
+:root,
+:root[data-theme="dark"] {
+  --c-bg: #080c14;         /* page background */
+  --c-surface: #10141a;    /* cards, panels, bars */
+  --c-surface-2: #161c24;  /* inputs, elevated/hover surfaces */
+  --c-border: #2a313c;
+  --c-text: #ffffff;       /* primary text */
+  --c-text-muted: #c8c7c7; /* secondary text */
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --c-bg: #f5f7fa;
+  --c-surface: #ffffff;
+  --c-surface-2: #eef1f6;
+  --c-border: #d5dce6;
+  --c-text: #0d1320;
+  --c-text-muted: #59636f;
+  color-scheme: light;
+}
+
 @theme {
-  --color-arc-page: #080c14;
-  --color-arc-card: #0d1320;
+  --color-arc-page: var(--c-bg);
+  --color-arc-card: var(--c-surface);
   --color-arc-accent: #10B981;
-  --color-arc-input: #080c14;
-  --color-arc-google-bg: #0a0f1c;
-  --color-arc-primary: #e4f0ff;
+  --color-arc-input: var(--c-bg);
+  --color-arc-google-bg: var(--c-surface-2);
+  --color-arc-primary: var(--c-text);
   --color-arc-border-card: rgba(16, 185, 129, 0.22);
   --color-arc-border-input: rgba(16, 185, 129, 0.18);
-  --color-arc-border-google: rgba(255, 255, 255, 0.1);
+  --color-arc-border-google: var(--c-border);
   --font-sans: var(--font-manrope), var(--font-inter), sans-serif;
   --font-chakra: var(--font-manrope), var(--font-chakra-petch), sans-serif;
 }
+
+/*
+ * Tailwind's built-in white/black text utilities are used ~135 times as
+ * "primary text". Re-point them at the theme's text colour so they invert in
+ * light mode. The [data-theme] prefix outranks Tailwind's own rule.
+ */
+:root[data-theme="light"] .text-white { color: var(--c-text); }
+:root[data-theme="light"] .bg-white { background-color: var(--c-surface); }
+
+html { background-color: var(--c-bg); }
 
 body {
   color: var(--color-arc-primary);

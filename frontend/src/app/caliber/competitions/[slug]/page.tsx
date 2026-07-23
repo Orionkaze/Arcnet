@@ -86,7 +86,7 @@ export default function CompetitionDetail() {
                   </h1>
                   <span className={s.pill}>{detail.competition.state}</span>
                 </div>
-                <p className="font-inter text-sm text-[#C8C7C7]">{detail.competition.description}</p>
+                <p className="font-inter text-sm text-[var(--c-text-muted)]">{detail.competition.description}</p>
               </div>
 
               {detail.competition.state !== "ended" && (

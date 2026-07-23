@@ -43,7 +43,7 @@ export default function CaliberHome() {
             <h1 className="font-chakra text-2xl text-white font-bold uppercase tracking-wider">
               Practice
             </h1>
-            <p className="font-inter text-sm text-[#C8C7C7]">
+            <p className="font-inter text-sm text-[var(--c-text-muted)]">
               Practice real problems. Get instant feedback. Build a rating that proves your ability.
             </p>
           </div>

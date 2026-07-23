@@ -943,12 +943,12 @@ export default function HubPage() {
   };
 
   return (
-    <div className="home-layout flex flex-col h-screen w-screen overflow-hidden bg-[#10141A]">
+    <div className="home-layout flex flex-col h-screen w-screen overflow-hidden bg-[var(--c-surface)]">
       <Navbar onMenuToggle={() => setIsDrawerOpen(!isDrawerOpen)} />
 
       {/* Global in-UI toast */}
       {toast && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 bg-[#10B981] text-[#10141A] font-chakra font-bold text-xs py-2 px-4 rounded-md shadow-[0_0_15px_rgba(16, 185, 129,0.4)] z-[200] animate-fade-in">
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 bg-[#10B981] text-[var(--c-surface)] font-chakra font-bold text-xs py-2 px-4 rounded-md shadow-[0_0_15px_rgba(16, 185, 129,0.4)] z-[200] animate-fade-in">
           {toast}
         </div>
       )}
@@ -966,11 +966,11 @@ export default function HubPage() {
         <div className="flex-1 flex overflow-hidden mt-14 relative">
           
           {/* COLUMN 1: LEFT SIDEBAR (Hub Info, Channels, Join/Leave) */}
-          <aside className="w-[260px] min-w-[260px] border-r border-[#2A313C] bg-[#10141A] p-4 flex flex-col justify-between select-none h-full">
+          <aside className="w-[260px] min-w-[260px] border-r border-[var(--c-border)] bg-[var(--c-surface)] p-4 flex flex-col justify-between select-none h-full">
             <div className="flex flex-col overflow-y-auto space-y-4 pr-1">
               
               {/* Hub Meta Card */}
-              <div className="p-3 bg-[#161c24] border border-[#2A313C] rounded-lg relative">
+              <div className="p-3 bg-[var(--c-surface-2)] border border-[var(--c-border)] rounded-lg relative">
                 <div className="flex items-center gap-3">
                   <span className="text-white">{renderHubIcon(hub.icon, 28)}</span>
                   <div>
@@ -991,33 +991,33 @@ export default function HubPage() {
                     </span>
                   </div>
                 </div>
-                <p className="text-xs text-[#C8C7C7] mt-2 leading-relaxed font-inter">
+                <p className="text-xs text-[var(--c-text-muted)] mt-2 leading-relaxed font-inter">
                   {hub.description}
                 </p>
 
                 {/* Member Metrics */}
-                <div className="flex items-center gap-4 mt-3 text-[11px] font-chakra border-t border-[#2A313C]/50 pt-2.5">
+                <div className="flex items-center gap-4 mt-3 text-[11px] font-chakra border-t border-[color-mix(in_srgb,var(--c-border)_50%,transparent)] pt-2.5">
                   <div className="flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-[#00E676]"></span>
                     <span className="text-white font-bold">{hub.onlineCount}</span>
-                    <span className="text-[#C8C7C7]">Online</span>
+                    <span className="text-[var(--c-text-muted)]">Online</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-[#C8C7C7]/50"></span>
+                    <span className="w-2 h-2 rounded-full bg-[color-mix(in_srgb,var(--c-text-muted)_50%,transparent)]"></span>
                     <span className="text-white font-bold">{hub.memberCount}</span>
-                    <span className="text-[#C8C7C7]">Members</span>
+                    <span className="text-[var(--c-text-muted)]">Members</span>
                   </div>
                 </div>
               </div>
 
               {/* View Selector (Chat vs Community Feed) */}
-              <div className="grid grid-cols-2 gap-2 bg-[#161c24]/50 p-1 rounded-lg border border-[#2A313C]/50">
+              <div className="grid grid-cols-2 gap-2 bg-[color-mix(in_srgb,var(--c-surface-2)_50%,transparent)] p-1 rounded-lg border border-[color-mix(in_srgb,var(--c-border)_50%,transparent)]">
                 <button
                   onClick={() => setViewMode("chat")}
                   className={`py-1.5 text-xs font-chakra font-bold rounded uppercase transition-all tracking-wider ${
                     viewMode === "chat"
-                      ? "bg-[#10B981] text-[#10141A] shadow-[0_0_8px_rgba(16, 185, 129,0.3)]"
-                      : "text-[#C8C7C7] hover:text-white"
+                      ? "bg-[#10B981] text-[var(--c-surface)] shadow-[0_0_8px_rgba(16, 185, 129,0.3)]"
+                      : "text-[var(--c-text-muted)] hover:text-white"
                   }`}
                 >
                   Chatroom
@@ -1026,8 +1026,8 @@ export default function HubPage() {
                   onClick={() => setViewMode("feed")}
                   className={`py-1.5 text-xs font-chakra font-bold rounded uppercase transition-all tracking-wider ${
                     viewMode === "feed"
-                      ? "bg-[#10B981] text-[#10141A] shadow-[0_0_8px_rgba(16, 185, 129,0.3)]"
-                      : "text-[#C8C7C7] hover:text-white"
+                      ? "bg-[#10B981] text-[var(--c-surface)] shadow-[0_0_8px_rgba(16, 185, 129,0.3)]"
+                      : "text-[var(--c-text-muted)] hover:text-white"
                   }`}
                 >
                   Feed
@@ -1050,7 +1050,7 @@ export default function HubPage() {
                       className={`w-full flex items-center gap-2 px-3 py-2 rounded text-left text-xs transition-all font-inter border-l-2 ${
                         selectedChannel?.id === chan.id && viewMode === "chat"
                           ? "bg-cyan-950/20 text-[#10B981] border-[#10B981]"
-                          : "text-[#C8C7C7] border-transparent hover:bg-[#161c24]/50 hover:text-white"
+                          : "text-[var(--c-text-muted)] border-transparent hover:bg-[color-mix(in_srgb,var(--c-surface-2)_50%,transparent)] hover:text-white"
                       }`}
                     >
                       <span className="text-[#10B981]/70 font-chakra">#</span>
@@ -1063,7 +1063,7 @@ export default function HubPage() {
             </div>
 
             {/* Bottom Join/Leave trigger */}
-            <div className="border-t border-[#2A313C] pt-3">
+            <div className="border-t border-[var(--c-border)] pt-3">
               {user ? (
                 <button
                   onClick={handleJoinToggle}
@@ -1071,7 +1071,7 @@ export default function HubPage() {
                   className={`w-full py-2.5 rounded font-chakra font-bold text-xs uppercase tracking-wider transition-all border ${
                     hub.joined
                       ? "bg-transparent text-[#FF4D4D] border-[#FF4D4D]/40 hover:bg-[#FF4D4D]/10 hover:border-[#FF4D4D]"
-                      : "bg-[#10B981] text-[#10141A] border-[#10B981] hover:bg-[#00d0e0] shadow-[0_0_10px_rgba(16, 185, 129,0.25)]"
+                      : "bg-[#10B981] text-[var(--c-surface)] border-[#10B981] hover:bg-[#00d0e0] shadow-[0_0_10px_rgba(16, 185, 129,0.25)]"
                   }`}
                 >
                   {joining ? "Processing..." : hub.joined ? "Leave Hub" : "Join Hub"}
@@ -1088,10 +1088,10 @@ export default function HubPage() {
           </aside>
 
           {/* COLUMN 2: CENTER PANE (Chatroom or Feed) */}
-          <main className="flex-1 flex flex-col bg-[#10141A] h-full overflow-hidden">
+          <main className="flex-1 flex flex-col bg-[var(--c-surface)] h-full overflow-hidden">
             
             {/* View Header */}
-            <header className="h-[56px] border-b border-[#2A313C] px-4 flex items-center justify-between flex-shrink-0 select-none bg-[#10141A]">
+            <header className="h-[56px] border-b border-[var(--c-border)] px-4 flex items-center justify-between flex-shrink-0 select-none bg-[var(--c-surface)]">
               <div className="flex items-center gap-2">
                 <span className="text-[#10B981] font-chakra text-lg">#</span>
                 <h1 className="font-chakra font-bold text-sm text-white tracking-wide uppercase">
@@ -1111,7 +1111,7 @@ export default function HubPage() {
                 {/* Members Panel toggle */}
                 <button
                   onClick={() => setShowMembersPanel(!showMembersPanel)}
-                  className={`p-2 rounded text-[#C8C7C7] hover:text-white transition-all cursor-pointer ${
+                  className={`p-2 rounded text-[var(--c-text-muted)] hover:text-white transition-all cursor-pointer ${
                     showMembersPanel ? "text-[#10B981]" : ""
                   }`}
                   title="Toggle Member Panel"
@@ -1128,8 +1128,8 @@ export default function HubPage() {
 
             {/* Check Privacy Access */}
             {hub.isPrivate && !hub.joined ? (
-              <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#10141A]">
-                <div className="w-16 h-16 rounded-full bg-[#161c24] border border-[#2A313C] flex items-center justify-center shadow-lg mb-4 text-white">
+              <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[var(--c-surface)]">
+                <div className="w-16 h-16 rounded-full bg-[var(--c-surface-2)] border border-[var(--c-border)] flex items-center justify-center shadow-lg mb-4 text-white">
                   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="3" y="11" width="18" height="11" rx="2" />
                     <path d="M7 11V7a5 5 0 0 1 10 0v4" />
@@ -1138,7 +1138,7 @@ export default function HubPage() {
                 <h2 className="font-chakra font-bold text-xl text-white mb-2 uppercase tracking-widest">
                   Private Hub
                 </h2>
-                <p className="font-inter text-sm text-[#C8C7C7] max-w-sm leading-relaxed mb-6">
+                <p className="font-inter text-sm text-[var(--c-text-muted)] max-w-sm leading-relaxed mb-6">
                   You need to be a member to view messages, channels, and feed in this hub. Enter the join code below to request access.
                 </p>
 
@@ -1156,12 +1156,12 @@ export default function HubPage() {
                         }
                       }}
                       placeholder="Enter join code"
-                      className="flex-1 bg-[#161c24] border border-[#2A313C] text-white text-xs px-3 py-2.5 rounded-lg focus:outline-none focus:border-[#10B981] font-chakra tracking-[0.15em] uppercase text-center placeholder:tracking-normal placeholder:normal-case"
+                      className="flex-1 bg-[var(--c-surface-2)] border border-[var(--c-border)] text-white text-xs px-3 py-2.5 rounded-lg focus:outline-none focus:border-[#10B981] font-chakra tracking-[0.15em] uppercase text-center placeholder:tracking-normal placeholder:normal-case"
                     />
                     <button
                       onClick={handleRequestToJoin}
                       disabled={joinRequestLoading}
-                      className="px-4 py-2.5 bg-[#10B981] text-[#10141A] font-chakra font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-[#00d0e0] shadow-[0_0_10px_rgba(16, 185, 129,0.25)] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                      className="px-4 py-2.5 bg-[#10B981] text-[var(--c-surface)] font-chakra font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-[#00d0e0] shadow-[0_0_10px_rgba(16, 185, 129,0.25)] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                     >
                       {joinRequestLoading ? "Sending..." : "Request to Join"}
                     </button>
@@ -1196,7 +1196,7 @@ export default function HubPage() {
                 
                 {/* rate limit notification toast */}
                 {rateLimitError && (
-                  <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-[#FF4D4D] text-[#10141A] font-chakra font-bold text-xs py-2 px-4 rounded-md shadow-[0_0_15px_rgba(255,77,77,0.4)] z-30 animate-pulse">
+                  <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-[#FF4D4D] text-[var(--c-surface)] font-chakra font-bold text-xs py-2 px-4 rounded-md shadow-[0_0_15px_rgba(255,77,77,0.4)] z-30 animate-pulse">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block align-[-2px] mr-1">
                       <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
                       <line x1="12" y1="9" x2="12" y2="13" />
@@ -1208,7 +1208,7 @@ export default function HubPage() {
 
                 {/* Local Pinned Message banner */}
                 {pinnedMessage && (
-                  <div className="bg-[#161c24] border-b border-[#2A313C] px-4 py-2 flex items-center justify-between text-xs font-inter z-10 flex-shrink-0">
+                  <div className="bg-[var(--c-surface-2)] border-b border-[var(--c-border)] px-4 py-2 flex items-center justify-between text-xs font-inter z-10 flex-shrink-0">
                     <div className="flex items-center gap-2 truncate">
                       <span className="text-[#10B981]">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1216,14 +1216,14 @@ export default function HubPage() {
                           <path d="M5 17h14l-1.6-2.1a2 2 0 0 1-.4-1.2V8a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v5.7a2 2 0 0 1-.4 1.2z" />
                         </svg>
                       </span>
-                      <span className="text-[#C8C7C7] truncate">
+                      <span className="text-[var(--c-text-muted)] truncate">
                         <strong>@{pinnedMessage.author.username}</strong>: {pinnedMessage.content}
                       </span>
                     </div>
                     {canManagePins && (
                       <button
                         onClick={() => handleSetPinnedMessage(null)}
-                        className="text-[#C8C7C7] hover:text-[#FF4D4D] font-chakra text-[10px] tracking-wider uppercase font-bold pl-3"
+                        className="text-[var(--c-text-muted)] hover:text-[#FF4D4D] font-chakra text-[10px] tracking-wider uppercase font-bold pl-3"
                       >
                         Dismiss
                       </button>
@@ -1238,11 +1238,11 @@ export default function HubPage() {
                   className="flex-1 overflow-y-auto p-4 space-y-4 relative min-h-0"
                 >
                   {chatLoading ? (
-                    <div className="h-full flex items-center justify-center text-xs text-[#C8C7C7] font-chakra">
+                    <div className="h-full flex items-center justify-center text-xs text-[var(--c-text-muted)] font-chakra">
                       Loading conversation...
                     </div>
                   ) : messages.length === 0 ? (
-                    <div className="h-full flex flex-col items-center justify-center text-center text-[#C8C7C7] px-6 select-none">
+                    <div className="h-full flex flex-col items-center justify-center text-center text-[var(--c-text-muted)] px-6 select-none">
                       <span className="mb-2">
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -1268,22 +1268,22 @@ export default function HubPage() {
                             {/* Date divider */}
                             {isNewDay && (
                               <div className="flex items-center gap-2 py-3 select-none">
-                                <div className="flex-1 h-[1px] bg-[#2A313C]/40"></div>
-                                <span className="font-chakra text-[10px] text-[#C8C7C7] uppercase tracking-wider px-2 bg-[#10141A]">
+                                <div className="flex-1 h-[1px] bg-[color-mix(in_srgb,var(--c-border)_40%,transparent)]"></div>
+                                <span className="font-chakra text-[10px] text-[var(--c-text-muted)] uppercase tracking-wider px-2 bg-[var(--c-surface)]">
                                   {getFormattedDateHeader(msg.createdAt)}
                                 </span>
-                                <div className="flex-1 h-[1px] bg-[#2A313C]/40"></div>
+                                <div className="flex-1 h-[1px] bg-[color-mix(in_srgb,var(--c-border)_40%,transparent)]"></div>
                               </div>
                             )}
 
                             {/* Single Message Wrapper */}
-                            <div className="group flex gap-3 hover:bg-[#161c24]/30 p-1.5 rounded-lg transition-colors relative">
+                            <div className="group flex gap-3 hover:bg-[color-mix(in_srgb,var(--c-surface-2)_30%,transparent)] p-1.5 rounded-lg transition-colors relative">
                               
                               {/* Avatar */}
                               {msg.author.username ? (
                                 <Link
                                   href={`/profile/${msg.author.username}`}
-                                  className="w-8 h-8 rounded-full bg-[#2A313C] overflow-hidden flex-shrink-0 flex items-center justify-center font-bold text-xs select-none hover:ring-2 hover:ring-[#10B981] transition-all"
+                                  className="w-8 h-8 rounded-full bg-[var(--c-border)] overflow-hidden flex-shrink-0 flex items-center justify-center font-bold text-xs select-none hover:ring-2 hover:ring-[#10B981] transition-all"
                                 >
                                   {msg.author.avatar ? (
                                     // eslint-disable-next-line @next/next/no-img-element
@@ -1297,7 +1297,7 @@ export default function HubPage() {
                                   )}
                                 </Link>
                               ) : (
-                                <div className="w-8 h-8 rounded-full bg-[#2A313C] overflow-hidden flex-shrink-0 flex items-center justify-center font-bold text-xs select-none">
+                                <div className="w-8 h-8 rounded-full bg-[var(--c-border)] overflow-hidden flex-shrink-0 flex items-center justify-center font-bold text-xs select-none">
                                   {msg.author.avatar ? (
                                     // eslint-disable-next-line @next/next/no-img-element
                                     <img
@@ -1331,14 +1331,14 @@ export default function HubPage() {
                                       <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                                     </svg>
                                   )}
-                                  <span className="text-[10px] text-[#C8C7C7]">
+                                  <span className="text-[10px] text-[var(--c-text-muted)]">
                                     @{msg.author.username} • {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                   </span>
                                 </div>
 
                                 {/* Reply details if message is nested */}
                                 {msg.replyTo && (
-                                  <div className="mt-1 flex items-center gap-2 bg-[#161c24] border-l-2 border-[#10B981] px-2 py-1 rounded text-[11px] text-[#C8C7C7] select-none truncate max-w-lg">
+                                  <div className="mt-1 flex items-center gap-2 bg-[var(--c-surface-2)] border-l-2 border-[#10B981] px-2 py-1 rounded text-[11px] text-[var(--c-text-muted)] select-none truncate max-w-lg">
                                     <span className="text-[#10B981]">
                                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <polyline points="9 14 4 9 9 4" />
@@ -1351,7 +1351,7 @@ export default function HubPage() {
                                   </div>
                                 )}
 
-                                <p className="text-xs text-[#E4F0FF] leading-relaxed mt-1 font-inter whitespace-pre-wrap break-words">
+                                <p className="text-xs text-[var(--c-text)] leading-relaxed mt-1 font-inter whitespace-pre-wrap break-words">
                                   {msg.content}
                                 </p>
 
@@ -1373,7 +1373,7 @@ export default function HubPage() {
                                           className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[10px] font-chakra transition-all cursor-pointer ${
                                             hasMyReaction
                                               ? "bg-cyan-950/20 text-[#10B981] border-[#10B981]"
-                                              : "bg-[#161c24] text-[#C8C7C7] border-[#2A313C] hover:border-white"
+                                              : "bg-[var(--c-surface-2)] text-[var(--c-text-muted)] border-[var(--c-border)] hover:border-white"
                                           }`}
                                         >
                                           <span>{emoji}</span>
@@ -1386,10 +1386,10 @@ export default function HubPage() {
                               </div>
 
                               {/* Hover Message Utilities (Reply, React, Pin) */}
-                              <div className="absolute right-2 -top-3 hidden group-hover:flex items-center gap-1 bg-[#161c24] border border-[#2A313C] rounded shadow-md px-1 py-0.5 z-10 select-none">
+                              <div className="absolute right-2 -top-3 hidden group-hover:flex items-center gap-1 bg-[var(--c-surface-2)] border border-[var(--c-border)] rounded shadow-md px-1 py-0.5 z-10 select-none">
                                 <button
                                   onClick={() => setReplyingTo(msg)}
-                                  className="p-1 text-[#C8C7C7] hover:text-[#10B981] rounded transition-all cursor-pointer"
+                                  className="p-1 text-[var(--c-text-muted)] hover:text-[#10B981] rounded transition-all cursor-pointer"
                                   title="Reply"
                                 >
                                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1402,7 +1402,7 @@ export default function HubPage() {
                                 <div className="relative">
                                   <button
                                     onClick={() => setShowEmojiPickerForId(showEmojiPickerForId === msg.id ? null : msg.id)}
-                                    className="p-1 text-[#C8C7C7] hover:text-[#10B981] rounded transition-all cursor-pointer"
+                                    className="p-1 text-[var(--c-text-muted)] hover:text-[#10B981] rounded transition-all cursor-pointer"
                                     title="Add Reaction"
                                   >
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1414,7 +1414,7 @@ export default function HubPage() {
                                   </button>
 
                                   {showEmojiPickerForId === msg.id && (
-                                    <div className="absolute right-0 bottom-6 bg-[#161c24] border border-[#2A313C] rounded-lg shadow-xl p-1.5 flex gap-1 z-20 animate-fade-in">
+                                    <div className="absolute right-0 bottom-6 bg-[var(--c-surface-2)] border border-[var(--c-border)] rounded-lg shadow-xl p-1.5 flex gap-1 z-20 animate-fade-in">
                                       {emojiList.map((emoji) => (
                                         <button
                                           key={emoji}
@@ -1431,7 +1431,7 @@ export default function HubPage() {
                                 {canManagePins && (
                                   <button
                                     onClick={() => handleSetPinnedMessage(msg)}
-                                    className="p-1 text-[#C8C7C7] hover:text-[#10B981] rounded transition-all cursor-pointer"
+                                    className="p-1 text-[var(--c-text-muted)] hover:text-[#10B981] rounded transition-all cursor-pointer"
                                     title="Pin Message"
                                   >
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1471,7 +1471,7 @@ export default function HubPage() {
                       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
                       setIsScrolledToBottom(true);
                     }}
-                    className="absolute bottom-[90px] right-6 bg-[#10B981] text-[#10141A] font-chakra font-bold text-[10px] tracking-wider uppercase px-3 py-1.5 rounded-full shadow-[0_0_12px_rgba(16, 185, 129,0.4)] hover:scale-105 transition-transform cursor-pointer z-10"
+                    className="absolute bottom-[90px] right-6 bg-[#10B981] text-[var(--c-surface)] font-chakra font-bold text-[10px] tracking-wider uppercase px-3 py-1.5 rounded-full shadow-[0_0_12px_rgba(16, 185, 129,0.4)] hover:scale-105 transition-transform cursor-pointer z-10"
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block align-[-2px] mr-1">
                       <polyline points="6 9 12 15 18 9" />
@@ -1482,7 +1482,7 @@ export default function HubPage() {
 
                 {/* Reply state Banner above input */}
                 {replyingTo && (
-                  <div className="bg-[#161c24] border-t border-[#2A313C] px-4 py-2 flex items-center justify-between text-xs font-inter flex-shrink-0 select-none">
+                  <div className="bg-[var(--c-surface-2)] border-t border-[var(--c-border)] px-4 py-2 flex items-center justify-between text-xs font-inter flex-shrink-0 select-none">
                     <div className="flex items-center gap-2 truncate">
                       <span className="text-[#10B981] flex items-center gap-1">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1492,7 +1492,7 @@ export default function HubPage() {
                         Replying to
                       </span>
                       <span className="text-white font-bold truncate">@{replyingTo.author.username}</span>
-                      <span className="text-[#C8C7C7] truncate italic">&ldquo;{replyingTo.content}&rdquo;</span>
+                      <span className="text-[var(--c-text-muted)] truncate italic">&ldquo;{replyingTo.content}&rdquo;</span>
                     </div>
                     <button
                       onClick={() => setReplyingTo(null)}
@@ -1504,7 +1504,7 @@ export default function HubPage() {
                 )}
 
                 {/* Chat Form Area */}
-                <div className="p-4 border-t border-[#2A313C] bg-[#10141A] flex-shrink-0 relative">
+                <div className="p-4 border-t border-[var(--c-border)] bg-[var(--c-surface)] flex-shrink-0 relative">
                   {/* Typing Indicator */}
                   {typingUsers.length > 0 && (
                     <div className="absolute -top-6 left-4 text-[10px] font-chakra text-[#10B981] italic tracking-widest flex items-center gap-1 animate-pulse select-none">
@@ -1518,7 +1518,7 @@ export default function HubPage() {
                   )}
                   {hub.joined ? (
                     <form onSubmit={handleSendMessage} className="flex gap-2 items-center">
-                      <div className="flex-grow bg-[#161c24] border border-[#2A313C] rounded-lg px-3 py-2 flex flex-col">
+                      <div className="flex-grow bg-[var(--c-surface-2)] border border-[var(--c-border)] rounded-lg px-3 py-2 flex flex-col">
                         <textarea
                           placeholder={`Message #${selectedChannel?.name || "channel"}`}
                           value={messageText}
@@ -1533,7 +1533,7 @@ export default function HubPage() {
                           maxLength={1000}
                           className="bg-transparent border-none text-white text-xs w-full focus:outline-none resize-none font-inter leading-relaxed"
                         />
-                        <div className="flex justify-between items-center mt-2 text-[10px] font-chakra text-[#C8C7C7] select-none pt-1 border-t border-[#2A313C]/20">
+                        <div className="flex justify-between items-center mt-2 text-[10px] font-chakra text-[var(--c-text-muted)] select-none pt-1 border-t border-[color-mix(in_srgb,var(--c-border)_20%,transparent)]">
                           <div className="flex gap-2 relative">
                             {/* Emoji picker trigger */}
                             <button
@@ -1550,7 +1550,7 @@ export default function HubPage() {
                               Insert Emoji
                             </button>
                             {showInputEmojiPicker && (
-                              <div className="absolute bottom-6 left-0 bg-[#10141A] border border-[#2A313C] rounded-lg shadow-xl p-1.5 flex gap-1 z-30 animate-fade-in">
+                              <div className="absolute bottom-6 left-0 bg-[var(--c-surface)] border border-[var(--c-border)] rounded-lg shadow-xl p-1.5 flex gap-1 z-30 animate-fade-in">
                                 {["👍", "🔥", "🚀", "😂", "🎉", "🎨", "🎮", "❤️"].map((emoji) => (
                                   <button
                                     key={emoji}
@@ -1575,20 +1575,20 @@ export default function HubPage() {
                       <button
                         type="submit"
                         disabled={!messageText.trim()}
-                        className="h-[48px] px-5 bg-[#10B981] hover:bg-[#00d0e0] text-[#10141A] font-chakra font-bold text-xs uppercase tracking-wider rounded-lg transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="h-[48px] px-5 bg-[#10B981] hover:bg-[#00d0e0] text-[var(--c-surface)] font-chakra font-bold text-xs uppercase tracking-wider rounded-lg transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                       >
                         Send
                       </button>
                     </form>
                   ) : (
-                    <div className="bg-[#161c24] border border-[#2A313C]/50 rounded-lg p-4 text-center select-none">
-                      <p className="text-xs text-[#C8C7C7] mb-2.5 font-inter">
+                    <div className="bg-[var(--c-surface-2)] border border-[color-mix(in_srgb,var(--c-border)_50%,transparent)] rounded-lg p-4 text-center select-none">
+                      <p className="text-xs text-[var(--c-text-muted)] mb-2.5 font-inter">
                         You are viewing #{selectedChannel?.name || "channel"} in read-only mode.
                       </p>
                       <button
                         onClick={handleJoinToggle}
                         disabled={joining}
-                        className="px-6 py-2 bg-[#10B981] text-[#10141A] font-chakra font-bold text-xs uppercase tracking-wider rounded hover:bg-[#00d0e0] shadow-[0_0_10px_rgba(16, 185, 129,0.2)] transition-all cursor-pointer"
+                        className="px-6 py-2 bg-[#10B981] text-[var(--c-surface)] font-chakra font-bold text-xs uppercase tracking-wider rounded hover:bg-[#00d0e0] shadow-[0_0_10px_rgba(16, 185, 129,0.2)] transition-all cursor-pointer"
                       >
                         {joining ? "Joining..." : "Join Hub to Chat"}
                       </button>
@@ -1605,10 +1605,10 @@ export default function HubPage() {
                 
                 {/* Inline Post Creation Box */}
                 {user && hub.joined && (
-                  <div className="bg-[#161c24] border border-[#2A313C] rounded-lg p-4">
+                  <div className="bg-[var(--c-surface-2)] border border-[var(--c-border)] rounded-lg p-4">
                     <form onSubmit={handleCreatePost} className="space-y-3">
                       <div className="flex gap-3">
-                        <div className="w-8 h-8 rounded-full bg-[#2A313C] overflow-hidden flex items-center justify-center font-bold text-xs">
+                        <div className="w-8 h-8 rounded-full bg-[var(--c-border)] overflow-hidden flex items-center justify-center font-bold text-xs">
                           {user.avatar ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={user.avatar} alt={user.firstName} className="w-full h-full object-cover" />
@@ -1623,14 +1623,14 @@ export default function HubPage() {
                             onChange={(e) => setNewPostContent(e.target.value)}
                             maxLength={500}
                             rows={3}
-                            className="w-full bg-[#10141A] border border-[#2A313C] text-white text-xs p-2.5 rounded-lg focus:outline-none focus:border-[#10B981] resize-none font-inter leading-relaxed"
+                            className="w-full bg-[var(--c-surface)] border border-[var(--c-border)] text-white text-xs p-2.5 rounded-lg focus:outline-none focus:border-[#10B981] resize-none font-inter leading-relaxed"
                           />
                           <input
                             type="text"
                             placeholder="Optional Image URL (https://...)"
                             value={newPostImageUrl}
                             onChange={(e) => setNewPostImageUrl(e.target.value)}
-                            className="w-full mt-2 bg-[#10141A] border border-[#2A313C] text-white text-xs px-3 py-2 rounded-lg focus:outline-none focus:border-[#10B981] font-inter"
+                            className="w-full mt-2 bg-[var(--c-surface)] border border-[var(--c-border)] text-white text-xs px-3 py-2 rounded-lg focus:outline-none focus:border-[#10B981] font-inter"
                           />
                         </div>
                       </div>
@@ -1647,13 +1647,13 @@ export default function HubPage() {
                       )}
 
                       <div className="flex justify-between items-center pl-11">
-                        <span className="text-[10px] font-chakra text-[#C8C7C7]">
+                        <span className="text-[10px] font-chakra text-[var(--c-text-muted)]">
                           {newPostContent.length} / 500 characters
                         </span>
                         <button
                           type="submit"
                           disabled={postingNewPost || !newPostContent.trim()}
-                          className="px-5 py-2 bg-[#10B981] hover:bg-[#00d0e0] text-[#10141A] font-chakra font-bold text-xs uppercase tracking-wider rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                          className="px-5 py-2 bg-[#10B981] hover:bg-[#00d0e0] text-[var(--c-surface)] font-chakra font-bold text-xs uppercase tracking-wider rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                         >
                           {postingNewPost ? "Posting..." : "Share Post"}
                         </button>
@@ -1669,7 +1669,7 @@ export default function HubPage() {
                     <PostSkeleton />
                   </div>
                 ) : posts.length === 0 ? (
-                  <div className="text-center py-10 text-[#C8C7C7] select-none">
+                  <div className="text-center py-10 text-[var(--c-text-muted)] select-none">
                     <span className="inline-block">
                       <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
@@ -1703,7 +1703,7 @@ export default function HubPage() {
 
           {/* COLUMN 3: RIGHT PANEL (Members List) */}
           <aside
-            className={`h-full border-l border-[#2A313C] bg-[#10141A] flex flex-col select-none transition-all duration-300 ${
+            className={`h-full border-l border-[var(--c-border)] bg-[var(--c-surface)] flex flex-col select-none transition-all duration-300 ${
               showMembersPanel ? "w-[260px] opacity-100" : "w-0 opacity-0 overflow-hidden border-l-0"
             }`}
           >
@@ -1718,20 +1718,20 @@ export default function HubPage() {
                 placeholder="Search members..."
                 value={membersSearch}
                 onChange={(e) => setMembersSearch(e.target.value)}
-                className="w-full bg-[#161c24] border border-[#2A313C] text-white text-xs px-3 py-2 rounded-lg focus:outline-none focus:border-[#10B981] font-inter"
+                className="w-full bg-[var(--c-surface-2)] border border-[var(--c-border)] text-white text-xs px-3 py-2 rounded-lg focus:outline-none focus:border-[#10B981] font-inter"
               />
 
               {/* Online Only filter pill */}
-              <div className="flex items-center justify-between mt-3 text-[10px] font-chakra text-[#C8C7C7]">
+              <div className="flex items-center justify-between mt-3 text-[10px] font-chakra text-[var(--c-text-muted)]">
                 <span>Filter Active</span>
                 <button
                   onClick={() => setOnlineOnly(!onlineOnly)}
                   className={`w-9 h-5 rounded-full p-0.5 transition-colors duration-200 focus:outline-none cursor-pointer ${
-                    onlineOnly ? "bg-[#10B981]" : "bg-[#2A313C]"
+                    onlineOnly ? "bg-[#10B981]" : "bg-[var(--c-border)]"
                   }`}
                 >
                   <div
-                    className={`w-4 h-4 rounded-full bg-[#10141A] transition-transform duration-200 ${
+                    className={`w-4 h-4 rounded-full bg-[var(--c-surface)] transition-transform duration-200 ${
                       onlineOnly ? "translate-x-4" : "translate-x-0"
                     }`}
                   ></div>
@@ -1742,11 +1742,11 @@ export default function HubPage() {
             {/* List area */}
             <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-4">
               {membersLoading && members.length === 0 ? (
-                <div className="text-center py-4 text-[#C8C7C7] text-xs font-chakra">
+                <div className="text-center py-4 text-[var(--c-text-muted)] text-xs font-chakra">
                   Loading members...
                 </div>
               ) : members.length === 0 ? (
-                <div className="text-center py-4 text-[#C8C7C7] text-xs italic font-inter">
+                <div className="text-center py-4 text-[var(--c-text-muted)] text-xs italic font-inter">
                   No members found.
                 </div>
               ) : (
@@ -1767,7 +1767,7 @@ export default function HubPage() {
                             {onlineGroup.map((m) => (
                               <div key={m.id} className="flex items-center gap-2.5 py-1">
                                 <div className="relative flex-shrink-0">
-                                  <div className="w-7 h-7 rounded-full bg-[#2A313C] overflow-hidden flex items-center justify-center font-bold text-xs">
+                                  <div className="w-7 h-7 rounded-full bg-[var(--c-border)] overflow-hidden flex items-center justify-center font-bold text-xs">
                                     {m.user.avatar ? (
                                       // eslint-disable-next-line @next/next/no-img-element
                                       <img src={m.user.avatar} alt={m.user.firstName} className="w-full h-full object-cover" />
@@ -1776,7 +1776,7 @@ export default function HubPage() {
                                     )}
                                   </div>
                                   {/* Online green indicator dot */}
-                                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-[#00E676] border-2 border-[#10141A] z-10 translate-x-[10%] translate-y-[10%]"></span>
+                                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-[#00E676] border-2 border-[var(--c-surface)] z-10 translate-x-[10%] translate-y-[10%]"></span>
                                 </div>
                                 <div className="truncate flex-1 min-w-0">
                                   <div className="flex items-center gap-1">
@@ -1789,7 +1789,7 @@ export default function HubPage() {
                                       </svg>
                                     )}
                                   </div>
-                                  <div className="text-[10px] text-[#C8C7C7] flex items-center gap-1.5 select-none">
+                                  <div className="text-[10px] text-[var(--c-text-muted)] flex items-center gap-1.5 select-none">
                                     <span className="truncate">@{m.user.username}</span>
                                     {m.role !== "member" && (
                                       <span className="px-1 bg-[#10B981]/10 text-[#10B981] rounded text-[8px] font-chakra uppercase font-bold border border-[#10B981]/20 flex-shrink-0">
@@ -1806,13 +1806,13 @@ export default function HubPage() {
                         {/* OFFLINE GROUP */}
                         {offlineGroup.length > 0 && (
                           <div className="space-y-1.5">
-                            <h4 className="font-chakra text-[10px] text-[#C8C7C7] uppercase tracking-wider font-bold mb-1">
+                            <h4 className="font-chakra text-[10px] text-[var(--c-text-muted)] uppercase tracking-wider font-bold mb-1">
                               Offline — {offlineGroup.length}
                             </h4>
                             {offlineGroup.map((m) => (
                               <div key={m.id} className="flex items-center gap-2.5 py-1 opacity-70">
                                 <div className="relative flex-shrink-0">
-                                  <div className="w-7 h-7 rounded-full bg-[#2A313C] overflow-hidden flex items-center justify-center font-bold text-xs">
+                                  <div className="w-7 h-7 rounded-full bg-[var(--c-border)] overflow-hidden flex items-center justify-center font-bold text-xs">
                                     {m.user.avatar ? (
                                       // eslint-disable-next-line @next/next/no-img-element
                                       <img src={m.user.avatar} alt={m.user.firstName} className="w-full h-full object-cover" />
@@ -1821,7 +1821,7 @@ export default function HubPage() {
                                     )}
                                   </div>
                                   {/* Offline grey indicator dot */}
-                                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-[#8b949e] border-2 border-[#10141A] z-10 translate-x-[10%] translate-y-[10%]"></span>
+                                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-[#8b949e] border-2 border-[var(--c-surface)] z-10 translate-x-[10%] translate-y-[10%]"></span>
                                 </div>
                                 <div className="truncate flex-1 min-w-0">
                                   <div className="flex items-center gap-1">
@@ -1834,10 +1834,10 @@ export default function HubPage() {
                                       </svg>
                                     )}
                                   </div>
-                                  <div className="text-[10px] text-[#C8C7C7] flex items-center gap-1.5 select-none">
+                                  <div className="text-[10px] text-[var(--c-text-muted)] flex items-center gap-1.5 select-none">
                                     <span className="truncate">@{m.user.username}</span>
                                     {m.role !== "member" && (
-                                      <span className="px-1 bg-[#2A313C] text-[#C8C7C7] rounded text-[8px] font-chakra uppercase font-bold flex-shrink-0">
+                                      <span className="px-1 bg-[var(--c-border)] text-[var(--c-text-muted)] rounded text-[8px] font-chakra uppercase font-bold flex-shrink-0">
                                         {m.role}
                                       </span>
                                     )}
@@ -1861,15 +1861,15 @@ export default function HubPage() {
       {/* Manage Join Requests Modal */}
       {isManageRequestsOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-[#10141A] border border-[#2A313C] rounded-lg w-[500px] max-w-[90vw] max-h-[80vh] flex flex-col shadow-2xl relative">
+          <div className="bg-[var(--c-surface)] border border-[var(--c-border)] rounded-lg w-[500px] max-w-[90vw] max-h-[80vh] flex flex-col shadow-2xl relative">
             
-            <header className="px-6 py-4 border-b border-[#2A313C] flex justify-between items-center flex-shrink-0">
+            <header className="px-6 py-4 border-b border-[var(--c-border)] flex justify-between items-center flex-shrink-0">
               <h2 className="text-lg font-chakra font-bold text-white tracking-wider uppercase">
                 Manage Join Requests
               </h2>
               <button
                 onClick={() => setIsManageRequestsOpen(false)}
-                className="text-[#C8C7C7] hover:text-white transition-colors p-1"
+                className="text-[var(--c-text-muted)] hover:text-white transition-colors p-1"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M18 6L6 18M6 6l12 12" />
@@ -1884,15 +1884,15 @@ export default function HubPage() {
                   Loading requests...
                 </div>
               ) : joinRequests.length === 0 ? (
-                <div className="text-center py-8 text-[#C8C7C7] font-inter text-sm">
+                <div className="text-center py-8 text-[var(--c-text-muted)] font-inter text-sm">
                   No pending requests.
                 </div>
               ) : (
                 <div className="space-y-4">
                   {joinRequests.map((req) => (
-                    <div key={req.id} className="flex items-center justify-between p-3 bg-[#161c24] border border-[#2A313C] rounded hover:border-[#10B981]/30 transition-colors">
+                    <div key={req.id} className="flex items-center justify-between p-3 bg-[var(--c-surface-2)] border border-[var(--c-border)] rounded hover:border-[#10B981]/30 transition-colors">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-[#2A313C] overflow-hidden flex items-center justify-center font-bold text-xs select-none">
+                        <div className="w-10 h-10 rounded-full bg-[var(--c-border)] overflow-hidden flex items-center justify-center font-bold text-xs select-none">
                           {req.user.avatar ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={req.user.avatar} alt={req.user.firstName} className="w-full h-full object-cover" />
@@ -1904,7 +1904,7 @@ export default function HubPage() {
                           <span className="text-sm font-inter font-bold text-white">
                             {req.user.firstName} {req.user.lastName}
                           </span>
-                          <span className="text-xs text-[#C8C7C7]">
+                          <span className="text-xs text-[var(--c-text-muted)]">
                             @{req.user.username}
                           </span>
                         </div>
@@ -1913,7 +1913,7 @@ export default function HubPage() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleRequestAction(req.id, "approve")}
-                          className="px-3 py-1.5 rounded bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/30 hover:bg-[#10B981] hover:text-[#10141A] font-chakra font-bold text-xs uppercase transition-all"
+                          className="px-3 py-1.5 rounded bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/30 hover:bg-[#10B981] hover:text-[var(--c-surface)] font-chakra font-bold text-xs uppercase transition-all"
                         >
                           Approve
                         </button>
@@ -1936,16 +1936,16 @@ export default function HubPage() {
       {/* Hub Details Modal */}
       {isDetailsOpen && hub && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-[#10141A] border border-[#2A313C] rounded-lg w-[500px] max-w-[90vw] shadow-2xl relative overflow-hidden flex flex-col">
+          <div className="bg-[var(--c-surface)] border border-[var(--c-border)] rounded-lg w-[500px] max-w-[90vw] shadow-2xl relative overflow-hidden flex flex-col">
             
             {/* Header */}
-            <div className="px-6 py-5 border-b border-[#2A313C] flex justify-between items-center bg-[#161c24]">
+            <div className="px-6 py-5 border-b border-[var(--c-border)] flex justify-between items-center bg-[var(--c-surface-2)]">
               <h2 className="text-lg font-chakra font-bold text-white tracking-wider flex items-center gap-2">
                 <span className="text-white">{renderHubIcon(hub.icon, 22)}</span> {hub.name} Details
               </h2>
               <button
                 onClick={() => setIsDetailsOpen(false)}
-                className="text-[#C8C7C7] hover:text-white transition-colors p-1"
+                className="text-[var(--c-text-muted)] hover:text-white transition-colors p-1"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M18 6L6 18M6 6l12 12" />
@@ -1957,28 +1957,28 @@ export default function HubPage() {
             <div className="p-6 space-y-6">
               <div>
                 <h3 className="text-[11px] font-chakra text-[#10B981] uppercase tracking-widest mb-2">Description</h3>
-                <p className="text-sm text-[#C8C7C7] font-inter leading-relaxed">
+                <p className="text-sm text-[var(--c-text-muted)] font-inter leading-relaxed">
                   {hub.description || "No description provided."}
                 </p>
               </div>
 
               <div className="flex gap-4">
-                <div className="flex-1 bg-[#161c24] border border-[#2A313C] rounded-md p-3 flex flex-col items-center justify-center">
+                <div className="flex-1 bg-[var(--c-surface-2)] border border-[var(--c-border)] rounded-md p-3 flex flex-col items-center justify-center">
                   <span className="text-2xl font-chakra font-bold text-white">{hub.memberCount}</span>
-                  <span className="text-[10px] font-chakra text-[#C8C7C7] uppercase tracking-widest mt-1">Members</span>
+                  <span className="text-[10px] font-chakra text-[var(--c-text-muted)] uppercase tracking-widest mt-1">Members</span>
                 </div>
-                <div className="flex-1 bg-[#161c24] border border-[#2A313C] rounded-md p-3 flex flex-col items-center justify-center">
+                <div className="flex-1 bg-[var(--c-surface-2)] border border-[var(--c-border)] rounded-md p-3 flex flex-col items-center justify-center">
                   <span className="text-2xl font-chakra font-bold text-white">{hub.isPrivate ? "Private" : "Public"}</span>
-                  <span className="text-[10px] font-chakra text-[#C8C7C7] uppercase tracking-widest mt-1">Status</span>
+                  <span className="text-[10px] font-chakra text-[var(--c-text-muted)] uppercase tracking-widest mt-1">Status</span>
                 </div>
               </div>
 
               {/* Invite Code (if available) */}
               {hub.isPrivate && hub.joinCode && (
-                <div className="bg-[#161c24] border border-[#2A313C] rounded-md p-4 flex flex-col items-center">
+                <div className="bg-[var(--c-surface-2)] border border-[var(--c-border)] rounded-md p-4 flex flex-col items-center">
                   <span className="text-[11px] font-chakra text-[#10B981] uppercase tracking-widest mb-2">Invite Code</span>
                   <div className="flex items-center gap-3 w-full max-w-[200px]">
-                    <code className="flex-1 bg-black/50 border border-[#2A313C] text-[#10B981] font-chakra font-bold text-center py-2 rounded tracking-[0.2em] text-lg select-all">
+                    <code className="flex-1 bg-black/50 border border-[var(--c-border)] text-[#10B981] font-chakra font-bold text-center py-2 rounded tracking-[0.2em] text-lg select-all">
                       {hub.joinCode}
                     </code>
                     <button
@@ -1988,7 +1988,7 @@ export default function HubPage() {
                           showToast("Invite code copied!");
                         }
                       }}
-                      className="p-2.5 rounded bg-[#2A313C] hover:bg-[#3b4351] text-white transition-colors"
+                      className="p-2.5 rounded bg-[var(--c-border)] hover:bg-[var(--c-border)] text-white transition-colors"
                       title="Copy to clipboard"
                     >
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1997,7 +1997,7 @@ export default function HubPage() {
                       </svg>
                     </button>
                   </div>
-                  <p className="text-[10px] text-[#C8C7C7] mt-3 text-center">Share this code with others so they can request to join.</p>
+                  <p className="text-[10px] text-[var(--c-text-muted)] mt-3 text-center">Share this code with others so they can request to join.</p>
                 </div>
               )}
 
@@ -2008,7 +2008,7 @@ export default function HubPage() {
                     setIsDetailsOpen(false);
                     setIsSettingsOpen(true);
                   }}
-                  className="w-full py-2.5 rounded bg-[#10B981]/10 border border-[#10B981]/30 text-[#10B981] font-chakra font-bold text-sm uppercase hover:bg-[#10B981] hover:text-[#10141A] transition-all flex items-center justify-center gap-2"
+                  className="w-full py-2.5 rounded bg-[#10B981]/10 border border-[#10B981]/30 text-[#10B981] font-chakra font-bold text-sm uppercase hover:bg-[#10B981] hover:text-[var(--c-surface)] transition-all flex items-center justify-center gap-2"
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <circle cx="12" cy="12" r="3"></circle>
@@ -2025,17 +2025,17 @@ export default function HubPage() {
       {/* Group Settings Modal */}
       {isSettingsOpen && hub && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-[#10141A] border border-[#2A313C] rounded-lg w-[600px] max-w-[90vw] h-[80vh] flex flex-col shadow-2xl relative overflow-hidden">
+          <div className="bg-[var(--c-surface)] border border-[var(--c-border)] rounded-lg w-[600px] max-w-[90vw] h-[80vh] flex flex-col shadow-2xl relative overflow-hidden">
             
             {/* Header */}
-            <div className="px-6 py-4 border-b border-[#2A313C] flex justify-between items-center bg-[#161c24] flex-shrink-0">
+            <div className="px-6 py-4 border-b border-[var(--c-border)] flex justify-between items-center bg-[var(--c-surface-2)] flex-shrink-0">
               <h2 className="text-lg font-chakra font-bold text-white tracking-wider flex items-center gap-2">
                 <button
                   onClick={() => {
                     setIsSettingsOpen(false);
                     setIsDetailsOpen(true);
                   }}
-                  className="mr-2 text-[#C8C7C7] hover:text-white transition-colors"
+                  className="mr-2 text-[var(--c-text-muted)] hover:text-white transition-colors"
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -2046,7 +2046,7 @@ export default function HubPage() {
               </h2>
               <button
                 onClick={() => setIsSettingsOpen(false)}
-                className="text-[#C8C7C7] hover:text-white transition-colors p-1"
+                className="text-[var(--c-text-muted)] hover:text-white transition-colors p-1"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M18 6L6 18M6 6l12 12" />
@@ -2059,15 +2059,15 @@ export default function HubPage() {
               {/* Settings Section */}
               <section>
                 <h3 className="text-[11px] font-chakra text-[#10B981] uppercase tracking-widest mb-4">Permissions</h3>
-                <div className="flex items-center justify-between p-4 bg-[#161c24] border border-[#2A313C] rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-[var(--c-surface-2)] border border-[var(--c-border)] rounded-lg">
                   <div>
                     <h4 className="text-sm font-bold text-white font-inter">Allow members to view invite code</h4>
-                    <p className="text-xs text-[#C8C7C7] mt-1">If enabled, any member can see and share the invite code.</p>
+                    <p className="text-xs text-[var(--c-text-muted)] mt-1">If enabled, any member can see and share the invite code.</p>
                   </div>
                   <button
                     disabled={updatingSettings}
                     onClick={() => handleToggleSettings(!hub.allowMembersToInvite)}
-                    className={`w-12 h-6 rounded-full relative transition-colors ${hub.allowMembersToInvite ? "bg-[#00E676]" : "bg-[#2A313C]"}`}
+                    className={`w-12 h-6 rounded-full relative transition-colors ${hub.allowMembersToInvite ? "bg-[#00E676]" : "bg-[var(--c-border)]"}`}
                   >
                     <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${hub.allowMembersToInvite ? "left-[26px]" : "left-1"}`} />
                   </button>
@@ -2078,10 +2078,10 @@ export default function HubPage() {
               <section className="flex-1 flex flex-col min-h-0">
                 <h3 className="text-[11px] font-chakra text-[#10B981] uppercase tracking-widest mb-4 flex justify-between items-end">
                   <span>Role Management</span>
-                  <span className="text-[#C8C7C7] lowercase tracking-normal">{members.length} total members</span>
+                  <span className="text-[var(--c-text-muted)] lowercase tracking-normal">{members.length} total members</span>
                 </h3>
                 
-                <div className="bg-[#161c24] border border-[#2A313C] rounded-lg flex-1 overflow-hidden flex flex-col">
+                <div className="bg-[var(--c-surface-2)] border border-[var(--c-border)] rounded-lg flex-1 overflow-hidden flex flex-col">
                   <div className="overflow-y-auto flex-1 p-2 space-y-1">
                     {membersLoading && members.length === 0 ? (
                       <div className="flex justify-center text-[#10B981] font-chakra py-8">
@@ -2089,9 +2089,9 @@ export default function HubPage() {
                       </div>
                     ) : (
                       members.map(member => (
-                        <div key={member.id} className="flex items-center justify-between p-2 hover:bg-[#2A313C]/30 rounded transition-colors group">
+                        <div key={member.id} className="flex items-center justify-between p-2 hover:bg-[color-mix(in_srgb,var(--c-border)_30%,transparent)] rounded transition-colors group">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-[#2A313C] overflow-hidden flex items-center justify-center font-bold text-[10px] select-none text-white">
+                            <div className="w-8 h-8 rounded-full bg-[var(--c-border)] overflow-hidden flex items-center justify-center font-bold text-[10px] select-none text-white">
                               {member.user.avatar ? (
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img src={member.user.avatar} alt={member.user.firstName} className="w-full h-full object-cover" />
@@ -2105,7 +2105,7 @@ export default function HubPage() {
                                 {member.role === "owner" && <span className="bg-[#FF9100]/20 text-[#FF9100] text-[9px] px-1.5 py-0.5 rounded uppercase font-chakra">Owner</span>}
                                 {member.role === "admin" && <span className="bg-[#10B981]/20 text-[#10B981] text-[9px] px-1.5 py-0.5 rounded uppercase font-chakra">Admin</span>}
                               </span>
-                              <span className="text-xs text-[#C8C7C7]">@{member.user.username}</span>
+                              <span className="text-xs text-[var(--c-text-muted)]">@{member.user.username}</span>
                             </div>
                           </div>
 
@@ -2119,7 +2119,7 @@ export default function HubPage() {
                                 {member.role === "member" && (
                                   <button
                                     onClick={() => handleMemberAction(member.user.id, "promote")}
-                                    className="px-2 py-1 bg-[#2A313C] hover:bg-[#10B981] text-white hover:text-black rounded text-[10px] font-chakra uppercase transition-colors"
+                                    className="px-2 py-1 bg-[var(--c-border)] hover:bg-[#10B981] text-white hover:text-black rounded text-[10px] font-chakra uppercase transition-colors"
                                   >
                                     Promote
                                   </button>
@@ -2128,7 +2128,7 @@ export default function HubPage() {
                                 {member.role === "admin" && hub.userRole === "owner" && (
                                   <button
                                     onClick={() => handleMemberAction(member.user.id, "demote")}
-                                    className="px-2 py-1 bg-[#2A313C] hover:bg-[#FF9100] text-white hover:text-black rounded text-[10px] font-chakra uppercase transition-colors"
+                                    className="px-2 py-1 bg-[var(--c-border)] hover:bg-[#FF9100] text-white hover:text-black rounded text-[10px] font-chakra uppercase transition-colors"
                                   >
                                     Demote
                                   </button>
@@ -2139,7 +2139,7 @@ export default function HubPage() {
                                   ((member.role === "member") || (member.role === "admin" && hub.userRole === "owner")) && (
                                     <button
                                       onClick={() => setKickTarget({ userId: member.user.id, name: member.user.username || member.user.firstName })}
-                                      className="px-2 py-1 bg-[#2A313C] hover:bg-[#FF4D4D] text-white rounded text-[10px] font-chakra uppercase transition-colors"
+                                      className="px-2 py-1 bg-[var(--c-border)] hover:bg-[#FF4D4D] text-white rounded text-[10px] font-chakra uppercase transition-colors"
                                     >
                                       Kick
                                     </button>
@@ -2166,19 +2166,19 @@ export default function HubPage() {
           onClick={() => setKickTarget(null)}
         >
           <div
-            className="bg-[#10141A] border border-[#2A313C] rounded-lg w-[400px] max-w-[90vw] shadow-2xl p-6"
+            className="bg-[var(--c-surface)] border border-[var(--c-border)] rounded-lg w-[400px] max-w-[90vw] shadow-2xl p-6"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-lg font-chakra font-bold text-white tracking-wider uppercase mb-2">
               Remove Member
             </h2>
-            <p className="text-sm text-[#C8C7C7] font-inter leading-relaxed mb-6">
+            <p className="text-sm text-[var(--c-text-muted)] font-inter leading-relaxed mb-6">
               Remove <span className="text-white font-bold">@{kickTarget.name || "this member"}</span> from this hub? They&apos;ll lose access to its channels and can only rejoin if re-invited.
             </p>
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setKickTarget(null)}
-                className="px-4 py-2 rounded bg-[#2A313C] hover:bg-[#3b4351] text-white font-chakra font-bold text-xs uppercase tracking-wider transition-colors"
+                className="px-4 py-2 rounded bg-[var(--c-border)] hover:bg-[var(--c-border)] text-white font-chakra font-bold text-xs uppercase tracking-wider transition-colors"
               >
                 Cancel
               </button>

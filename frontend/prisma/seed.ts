@@ -63,6 +63,12 @@ async function main() {
   await prisma.caliberTrack.deleteMany({}); // cascades problems -> submissions & competition links
   await prisma.notification.deleteMany({ where: { userId: { in: demoIds } } });
   await prisma.hubMember.deleteMany({ where: { userId: { in: demoIds } } });
+  // Channels survive re-seeding (seedHubs only creates missing ones), so clear
+  // chat messages explicitly or they accumulate. Reactions have no cascade from
+  // Message, and pinnedMessageId must be released before the rows are deleted.
+  await prisma.messageReaction.deleteMany({});
+  await prisma.channel.updateMany({ data: { pinnedMessageId: null } });
+  await prisma.message.deleteMany({});
   // Post children have no cascade, so clear them before the posts themselves.
   await prisma.like.deleteMany({});
   await prisma.comment.deleteMany({});
@@ -262,6 +268,86 @@ async function main() {
     await prisma.hub.update({ where: { id: hub.id }, data: { memberCount: 3 } });
   }
   const hubBySlug = Object.fromEntries(hubs.map((h) => [h.slug, h.id])) as Record<string, string>;
+
+  // --- Hub chatroom messages -------------------------------------------------
+  // Every hub channel was empty ("This channel is quiet"), so the chatroom —
+  // the main reason to open a hub — looked unbuilt. Seed real conversations in
+  // the busiest channels, plus a reaction and a pinned message.
+  const chatSeed: { hub: string; channel: string; lines: { by: string; text: string; mins: number }[] }[] = [
+    {
+      hub: "consulting", channel: "general", lines: [
+        { by: arjun, text: "Morning all — running a case drill Thursday 8pm if anyone wants a partner.", mins: 240 },
+        { by: sara, text: "I'm in. Profitability or market entry?", mins: 232 },
+        { by: arjun, text: "Market entry. I keep rushing the framework and missing the competitive piece.", mins: 228 },
+        { by: demo, text: "Same problem here. Count me in as the third.", mins: 219 },
+        { by: sara, text: "Perfect. I'll bring two prompts so nobody has seen them before.", mins: 210 },
+      ],
+    },
+    {
+      hub: "consulting", channel: "case-cracking", lines: [
+        { by: demo, text: "Does anyone actually write out the full issue tree in the interview, or just the top two branches?", mins: 180 },
+        { by: sara, text: "Top two, then say out loud which branch you'd go down first and why. Interviewers care about the prioritisation more than completeness.", mins: 174 },
+        { by: arjun, text: "Agreed. Full tree eats four minutes you don't have.", mins: 170 },
+      ],
+    },
+    {
+      hub: "finance", channel: "valuation", lines: [
+        { by: sara, text: "Quick sanity check: for a stable consumer business would you use a perpetuity growth or an exit multiple for TV?", mins: 300 },
+        { by: arjun, text: "Exit multiple for the base case, perpetuity growth as the cross-check. If they disagree wildly your assumptions are off somewhere.", mins: 292 },
+        { by: demo, text: "That cross-check framing is genuinely useful, thanks.", mins: 286 },
+      ],
+    },
+    {
+      hub: "data", channel: "sql", lines: [
+        { by: arjun, text: "Reminder that ROW_NUMBER, RANK and DENSE_RANK differ on ties — that's the classic screening gotcha.", mins: 150 },
+        { by: demo, text: "Got caught by exactly that last week. RANK skips numbers after a tie, DENSE_RANK doesn't.", mins: 143 },
+      ],
+    },
+    {
+      hub: "product", channel: "product-sense", lines: [
+        { by: sara, text: "If you're asked to improve a metric, always ask what the guardrail metric is first. Nobody wants engagement up and retention down.", mins: 200 },
+        { by: demo, text: "Saving this one.", mins: 195 },
+      ],
+    },
+    {
+      hub: "aptitude", channel: "quant", lines: [
+        { by: demo, text: "Anyone have a good drill set for percentage/ratio speed? My accuracy is fine but I'm slow.", mins: 130 },
+        { by: arjun, text: "Do 20 a day timed at 40s each. Speed comes from recognising the pattern, not from calculating faster.", mins: 124 },
+      ],
+    },
+  ];
+
+  for (const block of chatSeed) {
+    const channel = await prisma.channel.findFirst({
+      where: { hubId: hubBySlug[block.hub], name: block.channel },
+      select: { id: true },
+    });
+    if (!channel) continue;
+    const made = [];
+    for (const line of block.lines) {
+      made.push(await prisma.message.create({
+        data: {
+          channelId: channel.id, authorId: line.by, content: line.text,
+          createdAt: new Date(now - line.mins * 60 * 1000),
+        },
+        select: { id: true },
+      }));
+    }
+    // Pin the opening message of each hub's #general so the pin UI has data.
+    if (block.channel === "general" && made[0]) {
+      await prisma.channel.update({ where: { id: channel.id }, data: { pinnedMessageId: made[0].id } });
+    }
+    // A couple of reactions so the reaction UI isn't empty either.
+    if (made[1]) {
+      await prisma.messageReaction.createMany({
+        data: [
+          { messageId: made[1].id, userId: demo, emoji: "🔥" },
+          { messageId: made[1].id, userId: arjun, emoji: "🔥" },
+        ],
+        skipDuplicates: true,
+      });
+    }
+  }
 
   // --- Follows ---------------------------------------------------------------
   // The home feed shows posts from people you follow or hubs you've joined, so

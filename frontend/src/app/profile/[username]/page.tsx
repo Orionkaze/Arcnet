@@ -157,7 +157,7 @@ function extractDomainName(url: string): string {
 function getPlatformInfo(url: string) {
   const trimmed = url.trim();
   if (!trimmed) {
-    return { name: "empty", color: "#C8C7C7", isHardcoded: false, useFavicon: false, domain: "" };
+    return { name: "empty", color: "var(--c-text-muted)", isHardcoded: false, useFavicon: false, domain: "" };
   }
 
   const lowerUrl = trimmed.toLowerCase();
@@ -165,7 +165,7 @@ function getPlatformInfo(url: string) {
 
   if (hasUrlMarkers) {
     if (trimmed.length < 5) {
-      return { name: "empty", color: "#C8C7C7", isHardcoded: false, useFavicon: false, domain: "" };
+      return { name: "empty", color: "var(--c-text-muted)", isHardcoded: false, useFavicon: false, domain: "" };
     }
 
     // Gmail
@@ -238,7 +238,7 @@ function getPlatformInfo(url: string) {
     }
     // GitHub
     if (lowerUrl.includes("github.com")) {
-      return { name: "github", color: "#FFFFFF", isHardcoded: true, useFavicon: false, domain: "github.com" };
+      return { name: "github", color: "var(--c-text)", isHardcoded: true, useFavicon: false, domain: "github.com" };
     }
     // GitLab
     if (lowerUrl.includes("gitlab.com")) {
@@ -250,7 +250,7 @@ function getPlatformInfo(url: string) {
     }
     // CodePen
     if (lowerUrl.includes("codepen.io")) {
-      return { name: "codepen", color: "#FFFFFF", isHardcoded: true, useFavicon: true, domain: "codepen.io" };
+      return { name: "codepen", color: "var(--c-text)", isHardcoded: true, useFavicon: true, domain: "codepen.io" };
     }
     // LeetCode
     if (lowerUrl.includes("leetcode.com")) {
@@ -278,7 +278,7 @@ function getPlatformInfo(url: string) {
     }
     // Dev.to
     if (lowerUrl.includes("dev.to")) {
-      return { name: "devto", color: "#FFFFFF", isHardcoded: true, useFavicon: true, domain: "dev.to" };
+      return { name: "devto", color: "var(--c-text)", isHardcoded: true, useFavicon: true, domain: "dev.to" };
     }
     // Hashnode
     if (lowerUrl.includes("hashnode.com")) {
@@ -286,7 +286,7 @@ function getPlatformInfo(url: string) {
     }
     // Medium
     if (lowerUrl.includes("medium.com")) {
-      return { name: "medium", color: "#FFFFFF", isHardcoded: true, useFavicon: true, domain: "medium.com" };
+      return { name: "medium", color: "var(--c-text)", isHardcoded: true, useFavicon: true, domain: "medium.com" };
     }
     // Substack
     if (lowerUrl.includes("substack.com")) {
@@ -310,7 +310,7 @@ function getPlatformInfo(url: string) {
     }
     // Notion
     if (lowerUrl.includes("notion.so")) {
-      return { name: "notion", color: "#FFFFFF", isHardcoded: true, useFavicon: true, domain: "notion.so" };
+      return { name: "notion", color: "var(--c-text)", isHardcoded: true, useFavicon: true, domain: "notion.so" };
     }
     // Adobe Portfolio
     if (lowerUrl.includes("adobe.com")) {
@@ -415,10 +415,10 @@ function getPlatformInfo(url: string) {
     }
     // Unity Asset Store must be checked before plain Unity
     if (lowerUrl.includes("assetstore.unity.com")) {
-      return { name: "unityassetstore", color: "#FFFFFF", isHardcoded: true, useFavicon: true, domain: "assetstore.unity.com" };
+      return { name: "unityassetstore", color: "var(--c-text)", isHardcoded: true, useFavicon: true, domain: "assetstore.unity.com" };
     }
     if (lowerUrl.includes("discussions.unity.com") || lowerUrl.includes("unity.com")) {
-      return { name: "unity", color: "#FFFFFF", isHardcoded: true, useFavicon: true, domain: "unity.com" };
+      return { name: "unity", color: "var(--c-text)", isHardcoded: true, useFavicon: true, domain: "unity.com" };
     }
     if (lowerUrl.includes("godotengine.org")) {
       return { name: "godot", color: "#478CBF", isHardcoded: true, useFavicon: true, domain: "godotengine.org" };
@@ -585,7 +585,7 @@ function getPlatformInfo(url: string) {
     }
 
     const domain = extractDomainName(trimmed);
-    return { name: "custom", color: "#C8C7C7", isHardcoded: false, useFavicon: true, domain };
+    return { name: "custom", color: "var(--c-text-muted)", isHardcoded: false, useFavicon: true, domain };
   }
 
   if (!hasUrlMarkers) {
@@ -605,7 +605,7 @@ function getPlatformInfo(url: string) {
     }
   }
 
-  return { name: "empty", color: "#C8C7C7", isHardcoded: false, useFavicon: false, domain: "" };
+  return { name: "empty", color: "var(--c-text-muted)", isHardcoded: false, useFavicon: false, domain: "" };
 }
 
 const ProfileSocialBadge = ({ link }: { link: { platform: string; url: string } }) => {
@@ -648,8 +648,8 @@ const ProfileSocialBadge = ({ link }: { link: { platform: string; url: string } 
   const showFavicon = info.useFavicon && info.domain && !faviconFailed;
 
   const hasError = faviconFailed;
-  const iconColor = hasError ? "#C8C7C7" : info.color;
-  const borderColor = hasError || !info.isHardcoded || info.color === "#FFFFFF" ? "#2A313C" : info.color;
+  const iconColor = hasError ? "var(--c-text-muted)" : info.color;
+  const borderColor = hasError || !info.isHardcoded || info.color === "var(--c-text)" ? "var(--c-border)" : info.color;
 
   return (
     <a
@@ -717,7 +717,7 @@ const PRESETS = [
   { id: "midnight", name: "Midnight", category: "Dark Gradients", value: "linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)" },
   { id: "eclipse", name: "Eclipse", category: "Dark Gradients", value: "linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #2d2d2d 100%)" },
   // Emerald/Caliber themed
-  { id: "neon-grid", name: "Neon Grid", category: "Emerald/Caliber themed", value: "linear-gradient(to right, rgba(16, 185, 129, 0.08) 1px, transparent 1px) 0 0 / 20px 20px, linear-gradient(to bottom, rgba(16, 185, 129, 0.08) 1px, transparent 1px) 0 0 / 20px 20px, #10141A" },
+  { id: "neon-grid", name: "Neon Grid", category: "Emerald/Caliber themed", value: "linear-gradient(to right, rgba(16, 185, 129, 0.08) 1px, transparent 1px) 0 0 / 20px 20px, linear-gradient(to bottom, rgba(16, 185, 129, 0.08) 1px, transparent 1px) 0 0 / 20px 20px, var(--c-surface)" },
   { id: "cyber", name: "Cyber", category: "Emerald/Caliber themed", value: "linear-gradient(135deg, #0d1b2a 0%, #1b2838 50%, rgba(16, 185, 129, 0.07) 100%)" },
   { id: "arc-light", name: "Arc Light", category: "Emerald/Caliber themed", value: "linear-gradient(135deg, #001a1f 0%, #003d4a 50%, rgba(16, 185, 129, 0.13) 100%)" },
   { id: "electric", name: "Electric", category: "Emerald/Caliber themed", value: "linear-gradient(to bottom, transparent 55%, rgba(16, 185, 129, 0.3) 59%, #10B981 60%, rgba(16, 185, 129, 0.3) 61%, transparent 65%), linear-gradient(135deg, #0a0e1a 0%, #001b33 100%)" },
@@ -727,20 +727,20 @@ const PRESETS = [
   { id: "royal", name: "Royal", category: "Dark Colorful", value: "linear-gradient(135deg, #0a0a2e 0%, #1a0a4a 50%, #2a0a6a 100%)" },
   { id: "ember", name: "Ember", category: "Dark Colorful", value: "linear-gradient(135deg, #1a0800 0%, #3d1500 50%, #6b2800 100%)" },
   // Game Dev themed
-  { id: "pixel-dark", name: "Pixel Dark", category: "Game Dev themed", value: "radial-gradient(rgba(16, 185, 129, 0.1) 1.5px, transparent 1.5px) 0 0 / 16px 16px, #10141A" },
-  { id: "circuit", name: "Circuit", category: "Game Dev themed", value: "linear-gradient(90deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px) 0 0 / 40px 40px, linear-gradient(0deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px) 0 0 / 40px 40px, linear-gradient(45deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px) 0 0 / 40px 40px, #10141A" },
+  { id: "pixel-dark", name: "Pixel Dark", category: "Game Dev themed", value: "radial-gradient(rgba(16, 185, 129, 0.1) 1.5px, transparent 1.5px) 0 0 / 16px 16px, var(--c-surface)" },
+  { id: "circuit", name: "Circuit", category: "Game Dev themed", value: "linear-gradient(90deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px) 0 0 / 40px 40px, linear-gradient(0deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px) 0 0 / 40px 40px, linear-gradient(45deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px) 0 0 / 40px 40px, var(--c-surface)" },
   { id: "scanline", name: "Scanline", category: "Game Dev themed", value: "repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15) 2px, transparent 2px, transparent 4px), #151a22" },
-  { id: "noise", name: "Noise", category: "Game Dev themed", value: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E\"), #10141A" }
+  { id: "noise", name: "Noise", category: "Game Dev themed", value: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E\"), var(--c-surface)" }
 ];
 
 function resolveCoverBg(coverValue: string | null | undefined): string {
   if (!coverValue) {
-    return "linear-gradient(135deg, #10141A 0%, #15222E 50%, #2A313C 100%)";
+    return "linear-gradient(135deg, var(--c-surface) 0%, #15222E 50%, var(--c-border) 100%)";
   }
   if (coverValue.startsWith("preset:")) {
     const presetId = coverValue.substring(7);
     const preset = PRESETS.find(p => p.id === presetId);
-    return preset ? preset.value : "linear-gradient(135deg, #10141A 0%, #15222E 50%, #2A313C 100%)";
+    return preset ? preset.value : "linear-gradient(135deg, var(--c-surface) 0%, #15222E 50%, var(--c-border) 100%)";
   }
   return `url("${coverValue}") center/cover no-repeat`;
 }
@@ -1073,7 +1073,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
           <LeftSidebar />
           <main className="profile-main flex flex-col items-center justify-center gap-4">
             <span className="font-chakra text-2xl text-red-500">404 // PROFILE NOT FOUND</span>
-            <span className="font-inter text-[#C8C7C7]">The user @{cleanUsername} does not exist on Caliber.</span>
+            <span className="font-inter text-[var(--c-text-muted)]">The user @{cleanUsername} does not exist on Caliber.</span>
             <Link href="/" className="btn-edit-profile mt-4">Return Home</Link>
           </main>
         </div>
@@ -1425,7 +1425,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
               {!isTabLoading && activeTab === "posts" && (
                 <div className="flex flex-col gap-4">
                   {userPosts.length === 0 ? (
-                    <div className="py-8 text-center text-sm text-[#C8C7C7]">
+                    <div className="py-8 text-center text-sm text-[var(--c-text-muted)]">
                       No posts yet.
                     </div>
                   ) : (
@@ -1468,7 +1468,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
               {!isTabLoading && activeTab === "portfolio" && (
                 <div className="portfolio-grid">
                   {userPortfolio.length === 0 ? (
-                    <div className="py-8 text-center text-sm text-[#C8C7C7] col-span-full">
+                    <div className="py-8 text-center text-sm text-[var(--c-text-muted)] col-span-full">
                       No projects added yet.
                     </div>
                   ) : (
@@ -1515,7 +1515,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                   <div>
                     <h3 className="font-chakra text-xs font-semibold text-[#10B981] tracking-wider mb-4">JOINED HUBS</h3>
                     {userHubs.length === 0 ? (
-                      <div className="py-8 text-center text-sm text-[#C8C7C7]">
+                      <div className="py-8 text-center text-sm text-[var(--c-text-muted)]">
                         Not a member of any hubs yet.
                       </div>
                     ) : (
@@ -1571,13 +1571,13 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                     {profileUser.experience && Array.isArray(profileUser.experience) && profileUser.experience.length > 0 ? (
                       <div className="flex flex-col gap-4">
                         {profileUser.experience.map((exp: { id: string; role: string; company: string; startDate: string; endDate?: string | null; current: boolean; description?: string | null }) => (
-                          <div key={exp.id} className="p-4 border border-[#2A313C] rounded bg-[#10141A]/50">
-                            <h4 className="text-[#E0E0E0] font-medium text-lg">{exp.role} <span className="text-[#10B981]">@ {exp.company}</span></h4>
+                          <div key={exp.id} className="p-4 border border-[var(--c-border)] rounded bg-[color-mix(in_srgb,var(--c-surface)_50%,transparent)]">
+                            <h4 className="text-[var(--c-text)] font-medium text-lg">{exp.role} <span className="text-[#10B981]">@ {exp.company}</span></h4>
                             <p className="text-sm text-[#8E95A3] mt-1 font-chakra tracking-wide">
                               {exp.startDate} — {exp.current ? "Present" : exp.endDate}
                             </p>
                             {exp.description && (
-                              <p className="text-sm text-[#C8C7C7] mt-3 whitespace-pre-wrap font-inter leading-relaxed">
+                              <p className="text-sm text-[var(--c-text-muted)] mt-3 whitespace-pre-wrap font-inter leading-relaxed">
                                 {exp.description}
                               </p>
                             )}
@@ -1585,7 +1585,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                         ))}
                       </div>
                     ) : (
-                      <p className="font-inter text-sm text-[#C8C7C7] italic">No experience added yet</p>
+                      <p className="font-inter text-sm text-[var(--c-text-muted)] italic">No experience added yet</p>
                     )}
                   </div>
 
@@ -1598,7 +1598,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                         : [];
 
                       if (links.length === 0) {
-                        return <p className="font-inter text-sm text-[#C8C7C7] italic">No social links added yet</p>;
+                        return <p className="font-inter text-sm text-[var(--c-text-muted)] italic">No social links added yet</p>;
                       }
 
                       return (
@@ -1685,7 +1685,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                 </div>
               ))}
               {(modalOpen === "followers" ? followersList : followingList).length === 0 && (
-                <div className="py-8 text-center text-sm text-[#C8C7C7]">
+                <div className="py-8 text-center text-sm text-[var(--c-text-muted)]">
                   No users found in this list.
                 </div>
               )}
@@ -1700,7 +1700,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
           <div
             className="modal-container"
             onClick={(e) => e.stopPropagation()}
-            style={{ background: "#10141A", border: "1px solid #2A313C" }}
+            style={{ background: "var(--c-surface)", border: "1px solid var(--c-border)" }}
           >
             <div className="modal-header">
               <h2 className="modal-title">Add Project</h2>
@@ -1731,11 +1731,11 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                     placeholder="Project title"
                     className="font-inter"
                     style={{
-                      background: "#0A0D12",
-                      border: "1px solid #2A313C",
+                      background: "var(--c-bg)",
+                      border: "1px solid var(--c-border)",
                       borderRadius: "8px",
                       padding: "10px 12px",
-                      color: "#FFFFFF",
+                      color: "var(--c-text)",
                       fontSize: "14px",
                       outline: "none",
                     }}
@@ -1755,11 +1755,11 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                     rows={4}
                     className="font-inter"
                     style={{
-                      background: "#0A0D12",
-                      border: "1px solid #2A313C",
+                      background: "var(--c-bg)",
+                      border: "1px solid var(--c-border)",
                       borderRadius: "8px",
                       padding: "10px 12px",
-                      color: "#FFFFFF",
+                      color: "var(--c-text)",
                       fontSize: "14px",
                       outline: "none",
                       resize: "vertical",
@@ -1780,11 +1780,11 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                     placeholder="Comma-separated, e.g. Unity, 3D, Shader"
                     className="font-inter"
                     style={{
-                      background: "#0A0D12",
-                      border: "1px solid #2A313C",
+                      background: "var(--c-bg)",
+                      border: "1px solid var(--c-border)",
                       borderRadius: "8px",
                       padding: "10px 12px",
-                      color: "#FFFFFF",
+                      color: "var(--c-text)",
                       fontSize: "14px",
                       outline: "none",
                     }}
@@ -1804,11 +1804,11 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                     placeholder="https://..."
                     className="font-inter"
                     style={{
-                      background: "#0A0D12",
-                      border: "1px solid #2A313C",
+                      background: "var(--c-bg)",
+                      border: "1px solid var(--c-border)",
                       borderRadius: "8px",
                       padding: "10px 12px",
-                      color: "#FFFFFF",
+                      color: "var(--c-text)",
                       fontSize: "14px",
                       outline: "none",
                     }}
@@ -1829,10 +1829,10 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                     className="font-chakra"
                     style={{
                       background: "transparent",
-                      border: "1px solid #2A313C",
+                      border: "1px solid var(--c-border)",
                       borderRadius: "8px",
                       padding: "10px 18px",
-                      color: "#C8C7C7",
+                      color: "var(--c-text-muted)",
                       fontSize: "14px",
                       fontWeight: 600,
                       cursor: "pointer",
@@ -1850,7 +1850,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                       border: "none",
                       borderRadius: "8px",
                       padding: "10px 18px",
-                      color: "#0A0D12",
+                      color: "var(--c-bg)",
                       fontSize: "14px",
                       fontWeight: 700,
                       cursor: isSavingProject ? "not-allowed" : "pointer",
@@ -1923,7 +1923,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                   </div>
                 </div>
               ))}
-              <div className="text-center text-xs text-[#C8C7C7]/50 font-inter my-2">
+              <div className="text-center text-xs text-[color-mix(in_srgb,var(--c-text-muted)_50%,transparent)] font-inter my-2">
                 More presets coming soon
               </div>
             </div>
@@ -1970,7 +1970,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                 <button 
                   type="button" 
                   onClick={handleRemoveCustom} 
-                  className="text-xs text-[#C8C7C7] hover:text-[#10B981] transition-colors"
+                  className="text-xs text-[var(--c-text-muted)] hover:text-[#10B981] transition-colors"
                 >
                   Remove Image
                 </button>

@@ -59,10 +59,10 @@ export default function CreatePrivateHubModal({ open, onClose }: CreatePrivateHu
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="bg-[#10141A] border border-[#2A313C] rounded-lg p-6 w-[400px] max-w-[90vw] shadow-2xl relative">
+      <div className="bg-[var(--c-surface)] border border-[var(--c-border)] rounded-lg p-6 w-[400px] max-w-[90vw] shadow-2xl relative">
         <button
           onClick={handleClose}
-          className="absolute top-4 right-4 text-[#C8C7C7] hover:text-white transition-colors"
+          className="absolute top-4 right-4 text-[var(--c-text-muted)] hover:text-white transition-colors"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M18 6L6 18M6 6l12 12" />
@@ -79,8 +79,8 @@ export default function CreatePrivateHubModal({ open, onClose }: CreatePrivateHu
               </svg>
             </div>
             <h3 className="text-white font-chakra font-bold text-lg mb-2">Hub Created!</h3>
-            <p className="text-[#C8C7C7] text-sm mb-6">Share this code with your friends so they can request to join:</p>
-            <div className="bg-[#161c24] border border-[#2A313C] rounded px-4 py-3 text-2xl font-mono text-[#10B981] tracking-widest font-bold">
+            <p className="text-[var(--c-text-muted)] text-sm mb-6">Share this code with your friends so they can request to join:</p>
+            <div className="bg-[var(--c-surface-2)] border border-[var(--c-border)] rounded px-4 py-3 text-2xl font-mono text-[#10B981] tracking-widest font-bold">
               {createdHubCode}
             </div>
           </div>
@@ -88,7 +88,7 @@ export default function CreatePrivateHubModal({ open, onClose }: CreatePrivateHu
           <form onSubmit={handleCreatePrivateHub} className="space-y-4">
             {error && <div className="text-[#FF4D4D] text-sm font-chakra">{error}</div>}
             <div>
-              <label className="block text-xs font-chakra text-[#C8C7C7] mb-1 uppercase tracking-wider">
+              <label className="block text-xs font-chakra text-[var(--c-text-muted)] mb-1 uppercase tracking-wider">
                 Hub Name
               </label>
               <input
@@ -96,12 +96,12 @@ export default function CreatePrivateHubModal({ open, onClose }: CreatePrivateHu
                 value={hubName}
                 onChange={(e) => setHubName(e.target.value)}
                 required
-                className="w-full bg-[#161c24] border border-[#2A313C] rounded p-2 text-white font-inter text-sm focus:outline-none focus:border-[#10B981] transition-colors"
+                className="w-full bg-[var(--c-surface-2)] border border-[var(--c-border)] rounded p-2 text-white font-inter text-sm focus:outline-none focus:border-[#10B981] transition-colors"
                 placeholder="E.g. Case Prep Crew"
               />
             </div>
             <div>
-              <label className="block text-xs font-chakra text-[#C8C7C7] mb-1 uppercase tracking-wider">
+              <label className="block text-xs font-chakra text-[var(--c-text-muted)] mb-1 uppercase tracking-wider">
                 Description
               </label>
               <textarea
@@ -109,14 +109,14 @@ export default function CreatePrivateHubModal({ open, onClose }: CreatePrivateHu
                 onChange={(e) => setHubDesc(e.target.value)}
                 required
                 rows={3}
-                className="w-full bg-[#161c24] border border-[#2A313C] rounded p-2 text-white font-inter text-sm focus:outline-none focus:border-[#10B981] transition-colors resize-none"
+                className="w-full bg-[var(--c-surface-2)] border border-[var(--c-border)] rounded p-2 text-white font-inter text-sm focus:outline-none focus:border-[#10B981] transition-colors resize-none"
                 placeholder="What is this hub about?"
               />
             </div>
             <button
               type="submit"
               disabled={isCreating}
-              className="w-full py-2.5 rounded bg-[#10B981] text-[#10141A] font-chakra font-bold text-sm uppercase tracking-wider hover:bg-[#00d0e0] transition-colors mt-2 disabled:opacity-50"
+              className="w-full py-2.5 rounded bg-[#10B981] text-[var(--c-surface)] font-chakra font-bold text-sm uppercase tracking-wider hover:bg-[#00d0e0] transition-colors mt-2 disabled:opacity-50"
             >
               {isCreating ? "Creating..." : "Create Hub"}
             </button>

@@ -223,7 +223,7 @@ export default function LeftSidebar() {
             <span style={{ 
               fontFamily: 'var(--font-verdana), sans-serif', 
               fontSize: '13px', 
-              color: '#C8C7C7'
+              color: 'var(--c-text-muted)'
             }}>
               Private Hubs
             </span>

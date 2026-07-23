@@ -164,7 +164,7 @@ export default function NotificationsPage() {
             <h1 className="font-chakra text-2xl text-white font-bold uppercase tracking-wider">
               Notifications
             </h1>
-            <p className="font-inter text-sm text-[#C8C7C7]">
+            <p className="font-inter text-sm text-[var(--c-text-muted)]">
               Follows, reactions, and hub activity from across the Caliber ecosystem.
             </p>
           </div>
@@ -184,7 +184,7 @@ export default function NotificationsPage() {
             </div>
           ) : items.length === 0 ? (
             <div className="text-center py-16">
-              <div className="mx-auto mb-4 w-14 h-14 rounded-full bg-[#10141A] border border-[#2A313C] flex items-center justify-center">
+              <div className="mx-auto mb-4 w-14 h-14 rounded-full bg-[var(--c-surface)] border border-[var(--c-border)] flex items-center justify-center">
                 <svg
                   width="24"
                   height="24"
@@ -202,7 +202,7 @@ export default function NotificationsPage() {
               <div className="text-white font-chakra font-bold text-sm mb-1">
                 You&apos;re all caught up
               </div>
-              <div className="text-[#C8C7C7] font-inter text-sm">
+              <div className="text-[var(--c-text-muted)] font-inter text-sm">
                 New follows, reactions, and hub requests will show up here.
               </div>
             </div>
@@ -211,7 +211,7 @@ export default function NotificationsPage() {
               {items.map((n) => {
                 const meta = TYPE_META[n.type] || {
                   verb: "sent you a notification",
-                  color: "#C8C7C7",
+                  color: "var(--c-text-muted)",
                   icon: <circle cx="12" cy="12" r="9" />,
                 };
                 const from = n.fromUser;
@@ -283,7 +283,7 @@ export default function NotificationsPage() {
                           ) : (
                             <span className="font-bold">{name}</span>
                           )}{" "}
-                          <span className="text-[#C8C7C7]">{meta.verb}</span>
+                          <span className="text-[var(--c-text-muted)]">{meta.verb}</span>
                         </p>
                         {n.post?.excerpt && (
                           <p className="font-inter text-xs text-[#8A9099] mt-1 truncate">
@@ -318,8 +318,8 @@ export default function NotificationsPage() {
           color: rgba(16, 185, 129, 0.6);
         }
         .notif-card {
-          background: #10141a;
-          border: 1px solid #2a313c;
+          background: var(--c-surface);
+          border: 1px solid var(--c-border);
           border-radius: 10px;
           padding: 0.85rem 1rem;
           transition: border-color 0.2s, background 0.2s;
@@ -335,7 +335,7 @@ export default function NotificationsPage() {
           width: 40px;
           height: 40px;
           border-radius: 9999px;
-          background: #2a313c;
+          background: var(--c-border);
           overflow: hidden;
           display: flex;
           align-items: center;
@@ -343,7 +343,7 @@ export default function NotificationsPage() {
           font-weight: 700;
           font-size: 1rem;
           color: #fff;
-          border: 1px solid #2a313c;
+          border: 1px solid var(--c-border);
           transition: border-color 0.2s;
         }
         .notif-avatar:hover {
@@ -353,7 +353,7 @@ export default function NotificationsPage() {
           width: 24px;
           height: 24px;
           border-radius: 9999px;
-          background: #10141a;
+          background: var(--c-surface);
           border: 1.5px solid;
           display: flex;
           align-items: center;
