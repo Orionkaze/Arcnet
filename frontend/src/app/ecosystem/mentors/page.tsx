@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import "../../home.css";
 import Navbar from "@/components/home/Navbar";
 import LeftSidebar from "@/components/home/LeftSidebar";
@@ -8,6 +8,7 @@ import RightPanel from "@/components/home/RightPanel";
 import MobileBottomNav from "@/components/home/MobileBottomNav";
 import MobileDrawer from "@/components/home/MobileDrawer";
 import { useAuthStore } from "@/store/useAuthStore";
+import MentorListingModal from "@/components/ecosystem/MentorListingModal";
 
 interface Mentor {
   id: string;
@@ -24,6 +25,7 @@ interface Mentor {
   price: number;
   verified: boolean;
   requested: boolean;
+  mine: boolean;
 }
 
 const SPECIALTIES = ["All", "Consulting", "Finance", "Product", "Data", "Aptitude"];
@@ -39,31 +41,52 @@ export default function MentorsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [bookError, setBookError] = useState<string | null>(null);
+  const [isListingOpen, setIsListingOpen] = useState(false);
 
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
 
-  useEffect(() => {
-    let active = true;
-    (async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await fetch("/api/mentors");
-        if (!res.ok) throw new Error("Failed to load mentors");
-        const data = await res.json();
-        if (active) setMentors(data.mentors ?? []);
-      } catch {
-        if (active) setError("Couldn't load mentors. Please try again.");
-      } finally {
-        if (active) setLoading(false);
-      }
-    })();
-    return () => {
-      active = false;
-    };
+  const fetchMentors = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/mentors");
+      if (!res.ok) throw new Error("Failed to load mentors");
+      const data = await res.json();
+      setMentors(data.mentors ?? []);
+    } catch {
+      setError("Couldn't load mentors. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    // Deferred so the initial setState isn't synchronous in the effect body
+    // (project lint rule).
+    const t = setTimeout(() => fetchMentors(), 0);
+    return () => clearTimeout(t);
+  }, [fetchMentors]);
+
+  // The viewer's own listing, if they have one.
+  const myListing = useMemo(() => mentors.find((m) => m.mine) ?? null, [mentors]);
+
+  const handleRemoveListing = async (mentor: Mentor) => {
+    if (!window.confirm("Remove your mentor listing?")) return;
+    setBookError(null);
+    try {
+      const res = await fetch(`/api/mentors/${mentor.id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setBookError(data.error || "Could not remove your listing.");
+        return;
+      }
+      fetchMentors();
+    } catch {
+      setBookError("Could not remove your listing.");
+    }
+  };
 
   const handleBook = async (mentor: Mentor) => {
     setBookError(null);
@@ -124,9 +147,17 @@ export default function MentorsPage() {
           {/* Header */}
           <div className="flex flex-col gap-2 mb-6">
             <span className="section-label">ECOSYSTEM</span>
-            <h1 className="font-chakra text-2xl text-white font-bold uppercase tracking-wider">
-              Find Mentors
-            </h1>
+            <div className="flex items-start justify-between gap-3 flex-wrap">
+              <h1 className="font-chakra text-2xl text-white font-bold uppercase tracking-wider">
+                Find Mentors
+              </h1>
+              <button
+                onClick={() => setIsListingOpen(true)}
+                className="book-btn flex-shrink-0"
+              >
+                {myListing ? "Edit your listing" : "+ Become a Mentor"}
+              </button>
+            </div>
             <p className="font-inter text-sm text-[var(--c-text-muted)]">
               Browse verified professionals across consulting, finance, product,
               data, and aptitude &mdash; then book a session.
@@ -272,12 +303,27 @@ export default function MentorsPage() {
                       &#8377;{mentor.price.toLocaleString("en-IN")} / 45 min
                     </span>
                   </div>
-                  <button
-                    className="book-btn"
-                    onClick={() => handleBook(mentor)}
-                  >
-                    {mentor.requested ? "Session Requested ✓" : "Book a Session"}
-                  </button>
+                  {mentor.mine ? (
+                    // You can't book yourself — offer listing management instead.
+                    <div className="flex flex-col items-end gap-1">
+                      <span className="font-chakra text-[11px] uppercase tracking-wider text-[#10B981]">
+                        Your listing
+                      </span>
+                      <button
+                        onClick={() => handleRemoveListing(mentor)}
+                        className="font-inter text-xs text-[#FF4D4D] hover:underline"
+                      >
+                        Remove listing
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      className="book-btn"
+                      onClick={() => handleBook(mentor)}
+                    >
+                      {mentor.requested ? "Session Requested ✓" : "Book a Session"}
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
@@ -298,6 +344,13 @@ export default function MentorsPage() {
       </div>
       <MobileBottomNav />
       <MobileDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
+
+      <MentorListingModal
+        open={isListingOpen}
+        onClose={() => setIsListingOpen(false)}
+        existing={myListing}
+        onSaved={fetchMentors}
+      />
 
       <style jsx>{`
         .section-label {

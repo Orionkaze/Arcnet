@@ -53,6 +53,8 @@ model User {
   caliberReviews         CaliberReview[]         @relation("CaliberReviews")
   jobApplications        JobApplication[]
   mentorBookings         MentorBooking[]
+  postedJobs             Job[]
+  mentorProfile          Mentor?
 }
 
 model Conversation {
@@ -417,8 +419,11 @@ model Job {
   skills       String[]
   description  String
   postedAt     DateTime         @default(now())
+  postedById   String?
+  postedBy     User?            @relation(fields: [postedById], references: [id], onDelete: SetNull)
   applications JobApplication[]
   createdAt    DateTime         @default(now())
+  @@index([postedById])
 }
 
 model JobApplication {
@@ -447,6 +452,8 @@ model Mentor {
   sessions  Int
   price     Int
   verified  Boolean         @default(false)
+  userId    String?         @unique
+  user      User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
   bookings  MentorBooking[]
   createdAt DateTime        @default(now())
 }

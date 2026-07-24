@@ -8,6 +8,7 @@ import RightPanel from "@/components/home/RightPanel";
 import MobileBottomNav from "@/components/home/MobileBottomNav";
 import MobileDrawer from "@/components/home/MobileDrawer";
 import { useAuthStore } from "@/store/useAuthStore";
+import PostRoleModal from "@/components/ecosystem/PostRoleModal";
 
 type EmploymentType = "Full-Time" | "Internship" | "Contract" | "Remote";
 
@@ -22,7 +23,35 @@ interface Job {
   postedAt: string; // ISO date
   description: string;
   applied: boolean;
+  mine: boolean;
 }
+
+const EMPLOYMENT_TYPES: EmploymentType[] = [
+  "Full-Time",
+  "Internship",
+  "Contract",
+  "Remote",
+];
+
+interface PostRoleForm {
+  title: string;
+  company: string;
+  location: string;
+  type: EmploymentType;
+  ctc: string;
+  skills: string;
+  description: string;
+}
+
+const EMPTY_FORM: PostRoleForm = {
+  title: "",
+  company: "",
+  location: "",
+  type: "Full-Time",
+  ctc: "",
+  skills: "",
+  description: "",
+};
 
 const FILTERS: Array<"All" | EmploymentType> = [
   "All",
@@ -66,6 +95,12 @@ export default function JobsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [applyMsg, setApplyMsg] = useState<Record<string, string>>({});
+  const [isPostOpen, setIsPostOpen] = useState(false);
+
+  const [showPostModal, setShowPostModal] = useState(false);
+  const [form, setForm] = useState<PostRoleForm>(EMPTY_FORM);
+  const [submitting, setSubmitting] = useState(false);
+  const [postError, setPostError] = useState<string | null>(null);
 
   const fetchJobs = useCallback(async () => {
     setLoading(true);
@@ -133,6 +168,21 @@ export default function JobsPage() {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("Remove this listing? This can't be undone.")) return;
+    try {
+      const res = await fetch(`/api/jobs/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setApplyMsg((m) => ({ ...m, [id]: data.error || "Could not delete." }));
+        return;
+      }
+      fetchJobs();
+    } catch {
+      setApplyMsg((m) => ({ ...m, [id]: "Could not delete." }));
+    }
+  };
+
   const filteredJobs = useMemo(() => {
     const q = search.trim().toLowerCase();
     return jobs.filter((job) => {
@@ -161,9 +211,17 @@ export default function JobsPage() {
           {/* Header */}
           <div className="flex flex-col gap-2 mb-6">
             <span className="section-label">ECOSYSTEM</span>
-            <h1 className="font-chakra text-2xl text-white font-bold uppercase tracking-wider">
-              India-First Job Board
-            </h1>
+            <div className="flex items-start justify-between gap-3 flex-wrap">
+              <h1 className="font-chakra text-2xl text-white font-bold uppercase tracking-wider">
+                India-First Job Board
+              </h1>
+              <button
+                onClick={() => setIsPostOpen(true)}
+                className="job-btn-primary flex-shrink-0"
+              >
+                + Post a Role
+              </button>
+            </div>
             <p className="font-inter text-sm text-[var(--c-text-muted)]">
               Roles from internships to full-time, with transparent CTC. Find your next opportunity.
             </p>
@@ -290,6 +348,14 @@ export default function JobsPage() {
                     >
                       {job.applied ? "Applied ✓" : "Apply Now"}
                     </button>
+                    {job.mine && (
+                      <button
+                        onClick={() => handleDelete(job.id)}
+                        className="ml-auto font-inter text-xs text-[#FF4D4D] hover:underline"
+                      >
+                        Delete
+                      </button>
+                    )}
                   </div>
                   {applyMsg[job.id] && (
                     <p className="font-inter text-xs text-[#6B7280] mt-2">
@@ -316,6 +382,12 @@ export default function JobsPage() {
       </div>
       <MobileBottomNav />
       <MobileDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
+
+      <PostRoleModal
+        open={isPostOpen}
+        onClose={() => setIsPostOpen(false)}
+        onCreated={fetchJobs}
+      />
 
       <style jsx>{`
         .section-label {
