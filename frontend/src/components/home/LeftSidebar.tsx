@@ -218,7 +218,7 @@ export default function LeftSidebar() {
 
         {/* Bottom: Private Hubs */}
         <div className="sidebar-bottom" style={{ width: '100%' }}>
-          <div style={{ height: '1px', backgroundColor: '#6B7280', width: '100%', marginBottom: '16px' }} />
+          <div style={{ height: '1px', backgroundColor: 'var(--c-border)', width: '100%', marginBottom: '16px' }} />
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ 
               fontFamily: 'var(--font-verdana), sans-serif', 

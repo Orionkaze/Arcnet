@@ -620,7 +620,7 @@ function MessagesInner() {
           gap: 0.75rem;
           align-items: center;
           padding: 0.75rem 1rem;
-          border-bottom: 1px solid #1a1f27;
+          border-bottom: 1px solid var(--c-border);
           cursor: pointer;
           transition: background 0.15s;
           text-align: left;

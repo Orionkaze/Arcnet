@@ -16,8 +16,27 @@ export async function GET(
       orderBy: { difficulty: "asc" },
       select: { id: true, trackId: true, type: true, prompt: true, difficulty: true, maxPoints: true, config: true },
     });
-    const problems = rows.map((r) => toPublicProblem(r as unknown as ProblemRow));
-    return NextResponse.json({ track: { slug: track.slug, name: track.name }, problems });
+    const autoScored = rows.map((r) => ({ ...toPublicProblem(r as unknown as ProblemRow), isOpen: false }));
+
+    // Open (peer-reviewed) tracks store their problems in CaliberOpenProblem, not
+    // CaliberProblem — surface those too, or an open track (e.g. Consulting Cases)
+    // renders empty even though it's listed and clickable from /caliber.
+    const openRows = await prisma.caliberOpenProblem.findMany({
+      where: { trackId: track.id, status: "published" },
+      orderBy: { createdAt: "asc" },
+      select: { id: true, prompt: true, maxPoints: true },
+    });
+    const openProblems = openRows.map((r) => ({
+      id: r.id,
+      type: "open" as const,
+      prompt: r.prompt,
+      difficulty: 0,
+      maxPoints: r.maxPoints,
+      isOpen: true,
+    }));
+
+    const problems = [...autoScored, ...openProblems];
+    return NextResponse.json({ track: { slug: track.slug, name: track.name, kind: track.kind }, problems });
   } catch (error) {
     console.error("GET caliber track problems error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

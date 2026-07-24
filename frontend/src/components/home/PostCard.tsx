@@ -475,7 +475,7 @@ export default function PostCard({
               <div className="absolute right-0 mt-2 w-36 bg-[var(--c-surface)] border border-[var(--c-border)] rounded-lg shadow-lg overflow-hidden z-50 animate-fade-in">
                 <button
                   onClick={handleDeletePost}
-                  className="w-full text-left px-4 py-2 text-sm font-inter text-[#FF3366] hover:bg-[#1A202A] transition-colors"
+                  className="w-full text-left px-4 py-2 text-sm font-inter text-[#FF3366] hover:bg-[var(--c-surface-2)] transition-colors"
                 >
                   Delete Post
                 </button>

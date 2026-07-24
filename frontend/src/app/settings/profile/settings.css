@@ -259,7 +259,7 @@
   aspect-ratio: 4/3;
   border: 1px solid var(--c-border);
   border-radius: 4px;
-  background-color: #000000;
+  background-color: var(--c-surface-2);
   object-fit: cover;
 }
 

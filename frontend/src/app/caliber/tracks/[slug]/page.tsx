@@ -12,7 +12,7 @@ import MobileDrawer from "@/components/home/MobileDrawer";
 import { useAuthStore } from "@/store/useAuthStore";
 import s from "../../caliber.module.css";
 
-interface PublicProblem { id: string; type: string; prompt: string; difficulty: number; maxPoints: number; }
+interface PublicProblem { id: string; type: string; prompt: string; difficulty: number; maxPoints: number; isOpen?: boolean; }
 
 export default function TrackPage() {
   const params = useParams<{ slug: string }>();
@@ -59,10 +59,10 @@ export default function TrackPage() {
             <div className={s.state}>No problems in this track yet.</div>
           ) : (
             problems.map((p) => (
-              <Link key={p.id} href={`/caliber/problems/${p.id}`} className={s.card}>
+              <Link key={p.id} href={p.isOpen ? `/caliber/open/${p.id}` : `/caliber/problems/${p.id}`} className={s.card}>
                 <div className={s.rowBetween}>
                   <span>{p.prompt}</span>
-                  <span className={s.pill}>{p.difficulty}</span>
+                  <span className={s.pill}>{p.isOpen ? "PEER REVIEWED" : p.difficulty}</span>
                 </div>
               </Link>
             ))

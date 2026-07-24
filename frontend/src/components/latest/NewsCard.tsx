@@ -115,7 +115,7 @@ export default function NewsCard({
           display: flex;
           align-items: center;
           justify-content: center;
-          background: #1e242d;
+          background: var(--c-surface-2);
         }
         .news-content {
           padding: 12px;

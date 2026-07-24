@@ -25,16 +25,46 @@ async function main() {
   const passwordHash = await bcrypt.hash(DEMO_PASSWORD, 12);
 
   // --- Users (idempotent upsert by email) ------------------------------------
+  // Fully-filled profiles so the profile page (bio / role / location / skills /
+  // social links) reads as a real credential rather than an empty shell.
   const userSpecs = [
-    { email: "demo@caliber.dev", username: "demo", firstName: "Demo", lastName: "User" },
-    { email: "arjun@caliber.dev", username: "arjun", firstName: "Arjun", lastName: "Shah" },
-    { email: "sara@caliber.dev", username: "sara", firstName: "Sara", lastName: "Iyer" },
+    {
+      email: "demo@caliber.dev", username: "demo", firstName: "Demo", lastName: "User",
+      role: "Final-year student · Consulting aspirant", location: "Bengaluru, India",
+      bio: "Prepping for consulting and product roles. Grinding guesstimates and cases daily, and tracking it all with a Caliber rating instead of a resume line.",
+      skills: "Case Structuring,Guesstimates,Market Sizing,SQL,Product Sense",
+      socialLinks: [
+        { platform: "linkedin", url: "https://www.linkedin.com/in/demo" },
+        { platform: "github", url: "https://github.com/demo" },
+      ],
+    },
+    {
+      email: "arjun@caliber.dev", username: "arjun", firstName: "Arjun", lastName: "Shah",
+      role: "MBA candidate · Ex-analyst", location: "Mumbai, India",
+      bio: "Recovering spreadsheet monkey turned case-cracker. Here to run mock interviews and lose to Sara on the leaderboard.",
+      skills: "Valuation,DCF,Profitability Cases,Excel,Frameworks",
+      socialLinks: [{ platform: "linkedin", url: "https://www.linkedin.com/in/arjun" }],
+    },
+    {
+      email: "sara@caliber.dev", username: "sara", firstName: "Sara", lastName: "Iyer",
+      role: "Data analyst · PM hopeful", location: "Pune, India",
+      bio: "Numbers person moving into product. I like clean SQL, sharp metrics, and product-sense questions that force a real tradeoff.",
+      skills: "SQL,Statistics,A/B Testing,Product Metrics,Dashboards",
+      socialLinks: [
+        { platform: "linkedin", url: "https://www.linkedin.com/in/sara" },
+        { platform: "github", url: "https://github.com/sara" },
+      ],
+    },
   ];
   const users: Record<string, { id: string }> = {};
   for (const u of userSpecs) {
+    const profile = {
+      role: u.role, location: u.location, bio: u.bio, skills: u.skills,
+      socialLinks: u.socialLinks,
+    };
     const user = await prisma.user.upsert({
       where: { email: u.email },
-      update: { isVerified: true, isOnboarded: true, username: u.username, password: passwordHash },
+      update: { isVerified: true, isOnboarded: true, username: u.username, password: passwordHash, ...profile },
       create: {
         email: u.email,
         username: u.username,
@@ -43,6 +73,7 @@ async function main() {
         password: passwordHash,
         isVerified: true,
         isOnboarded: true,
+        ...profile,
       },
       select: { id: true },
     });
@@ -63,6 +94,8 @@ async function main() {
   await prisma.caliberTrack.deleteMany({}); // cascades problems -> submissions & competition links
   await prisma.notification.deleteMany({ where: { userId: { in: demoIds } } });
   await prisma.hubMember.deleteMany({ where: { userId: { in: demoIds } } });
+  await prisma.portfolioProject.deleteMany({ where: { userId: { in: demoIds } } });
+  await prisma.experience.deleteMany({ where: { userId: { in: demoIds } } });
   // Channels survive re-seeding (seedHubs only creates missing ones), so clear
   // chat messages explicitly or they accumulate. Reactions have no cascade from
   // Message, and pinnedMessageId must be released before the rows are deleted.
@@ -431,6 +464,44 @@ async function main() {
       { type: "comment", userId: demo, fromUserId: sara, postId: p3.id },
       { type: "repost", userId: demo, fromUserId: arjun, postId: p3.id },
       { type: "comment", userId: demo, fromUserId: arjun, postId: p6.id },
+    ],
+  });
+
+  // --- Portfolio projects ----------------------------------------------------
+  // The profile Portfolio tab was empty on the seeded demo; give the demo user
+  // a couple of case-style artifacts so it demonstrates the feature.
+  await prisma.portfolioProject.createMany({
+    data: [
+      {
+        userId: demo,
+        title: "Coffee-chain turnaround — case deck",
+        description: "Full structuring of a 15% same-store-sales decline: traffic-vs-ticket split, root-cause tree, and two prioritised recommendations. Scored 81/100 in peer review.",
+        tags: ["Consulting", "Profitability", "Structuring"],
+        link: "https://example.com/demo/coffee-case",
+      },
+      {
+        userId: demo,
+        title: "Market-sizing playbook",
+        description: "A reusable demand-first framework for order-of-magnitude estimates, with worked examples (EV charging stations, coffee cups/day) and the assumption checklist I run before touching numbers.",
+        tags: ["Guesstimates", "Market Sizing"],
+        link: null,
+      },
+    ],
+  });
+
+  // Experience, so the profile About tab's experience section demos populated.
+  await prisma.experience.createMany({
+    data: [
+      {
+        userId: demo, role: "Strategy Consulting Intern", company: "Meridian Advisory",
+        startDate: "2025-05", endDate: "2025-07", current: false,
+        description: "Supported a market-entry study for a D2C brand: sized the addressable market, built the competitive map, and drafted the go/no-go recommendation.",
+      },
+      {
+        userId: demo, role: "Case Club Lead", company: "University Consulting Society",
+        startDate: "2024-08", endDate: null, current: true,
+        description: "Run weekly case-practice sessions and mock interviews for 40+ members preparing for consulting and product roles.",
+      },
     ],
   });
 
