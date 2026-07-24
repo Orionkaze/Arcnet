@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import "../../home.css";
 import Navbar from "@/components/home/Navbar";
 import LeftSidebar from "@/components/home/LeftSidebar";
@@ -19,8 +19,9 @@ interface Job {
   type: EmploymentType;
   ctc: string;
   skills: string[];
-  postedAt: string;
+  postedAt: string; // ISO date
   description: string;
+  applied: boolean;
 }
 
 const FILTERS: Array<"All" | EmploymentType> = [
@@ -31,104 +32,20 @@ const FILTERS: Array<"All" | EmploymentType> = [
   "Remote",
 ];
 
-const JOBS: Job[] = [
-  {
-    id: "1",
-    title: "Business Analyst",
-    company: "McKinsey & Company",
-    location: "Gurugram, HR",
-    type: "Full-Time",
-    ctc: "₹18-24 LPA",
-    skills: ["Case Solving", "Excel", "PowerPoint", "Problem Structuring"],
-    postedAt: "2d ago",
-    description:
-      "Join our consulting team to solve ambiguous business problems for top clients. You'll structure issues, build models, run analyses, and present crisp recommendations to senior stakeholders across industries.",
-  },
-  {
-    id: "2",
-    title: "Investment Banking Analyst",
-    company: "Goldman Sachs",
-    location: "Mumbai, MH",
-    type: "Full-Time",
-    ctc: "₹16-22 LPA",
-    skills: ["Valuation", "Financial Modeling", "DCF", "Excel"],
-    postedAt: "3d ago",
-    description:
-      "Support M&A and capital-markets deals on the IBD floor. Expect deep work on three-statement models, comparable-company analysis, pitch books, and due diligence for live transactions.",
-  },
-  {
-    id: "3",
-    title: "Data Analyst Intern",
-    company: "Swiggy",
-    location: "Bengaluru, KA",
-    type: "Internship",
-    ctc: "₹40,000/month",
-    skills: ["SQL", "Python", "Tableau", "Statistics"],
-    postedAt: "1d ago",
-    description:
-      "A 6-month internship on the analytics team. You'll write SQL, build dashboards, run A/B tests, and turn messy operational data into insights that drive product and growth decisions.",
-  },
-  {
-    id: "4",
-    title: "Consulting Associate",
-    company: "Bain & Company",
-    location: "New Delhi, DL",
-    type: "Contract",
-    ctc: "₹15-20 LPA",
-    skills: ["Market Sizing", "Frameworks", "Client Comms", "Research"],
-    postedAt: "5d ago",
-    description:
-      "12-month engagement supporting case teams on profitability, market-entry, and growth strategy work. Own workstreams, synthesize findings, and help shape the final client recommendation.",
-  },
-  {
-    id: "5",
-    title: "Associate Product Manager",
-    company: "Flipkart",
-    location: "Remote",
-    type: "Remote",
-    ctc: "₹18-26 LPA",
-    skills: ["Product Sense", "Metrics", "Roadmapping", "SQL"],
-    postedAt: "4d ago",
-    description:
-      "Own a slice of the product roadmap for a surface used by millions. You'll write PRDs, define metrics, partner with engineering and design, and iterate on what moves the numbers that matter.",
-  },
-  {
-    id: "6",
-    title: "Equity Research Intern",
-    company: "Morgan Stanley",
-    location: "Mumbai, MH",
-    type: "Internship",
-    ctc: "₹35,000/month",
-    skills: ["Excel", "Valuation", "Industry Research", "Modeling"],
-    postedAt: "6d ago",
-    description:
-      "Assist senior analysts in covering listed companies and sectors. Build models, track earnings, and draft the research notes that inform institutional investment decisions.",
-  },
-  {
-    id: "7",
-    title: "Data Scientist",
-    company: "Zomato",
-    location: "Bengaluru, KA",
-    type: "Full-Time",
-    ctc: "₹20-28 LPA",
-    skills: ["Python", "SQL", "Machine Learning", "Experimentation"],
-    postedAt: "1w ago",
-    description:
-      "Build models and experiments that power personalization, pricing, and growth for millions of users. You'll own the full loop from problem framing to production impact alongside product and engineering.",
-  },
-  {
-    id: "8",
-    title: "Strategy Consultant (Contract)",
-    company: "BCG",
-    location: "Remote",
-    type: "Remote",
-    ctc: "₹18-25 LPA",
-    skills: ["Case Structuring", "Analytics", "Storylining", "Excel"],
-    postedAt: "1w ago",
-    description:
-      "Remote engagement helping clients with growth and operations strategy. Structure problems, run the analysis, and turn findings into a clear, executive-ready storyline.",
-  },
-];
+function timeAgo(iso: string): string {
+  const then = new Date(iso).getTime();
+  const secs = Math.floor((Date.now() - then) / 1000);
+  if (secs < 60) return "just now";
+  const mins = Math.floor(secs / 60);
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  if (days < 7) return `${days}d ago`;
+  const weeks = Math.floor(days / 7);
+  if (weeks < 5) return `${weeks}w ago`;
+  return new Date(iso).toLocaleDateString();
+}
 
 const typeAccent: Record<EmploymentType, string> = {
   "Full-Time": "#10B981",
@@ -144,20 +61,81 @@ export default function JobsPage() {
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState<"All" | EmploymentType>("All");
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
-  // No employer backend yet — record interest locally so the CTA is honest and live.
-  const [requested, setRequested] = useState<Record<string, boolean>>({});
+
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [applyMsg, setApplyMsg] = useState<Record<string, string>>({});
+
+  const fetchJobs = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/jobs");
+      if (!res.ok) throw new Error("Failed to load roles");
+      const data = await res.json();
+      setJobs(data.jobs || []);
+    } catch (err) {
+      console.error(err);
+      setError("Could not load roles.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     checkAuth();
-  }, [checkAuth]);
+    // Defer so the initial setState in fetchJobs doesn't run synchronously
+    // inside the effect body (project lint rule).
+    const t = setTimeout(() => fetchJobs(), 0);
+    return () => clearTimeout(t);
+  }, [checkAuth, fetchJobs]);
 
   const toggleExpand = (id: string) => {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
+  const handleApply = async (id: string) => {
+    setApplyMsg((m) => {
+      const { [id]: _omit, ...rest } = m;
+      return rest;
+    });
+    // Optimistic toggle; revert on failure.
+    let prevApplied = false;
+    setJobs((prev) =>
+      prev.map((j) => {
+        if (j.id === id) {
+          prevApplied = j.applied;
+          return { ...j, applied: !j.applied };
+        }
+        return j;
+      })
+    );
+    try {
+      const res = await fetch(`/api/jobs/${id}/apply`, { method: "POST" });
+      if (res.status === 401) {
+        setJobs((prev) =>
+          prev.map((j) => (j.id === id ? { ...j, applied: prevApplied } : j))
+        );
+        setApplyMsg((m) => ({ ...m, [id]: "Log in to apply." }));
+        return;
+      }
+      if (!res.ok) throw new Error("Apply failed");
+      const data = await res.json();
+      setJobs((prev) =>
+        prev.map((j) => (j.id === id ? { ...j, applied: !!data.applied } : j))
+      );
+    } catch (err) {
+      console.error(err);
+      setJobs((prev) =>
+        prev.map((j) => (j.id === id ? { ...j, applied: prevApplied } : j))
+      );
+    }
+  };
+
   const filteredJobs = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return JOBS.filter((job) => {
+    return jobs.filter((job) => {
       const matchesFilter = activeFilter === "All" || job.type === activeFilter;
       if (!matchesFilter) return false;
       if (!q) return true;
@@ -171,7 +149,7 @@ export default function JobsPage() {
         .toLowerCase();
       return haystack.includes(q);
     });
-  }, [search, activeFilter]);
+  }, [search, activeFilter, jobs]);
 
   return (
     <div className="home-layout">
@@ -188,7 +166,6 @@ export default function JobsPage() {
             </h1>
             <p className="font-inter text-sm text-[var(--c-text-muted)]">
               Roles from internships to full-time, with transparent CTC. Find your next opportunity.
-              <span className="block mt-1 text-xs text-[#8A9099]">Sample listings — live employer postings roll out soon. Register interest to be notified.</span>
             </p>
           </div>
 
@@ -220,7 +197,27 @@ export default function JobsPage() {
             })}
           </div>
 
+          {/* Loading / error / empty states */}
+          {loading && (
+            <div className="text-[var(--c-text-muted)] font-inter text-sm py-6">
+              Loading roles…
+            </div>
+          )}
+          {!loading && error && (
+            <div className="text-[var(--c-text-muted)] font-inter text-sm py-6">
+              {error}
+            </div>
+          )}
+          {!loading && !error && jobs.length === 0 && (
+            <div className="text-center py-16">
+              <div className="text-[var(--c-text-muted)] font-inter text-sm">
+                No roles yet.
+              </div>
+            </div>
+          )}
+
           {/* Job list */}
+          {!loading && !error && jobs.length > 0 && (
           <div className="grid grid-cols-1 gap-4">
             {filteredJobs.map((job) => {
               const accent = typeAccent[job.type];
@@ -256,7 +253,7 @@ export default function JobsPage() {
                       {job.ctc}
                     </span>
                     <span className="font-inter text-xs text-[#6B7280]">
-                      {job.postedAt}
+                      {timeAgo(job.postedAt)}
                     </span>
                   </div>
 
@@ -289,18 +286,24 @@ export default function JobsPage() {
                     </button>
                     <button
                       className="job-btn-primary"
-                      onClick={() => setRequested((r) => ({ ...r, [job.id]: !r[job.id] }))}
+                      onClick={() => handleApply(job.id)}
                     >
-                      {requested[job.id] ? "Interest Registered ✓" : "Apply Now"}
+                      {job.applied ? "Applied ✓" : "Apply Now"}
                     </button>
                   </div>
+                  {applyMsg[job.id] && (
+                    <p className="font-inter text-xs text-[#6B7280] mt-2">
+                      {applyMsg[job.id]}
+                    </p>
+                  )}
                 </div>
               );
             })}
           </div>
+          )}
 
-          {/* Empty state */}
-          {filteredJobs.length === 0 && (
+          {/* Empty state (search/filter yielded nothing) */}
+          {!loading && !error && jobs.length > 0 && filteredJobs.length === 0 && (
             <div className="text-center py-16">
               <div className="text-[var(--c-text-muted)] font-inter text-sm">
                 No roles found matching &quot;{search}&quot;.

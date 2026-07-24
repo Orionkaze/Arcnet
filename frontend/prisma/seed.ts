@@ -18,6 +18,7 @@ import "dotenv/config";
 import bcrypt from "bcrypt";
 import { prisma } from "../src/lib/prisma";
 import { seedHubs } from "../src/lib/seedHubs";
+import { seedEcosystem } from "../src/lib/seedEcosystem";
 
 const DEMO_PASSWORD = "caliber1234";
 
@@ -504,6 +505,9 @@ async function main() {
       },
     ],
   });
+
+  // --- Ecosystem directories (Jobs, Mentors) ---------------------------------
+  await seedEcosystem();
 
   console.log("\n✅ Caliber demo seed complete.\n");
   console.log("   Log in at /login with any of these (all password: " + DEMO_PASSWORD + "):");

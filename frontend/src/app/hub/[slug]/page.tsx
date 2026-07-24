@@ -287,7 +287,18 @@ export default function HubPage() {
   const [membersLoading, setMembersLoading] = useState(false);
   const [membersSearch, setMembersSearch] = useState("");
   const [onlineOnly, setOnlineOnly] = useState(false);
-  const [showMembersPanel, setShowMembersPanel] = useState(true);
+  // Default closed so the chat is fully visible on first paint (critical on
+  // mobile, where the panel overlays the chat); auto-open on desktop after mount.
+  const [showMembersPanel, setShowMembersPanel] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (typeof window !== "undefined" && window.innerWidth >= 768) {
+        setShowMembersPanel(true);
+      }
+    }, 0);
+    return () => clearTimeout(t);
+  }, []);
 
   // Manage Requests Modal
   interface HubJoinRequest {
@@ -966,7 +977,7 @@ export default function HubPage() {
         <div className="flex-1 flex overflow-hidden mt-14 relative">
           
           {/* COLUMN 1: LEFT SIDEBAR (Hub Info, Channels, Join/Leave) */}
-          <aside className="w-[260px] min-w-[260px] border-r border-[var(--c-border)] bg-[var(--c-surface)] p-4 flex flex-col justify-between select-none h-full">
+          <aside className="w-[260px] min-w-[260px] max-md:w-[150px] max-md:min-w-[150px] max-md:p-2 border-r border-[var(--c-border)] bg-[var(--c-surface)] p-4 flex flex-col justify-between select-none h-full">
             <div className="flex flex-col overflow-y-auto space-y-4 pr-1">
               
               {/* Hub Meta Card */}
@@ -1701,9 +1712,10 @@ export default function HubPage() {
             )}
           </main>
 
-          {/* COLUMN 3: RIGHT PANEL (Members List) */}
+          {/* COLUMN 3: RIGHT PANEL (Members List).
+              On mobile it overlays the chat (absolute) instead of squeezing it. */}
           <aside
-            className={`h-full border-l border-[var(--c-border)] bg-[var(--c-surface)] flex flex-col select-none transition-all duration-300 ${
+            className={`h-full border-l border-[var(--c-border)] bg-[var(--c-surface)] flex flex-col select-none transition-all duration-300 max-md:absolute max-md:right-0 max-md:top-0 max-md:bottom-0 max-md:z-40 max-md:shadow-2xl ${
               showMembersPanel ? "w-[260px] opacity-100" : "w-0 opacity-0 overflow-hidden border-l-0"
             }`}
           >

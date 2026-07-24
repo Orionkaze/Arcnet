@@ -14,7 +14,7 @@ interface Mentor {
   firstName: string;
   lastName: string;
   role: string;
-  studio: string;
+  company: string;
   specialty: string;
   years: number;
   bio: string;
@@ -23,132 +23,10 @@ interface Mentor {
   sessions: number;
   price: number;
   verified: boolean;
+  requested: boolean;
 }
 
 const SPECIALTIES = ["All", "Consulting", "Finance", "Product", "Data", "Aptitude"];
-
-const MENTORS: Mentor[] = [
-  {
-    id: "m1",
-    firstName: "Aarav",
-    lastName: "Menon",
-    role: "Engagement Manager",
-    studio: "McKinsey & Company",
-    specialty: "Consulting",
-    years: 11,
-    bio: "Ex-BCG, now EM. I help you structure ambiguous cases and land a crisp, MECE recommendation.",
-    expertise: ["Case Structuring", "Guesstimates", "Frameworks"],
-    rating: 4.9,
-    sessions: 132,
-    price: 1800,
-    verified: true,
-  },
-  {
-    id: "m2",
-    firstName: "Priya",
-    lastName: "Sharma",
-    role: "Investment Banking Associate",
-    studio: "Goldman Sachs",
-    specialty: "Finance",
-    years: 9,
-    bio: "IB associate on the M&A desk. Valuation, LBOs, and building models that survive scrutiny.",
-    expertise: ["DCF", "LBO", "Financial Modeling"],
-    rating: 4.8,
-    sessions: 88,
-    price: 1500,
-    verified: true,
-  },
-  {
-    id: "m3",
-    firstName: "Rohan",
-    lastName: "Iyer",
-    role: "Senior Product Manager",
-    studio: "Flipkart",
-    specialty: "Product",
-    years: 8,
-    bio: "Shipped 0-to-1 features to millions. Sharpen your product sense and metric-driven thinking.",
-    expertise: ["Product Sense", "Metrics", "Prioritization"],
-    rating: 4.9,
-    sessions: 64,
-    price: 1600,
-    verified: true,
-  },
-  {
-    id: "m4",
-    firstName: "Ananya",
-    lastName: "Nair",
-    role: "Data Scientist",
-    studio: "Swiggy",
-    specialty: "Data",
-    years: 7,
-    bio: "SQL, statistics, and A/B testing. I review your case approach and clean up your analysis.",
-    expertise: ["SQL", "A/B Testing", "Statistics"],
-    rating: 5.0,
-    sessions: 45,
-    price: 2000,
-    verified: true,
-  },
-  {
-    id: "m5",
-    firstName: "Vikram",
-    lastName: "Reddy",
-    role: "Placement Mentor",
-    studio: "Ex-CAT 99.8%iler",
-    specialty: "Aptitude",
-    years: 10,
-    bio: "Quant and DI coach. From fundamentals to speed, I get you interview- and test-ready.",
-    expertise: ["Quant", "Data Interpretation", "Logical Reasoning"],
-    rating: 4.7,
-    sessions: 97,
-    price: 1500,
-    verified: true,
-  },
-  {
-    id: "m6",
-    firstName: "Sneha",
-    lastName: "Kulkarni",
-    role: "Strategy Consultant",
-    studio: "Bain & Company",
-    specialty: "Consulting",
-    years: 6,
-    bio: "Profitability and market-entry cases. I stress-test your logic before the interviewer does.",
-    expertise: ["Profitability", "Market Entry", "Mock Interviews"],
-    rating: 4.8,
-    sessions: 51,
-    price: 1400,
-    verified: false,
-  },
-  {
-    id: "m7",
-    firstName: "Kabir",
-    lastName: "Deshmukh",
-    role: "Equity Research Analyst",
-    studio: "Morgan Stanley",
-    specialty: "Finance",
-    years: 8,
-    bio: "Markets, comps, and three-statement models. I help you talk stocks like a pro in interviews.",
-    expertise: ["Equity Research", "Comparables", "Markets"],
-    rating: 4.9,
-    sessions: 73,
-    price: 1700,
-    verified: true,
-  },
-  {
-    id: "m8",
-    firstName: "Meera",
-    lastName: "Pillai",
-    role: "Analytics Lead",
-    studio: "Zomato",
-    specialty: "Data",
-    years: 12,
-    bio: "Dashboards, experimentation, and metrics. If your analysis is slow or fuzzy, talk to me.",
-    expertise: ["Dashboards", "Experimentation", "Product Analytics"],
-    rating: 4.9,
-    sessions: 110,
-    price: 2200,
-    verified: true,
-  },
-];
 
 export default function MentorsPage() {
   const { checkAuth } = useAuthStore();
@@ -156,16 +34,68 @@ export default function MentorsPage() {
 
   const [search, setSearch] = useState("");
   const [activeSpecialty, setActiveSpecialty] = useState("All");
-  // No booking backend yet — record the request locally so the CTA is honest and live.
-  const [requested, setRequested] = useState<Record<string, boolean>>({});
+
+  const [mentors, setMentors] = useState<Mentor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [bookError, setBookError] = useState<string | null>(null);
 
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
 
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch("/api/mentors");
+        if (!res.ok) throw new Error("Failed to load mentors");
+        const data = await res.json();
+        if (active) setMentors(data.mentors ?? []);
+      } catch {
+        if (active) setError("Couldn't load mentors. Please try again.");
+      } finally {
+        if (active) setLoading(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const handleBook = async (mentor: Mentor) => {
+    setBookError(null);
+    const nextRequested = !mentor.requested;
+    // Optimistic update — revert on failure.
+    setMentors((list) =>
+      list.map((m) => (m.id === mentor.id ? { ...m, requested: nextRequested } : m))
+    );
+    try {
+      const res = await fetch(`/api/mentors/${mentor.id}/book`, { method: "POST" });
+      if (res.status === 401) {
+        setMentors((list) =>
+          list.map((m) => (m.id === mentor.id ? { ...m, requested: mentor.requested } : m))
+        );
+        setBookError("Log in to book.");
+        return;
+      }
+      if (!res.ok) throw new Error("Booking failed");
+      const data = await res.json();
+      setMentors((list) =>
+        list.map((m) => (m.id === mentor.id ? { ...m, requested: data.requested } : m))
+      );
+    } catch {
+      setMentors((list) =>
+        list.map((m) => (m.id === mentor.id ? { ...m, requested: mentor.requested } : m))
+      );
+    }
+  };
+
   const filteredMentors = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return MENTORS.filter((m) => {
+    return mentors.filter((m) => {
       const matchesSpecialty =
         activeSpecialty === "All" || m.specialty === activeSpecialty;
       if (!matchesSpecialty) return false;
@@ -174,7 +104,7 @@ export default function MentorsPage() {
         m.firstName,
         m.lastName,
         m.role,
-        m.studio,
+        m.company,
         m.specialty,
         ...m.expertise,
       ]
@@ -182,7 +112,7 @@ export default function MentorsPage() {
         .toLowerCase();
       return haystack.includes(q);
     });
-  }, [search, activeSpecialty]);
+  }, [search, activeSpecialty, mentors]);
 
   return (
     <div className="home-layout">
@@ -200,7 +130,6 @@ export default function MentorsPage() {
             <p className="font-inter text-sm text-[var(--c-text-muted)]">
               Browse verified professionals across consulting, finance, product,
               data, and aptitude &mdash; then book a session.
-              <span className="block mt-1 text-xs text-[#8A9099]">Sample profiles — live mentor booking rolls out soon. Request a session to be notified.</span>
             </p>
           </div>
 
@@ -231,7 +160,42 @@ export default function MentorsPage() {
             ))}
           </div>
 
+          {/* Booking auth notice */}
+          {bookError && (
+            <div className="mb-4 text-sm font-inter text-[#10B981]">
+              {bookError}
+            </div>
+          )}
+
+          {/* Loading state */}
+          {loading && (
+            <div className="text-center py-16">
+              <div className="text-[var(--c-text-muted)] font-inter text-sm">
+                Loading mentors&hellip;
+              </div>
+            </div>
+          )}
+
+          {/* Error state */}
+          {!loading && error && (
+            <div className="text-center py-16">
+              <div className="text-[var(--c-text-muted)] font-inter text-sm">
+                {error}
+              </div>
+            </div>
+          )}
+
+          {/* Empty state (no mentors at all) */}
+          {!loading && !error && mentors.length === 0 && (
+            <div className="text-center py-16">
+              <div className="text-[var(--c-text-muted)] font-inter text-sm">
+                No mentors yet.
+              </div>
+            </div>
+          )}
+
           {/* Mentors Grid */}
+          {!loading && !error && mentors.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredMentors.map((mentor) => (
               <div key={mentor.id} className="mentor-card flex flex-col">
@@ -272,7 +236,7 @@ export default function MentorsPage() {
                     </div>
 
                     <p className="font-chakra text-xs text-[#10B981] uppercase tracking-wide mt-1 font-bold truncate">
-                      {mentor.role} @ {mentor.studio}
+                      {mentor.role} @ {mentor.company}
                     </p>
                     <span className="font-inter text-[11px] text-[var(--c-text-muted)]">
                       {mentor.years} yrs experience
@@ -310,17 +274,18 @@ export default function MentorsPage() {
                   </div>
                   <button
                     className="book-btn"
-                    onClick={() => setRequested((r) => ({ ...r, [mentor.id]: !r[mentor.id] }))}
+                    onClick={() => handleBook(mentor)}
                   >
-                    {requested[mentor.id] ? "Session Requested ✓" : "Book a Session"}
+                    {mentor.requested ? "Session Requested ✓" : "Book a Session"}
                   </button>
                 </div>
               </div>
             ))}
           </div>
+          )}
 
-          {/* Empty state */}
-          {filteredMentors.length === 0 && (
+          {/* Empty state (no filter matches) */}
+          {!loading && !error && mentors.length > 0 && filteredMentors.length === 0 && (
             <div className="text-center py-16">
               <div className="text-[var(--c-text-muted)] font-inter text-sm">
                 No mentors found matching &quot;{search}&quot;.

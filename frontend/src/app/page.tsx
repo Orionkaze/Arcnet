@@ -336,8 +336,9 @@ export default function Home() {
 
         <RightPanel />
 
-        {/* Floating Grid Menu Button */}
-        <div className="fixed top-[72px] right-6 z-50">
+        {/* Floating Grid Menu Button (Create Post / Join Hub).
+            On mobile it sits above the bottom nav as a FAB instead of over the feed. */}
+        <div className="fixed top-[72px] right-6 z-50 max-md:top-auto max-md:bottom-24 max-md:right-4">
           <div className="relative">
             <button
               className="w-9 h-9 rounded-full bg-[var(--c-surface)] border-2 border-[#10B981] flex items-center justify-center hover:bg-[rgba(16, 185, 129,0.1)] transition-colors cursor-pointer"
@@ -361,7 +362,7 @@ export default function Home() {
             </button>
             
             {dropdownOpen && (
-              <div className="absolute top-full mt-2 right-0 bg-[var(--c-surface-2)] border border-[var(--c-border)] rounded-lg shadow-2xl py-2 w-48 font-inter">
+              <div className="absolute top-full mt-2 right-0 max-md:top-auto max-md:bottom-full max-md:mt-0 max-md:mb-2 bg-[var(--c-surface-2)] border border-[var(--c-border)] rounded-lg shadow-2xl py-2 w-48 font-inter">
                 <button
                   className="w-full text-left px-4 py-2 text-[var(--c-text-muted)] hover:text-white hover:bg-[var(--c-surface-2)] transition-colors text-sm"
                   onClick={() => {

@@ -51,6 +51,8 @@ model User {
   caliberCompEntries CaliberCompetitionEntry[] @relation("CaliberCompEntries")
   caliberOpenSubmissions CaliberOpenSubmission[] @relation("CaliberOpenSubmissions")
   caliberReviews         CaliberReview[]         @relation("CaliberReviews")
+  jobApplications        JobApplication[]
+  mentorBookings         MentorBooking[]
 }
 
 model Conversation {
@@ -402,4 +404,72 @@ model CaliberReview {
   createdAt    DateTime              @default(now())
   @@unique([submissionId, reviewerId])
   @@index([submissionId])
+}
+
+// --- Ecosystem: Jobs -------------------------------------------------------
+model Job {
+  id           String           @id @default(cuid())
+  title        String
+  company      String
+  location     String
+  type         String           // Full-Time | Internship | Contract | Remote
+  ctc          String
+  skills       String[]
+  description  String
+  postedAt     DateTime         @default(now())
+  applications JobApplication[]
+  createdAt    DateTime         @default(now())
+}
+
+model JobApplication {
+  id        String   @id @default(cuid())
+  jobId     String
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  @@unique([jobId, userId])
+  @@index([userId])
+}
+
+// --- Ecosystem: Mentors ----------------------------------------------------
+model Mentor {
+  id        String          @id @default(cuid())
+  firstName String
+  lastName  String
+  role      String
+  company   String
+  specialty String
+  years     Int
+  bio       String
+  expertise String[]
+  rating    Float
+  sessions  Int
+  price     Int
+  verified  Boolean         @default(false)
+  bookings  MentorBooking[]
+  createdAt DateTime        @default(now())
+}
+
+model MentorBooking {
+  id        String   @id @default(cuid())
+  mentorId  String
+  mentor    Mentor   @relation(fields: [mentorId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status    String   @default("requested") // requested | confirmed | cancelled
+  createdAt DateTime @default(now())
+  @@unique([mentorId, userId])
+  @@index([userId])
+}
+
+// --- Ecosystem: waitlist (e.g. AI Match "notify me") -----------------------
+model WaitlistEntry {
+  id        String   @id @default(cuid())
+  feature   String   // e.g. "ai-match"
+  email     String
+  userId    String?
+  createdAt DateTime @default(now())
+  @@unique([feature, email])
+  @@index([feature])
 }

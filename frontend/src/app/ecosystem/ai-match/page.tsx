@@ -59,18 +59,35 @@ export default function AiMatchPage() {
 
   const [email, setEmail] = useState("");
   const [successToast, setSuccessToast] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const showSuccessToast = (msg: string) => {
     setSuccessToast(msg);
     setTimeout(() => setSuccessToast(null), 3000);
   };
 
-  const handleNotifySubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleNotifySubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!email.trim()) return;
-    // Stub: client-side only, no backend call.
-    showSuccessToast("You're on the list!");
-    setEmail("");
+    if (!email.trim() || submitting) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ feature: "ai-match", email: email.trim() }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        showSuccessToast(data.error || "Could not add you — try again.");
+        return;
+      }
+      showSuccessToast(data.alreadyOnList ? "You're already on the list!" : "You're on the list!");
+      setEmail("");
+    } catch {
+      showSuccessToast("Could not add you — try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -159,15 +176,16 @@ export default function AiMatchPage() {
               >
                 <input
                   type="email"
-                  placeholder="you@studio.com"
+                  placeholder="you@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="flex-grow bg-[var(--c-surface-2)] border border-[var(--c-border)] text-white text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:border-[#10B981] transition-colors font-inter"
+                  disabled={submitting}
+                  className="flex-grow bg-[var(--c-surface-2)] border border-[var(--c-border)] text-white text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:border-[#10B981] transition-colors font-inter disabled:opacity-60"
                   style={{ height: "44px" }}
                 />
-                <button type="submit" className="notify-btn">
-                  Notify Me
+                <button type="submit" className="notify-btn" disabled={submitting}>
+                  {submitting ? "Adding…" : "Notify Me"}
                 </button>
               </form>
             </div>
